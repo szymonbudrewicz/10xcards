@@ -30,6 +30,7 @@ No unit-test runner is configured. CI (`.github/workflows`) targets the `master`
 - Services/helpers in `src/lib/` (business logic in `src/lib/services/`); shared types/DTOs in `src/types.ts`.
 - Migrations: `supabase/migrations/YYYYMMDDHHmmss_short_description.sql`; always enable RLS on new tables with granular per-operation, per-role policies.
 - Wklejony tekst użytkownika nie może być zapisywany ani logowany. Trwałe są tylko fiszki i liczniki propozycji/akceptacji.
+- Błędy API mają kształt { error: { code, message } }, z kodem w snake_case i komunikatem po polsku.
 
 ## 10x course tooling
 
