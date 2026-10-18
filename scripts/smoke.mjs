@@ -1,7 +1,9 @@
 // Smoke test: proves the built app, the Cloudflare adapter and the Supabase auth flow still work together.
 // Zero dependencies on purpose. Run against a live server: BASE_URL=http://localhost:4321 node scripts/smoke.mjs
 
-const BASE_URL = process.env.BASE_URL ?? "http://localhost:4321";
+import { readFileSync } from "node:fs";
+
+const BASE_URL =process.env.BASE_URL ?? "http://localhost:4321";
 const email = `smoke-${Date.now()}@example.com`;
 const password = "Smoke-Test-Passw0rd!";
 const jar = new Map();
@@ -35,6 +37,44 @@ async function request(path, { method = "GET", form } = {}) {
   return { status: response.status, location: response.headers.get("location") ?? "" };
 }
 
+// Supabase credentials (env first, then .dev.vars) let us verify the account really exists in Auth.
+function supabaseCredentials() {
+  let url = process.env.SUPABASE_URL;
+  let key = process.env.SUPABASE_KEY;
+  if (!url || !key) {
+    try {
+      const vars = Object.fromEntries(
+        readFileSync(".dev.vars", "utf8")
+          .split(/\r?\n/)
+          .map((line) => line.match(/^\s*([A-Z_]+)\s*=\s*"?([^"\r\n]*?)"?\s*$/))
+          .filter(Boolean)
+          .map((m) => [m[1], m[2]])
+      );
+      url ??= vars.SUPABASE_URL;
+      key ??= vars.SUPABASE_KEY;
+    } catch {
+      // no .dev.vars
+    }
+  }
+  return url && key ? { url: url.replace(/\/$/, ""), key } : null;
+}
+
+// Direct GoTrue password grant: an existing account yields 200 or email_not_confirmed,
+// a missing one yields invalid_credentials.
+async function accountExists() {
+  const creds = supabaseCredentials();
+  if (!creds) return { status: 0, location: "SUPABASE_URL/SUPABASE_KEY unavailable" };
+  const res = await fetch(`${creds.url}/auth/v1/token?grant_type=password`, {
+    method: "POST",
+    headers: { apikey: creds.key, "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+  const body = await res.json().catch(() => ({}));
+  const code = body.error_code ?? "";
+  const exists = res.status === 200 || code === "email_not_confirmed";
+  return { status: exists ? 200 : 404, location: `grant=${res.status}/${code || "-"}` };
+}
+
 const steps = [
   ["home renders", () => request("/"), { status: 200 }],
   ["dashboard redirects anonymous user", () => request("/dashboard"), { status: 302, location: "/auth/signin" }],
@@ -43,6 +83,7 @@ const steps = [
     () => request("/api/auth/signup", { method: "POST", form: { email, password } }),
     { status: 302, location: "/auth/confirm-email" },
   ],
+  ["account exists in Supabase Auth", accountExists, { status: 200 }],
   [
     "signin rejects wrong password",
     () => request("/api/auth/signin", { method: "POST", form: { email, password: "wrong" } }),
@@ -51,7 +92,7 @@ const steps = [
   [
     "signin accepts correct password",
     () => request("/api/auth/signin", { method: "POST", form: { email, password } }),
-    { status: 302, location: "/" },
+    { status: 302, location: "/", exact: true },
   ],
   ["dashboard renders for signed-in user", () => request("/dashboard"), { status: 200 }],
   ["signout clears session", () => request("/api/auth/signout", { method: "POST" }), { status: 302, location: "/" }],
@@ -63,7 +104,8 @@ for (const [name, run, expected] of steps) {
   const actual = await run();
   const ok =
     actual.status === expected.status &&
-    (expected.location === undefined || actual.location.startsWith(expected.location));
+    (expected.location === undefined ||
+      (expected.exact ? actual.location === expected.location : actual.location.startsWith(expected.location)));
   console.log(`${ok ? "PASS" : "FAIL"}  ${name}  -> ${actual.status} ${actual.location}`);
   if (!ok) {
     failed++;
@@ -72,4 +114,5 @@ for (const [name, run, expected] of steps) {
 }
 
 console.log(failed ? `\n${failed} step(s) failed` : "\nAll smoke steps passed");
+console.log(`Test account left in Supabase Auth (delete manually): ${email}`);
 process.exit(failed ? 1 : 0);

@@ -90,6 +90,8 @@ Po trzech tygodniach MVP działa lokalnie, bo `astro dev` odwzorowuje workerd. P
 
 - **Region Supabase:** UE (Frankfurt, `eu-central-1`) — dane użytkowników w UE (RODO), mały dystans do Workerów w Europie.
 - **Plan Cloudflare:** Free (Workers Free, 100 tys. żądań dziennie, 10 ms CPU na wywołanie) — zgodnie z priorytetem „minimalizuj koszt".
+- **KV `SESSION` i Cloudflare Images (decyzja 2026-10-18):** nie tworzymy ich. Adapter `@astrojs/cloudflare` domyślnie dodaje binding KV `SESSION` (automatyczne tworzenie przy `wrangler deploy`) i binding `IMAGES`. Auth działa na cookies `@supabase/ssr`, a aplikacja nie ma obrazów do optymalizacji. W `astro.config.mjs`: `session: false` i `cloudflare({ imageService: "passthrough" })`. Weryfikacja: `dist/server/wrangler.json` ma `kv_namespaces: []` i nie zawiera klucza `images`. Jeśli kiedyś pojawią się sesje Astro lub optymalizacja obrazów, trzeba tę decyzję zmienić świadomie (nowy zasób na koncie).
+- **Zakres smoke (decyzja 2026-10-18):** lokalny `npm run smoke` na runtime produkcyjnym uznany za wystarczający (4 kroki PASS: `/`, przekierowanie anonima, odrzucenie złego hasła, wylogowanie; klucz i URL Supabase działają). Hostowany Supabase odrzuca `example.com`, więc rejestracja i logowanie nie są objęte smoke: sprawdza je człowiek ręcznie w przeglądarce po deployu, własnym adresem. Na produkcji tylko `curl -I` na `/` i `/auth/signin` oraz przekierowanie chronionej trasy; bez zakładania kont testowych w produkcyjnym Supabase.
 
 ## Sygnał zmiany decyzji
 
