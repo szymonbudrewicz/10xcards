@@ -248,17 +248,17 @@ Tabela jest nowa, bez danych do przeniesienia. Rollback kodu (`wrangler rollback
 
 - [x] 2.7 Przegląd skryptu: żaden krok nie czyta `.dev.vars` i nie loguje haseł ani tokenów — 8930c60
 - [x] 2.8 `eslint.config.js` zmieniony tylko o globalne `URL` i `crypto` w `scriptsConfig` — 8930c60
-- [ ] 2.9 Człowiek potwierdza, że zielony run dotyczy ostatniego commita na branchu
+- [x] 2.9 Człowiek potwierdza, że zielony run dotyczy ostatniego commita na branchu — 4195b97
 
 ### Phase 3: Produkcja i domknięcie dokumentacji
 
 #### Automated
 
-- [ ] 3.1 Aplikacja nadal się buduje: `npm run build`
-- [ ] 3.2 Typy i lint: `npx astro check` oraz `npm run lint`
+- [x] 3.1 Aplikacja nadal się buduje: `npm run build`
+- [x] 3.2 Typy i lint: `npx astro check` oraz `npm run lint`
 
 #### Manual
 
-- [ ] 3.3 `db push --dry-run` pokazuje tylko migrację `create_cards`
-- [ ] 3.4 Zapytania katalogowe na produkcji zwracają oczekiwane wartości (RLS `true`, 4 polityki, brak uprawnień `anon`, pełne uprawnienia `authenticated`)
-- [ ] 3.5 `deploy-plan.md` zawiera dopisek o migracji
+- [x] 3.3 `db push --dry-run` pokazuje tylko migrację `create_cards`
+- [x] 3.4 Zapytania katalogowe na produkcji zwracają oczekiwane wartości (RLS `true`, 4 polityki, brak uprawnień `anon`, pełne uprawnienia `authenticated`)
+- [x] 3.5 `deploy-plan.md` zawiera dopisek o migracji
