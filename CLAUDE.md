@@ -11,7 +11,7 @@ Docs under `context/` are written in Polish; `context/archive/` is immutable —
 - `npx astro check` — type check (CI runs it after `npx astro sync`)
 - `npm run smoke` — dependency-free auth-flow smoke test (`scripts/smoke.mjs`) against a running server; `BASE_URL` defaults to `http://localhost:4321`. Run after dependency upgrades.
 
-No unit-test runner is configured. CI (`.github/workflows`) targets the `master` branch, while the local default branch is `main`.
+No unit-test runner is configured. CI (`.github/workflows`) runs on pushes and pull requests to `main` (lint, `astro check`, build, plus the `smoke` job); there is no deploy job.
 
 ## Environment
 
