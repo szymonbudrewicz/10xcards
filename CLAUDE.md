@@ -40,48 +40,55 @@ No unit-test runner is configured. CI (`.github/workflows`) runs on pushes and p
 - Rules-file filter: add a rule only if the agent couldn't know it from public training data. Recurring pitfalls go to `context/foundation/lessons.md` via `/10x-lesson` (append-only).
 <!-- BEGIN @przeprogramowani/10x-cli -->
 
-## Zestaw narzędzi AI 10xDevs — Moduł 2, Lekcja 1
+## Zestaw narzędzi AI 10xDevs - Moduł 2, Lekcja 2
 
-Przejdź od konfiguracji sprintu zerowego do orkiestracji projektu za pomocą **łańcucha roadmapy**:
+Przekształć jeden element roadmapy w pierwszy cykl implementacji za pomocą **łańcucha planowania zmian**:
 
 ```
-(Module 1 foundation docs) -> /10x-roadmap -> backlog-ready roadmap items
+/10x-roadmap -> /10x-new -> /10x-plan -> /10x-plan-review -> /10x-implement
 ```
 
-`/10x-roadmap` jest tematem lekcji. `/10x-new` zostaje celowo wprowadzone w Module 2, Lesson 2, gdy wybrany element roadmapy staje się folderem zmiany implementacyjnej.
+`/10x-new`, `/10x-plan`, `/10x-plan-review` i `/10x-implement` są głównym tematem lekcji. `/10x-frame` i `/10x-research` nie są tutaj wymaganymi rytuałami; są ścieżkami eskalacji wprowadzanymi w następnej lekcji.
 
-### Router zadań — od czego zacząć
+### Router zadań - od czego zacząć
 
-| Skill | Użyj, gdy |
+| Umiejętność | Użyj jej, gdy |
 | --- | --- |
-| **Roadmap (temat lekcji)** | |
-| `/10x-roadmap` | Masz `context/foundation/prd.md` oraz przygotowaną bazę projektu i potrzebujesz roadmapy MVP o priorytecie pionowych przekrojów. Skill odczytuje PRD, analizuje bazę kodu, wykorzystuje dostępne dokumenty podstawowe, takie jak `tech-stack.md`, `infrastructure.md` i `deploy-plan.md`, a następnie zapisuje `context/foundation/roadmap.md`. Użyj go PRZED utworzeniem folderów dla poszczególnych zmian lub planów implementacji. |
-| **W razie potrzeby uruchom ponownie etap wcześniejszy** | |
-| `/10x-shape` / `/10x-prd` / `/10x-tech-stack-selector` / `/10x-bootstrapper` / `/10x-agents-md` / `/10x-infra-research` | Zestawione z Module 1, aby kontrakty podstawowe można było poprawić przed ustaleniem kolejności roadmapy. Jeśli generowanie roadmapy ujawni lukę w PRD, popraw PRD, zanim uznasz backlog za gotowy. |
+| **Konfiguracja zmiany (główny temat lekcji)** | |
+| `/10x-new <change-id>` | Wybrano element roadmapy i potrzebny jest stabilny folder zmiany. Tworzy `context/changes/<change-id>/change.md`, aby planowanie, implementacja, postęp, commity i późniejszy przegląd miały wspólną tożsamość. Użyj PO wybraniu elementu roadmapy, PRZED `/10x-plan`. |
+| **Planowanie (główny temat lekcji)** | |
+| `/10x-plan <change-id>` | Masz folder zmiany i potrzebujesz planu implementacji możliwego do przeglądu. Odczytuje kontekst roadmapy, dokumenty podstawowe, dowody z codebase oraz wszelkie istniejące notatki dotyczące zmiany; zapisuje `plan.md` i `plan-brief.md` z fazami, kontraktami plików, kryteriami sukcesu oraz `## Progress`. |
+| **Gotowość planu (główny temat lekcji)** | |
+| `/10x-plan-review <change-id>` | Masz `plan.md` i potrzebujesz lekkiej kontroli gotowości przed rozpoczęciem kodowania. Użyj jej, aby wychwycić brakujący stan końcowy, słabe kontrakty, nieprawidłowo sformatowany postęp, dryf zakresu lub martwe punkty, zanim rozpoczną się zmiany w kodzie. |
+| **Implementacja (główny temat lekcji)** | |
+| `/10x-implement <change-id> phase <n>` | Masz zatwierdzony plan i chcesz wykonać jedną fazę z weryfikacją, ręczną bramką, rytuałem commitu oraz zapisaniem SHA w `## Progress`. |
+| **Zamknięcie cyklu życia** | |
+| `/10x-archive <change-id>` | Zmiana jest scalona lub celowo zamknięta. Przenieś ją z aktywnego `context/changes/` do stanu archiwalnego. |
 
-### Jak łańcuch przekazuje pracę dalej
+### Jak łańcuch przekazuje pracę
 
-- `/10x-roadmap` łączy produkt z implementacją. Nie wybiera frameworków, nie projektuje schematów ani nie tworzy planu implementacji dla pojedynczej zmiany.
-- Wynikiem jest `context/foundation/roadmap.md`: uporządkowane kamienie milowe, pionowe przekroje, ograniczone fundamenty, zależności, niewiadome, ryzyka oraz pola przekazania do backlogu.
-- Elementy roadmapy powinny otrzymywać stabilne, czytelne dla ludzi identyfikatory w narzędziach backlogu. Rzeczywisty folder `context/changes/<change-id>/` zostanie utworzony w Lekcji 2 za pomocą `/10x-new`.
+- `/10x-new` tworzy trwałą tożsamość zmiany.
+- `/10x-plan` przekształca tę tożsamość w kontrakt implementacyjny.
+- `/10x-plan-review` sprawdza plan, zanim agent zmodyfikuje kod.
+- `/10x-implement` wykonuje jedną zaplanowaną fazę, weryfikuje, prosi o ręczne potwierdzenie, gdy jest potrzebne, wykonuje commit i rejestruje postęp.
 
-### Granice roadmapy
+### Granice lekcji
 
-- Domyślnie stosuj pionowe przekroje: widoczne dla użytkownika rezultaty obejmujące UI, dane, logikę biznesową i integracje.
-- Praca horyzontalna jest dozwolona tylko jako ograniczony element umożliwiający realizację, który wskazuje docelowy pionowy kamień milowy, jaki odblokowuje.
-- Unikaj osieroconej pracy horyzontalnej, takiej jak „zbuduj całą bazę danych”, „zbuduj wszystkie endpointy API” lub „zaprojektuj cały UI” przed pierwszym przepływem widocznym dla użytkownika.
-- Roadmapa nie jest estymacją kalendarzową. Nie wymyślaj dat, punktów historyjek ani prędkości sprintu, chyba że użytkownik wyraźnie poprosi o osobny artefakt planowania.
+- Plan jest domyślnym routerem po wyborze elementu roadmapy. Zacznij od `/10x-plan`, chyba że problem jest niejasny lub blokują Cię dowody zewnętrzne.
+- Nie uruchamiaj `/10x-frame + /10x-research` jako ceremonii dla każdej zmiany.
+- Nie przekształcaj tej lekcji w pełną, kompleksową budowę produktu. Punkt kontrolny z zaplanowanym i częściowo lub w pełni zaimplementowanym strumieniem jest prawidłowy.
+- Przegląd kodu zaimplementowanego diffu należy do Lekcji 3 poprzez `/10x-impl-review`.
+- Zamknięcie cyklu życia przez `/10x-archive` po scaleniu lub celowym zamknięciu zmiany.
 
-### Ścieżki podstawowe używane przez tę lekcję
+### Ścieżki używane w tej lekcji
 
-- `context/foundation/prd.md` — dane wejściowe
-- `context/foundation/tech-stack.md` — opcjonalne dane wejściowe
-- `context/foundation/infrastructure.md` — opcjonalne dane wejściowe
-- `context/deployment/deploy-plan.md` — opcjonalne dane wejściowe
-- `context/foundation/roadmap.md` — dane wyjściowe
-- `context/foundation/lessons.md` — powtarzające się reguły i pułapki
-- `docs/reference/contract-surfaces.md` — rejestr nazw krytycznych dla działania
+- `context/foundation/roadmap.md` - nadrzędna roadmapa
+- `context/changes/<change-id>/change.md` - tożsamość zmiany
+- `context/changes/<change-id>/plan.md` - kontrakt implementacyjny
+- `context/changes/<change-id>/plan-brief.md` - skompresowane przekazanie
+- `context/foundation/lessons.md` - powtarzające się reguły i pułapki
+- `docs/reference/contract-surfaces.md` - rejestr nazw kluczowych dla działania systemu
 
-Skills nie mogą zapisywać do `context/archive/`. Zarchiwizowane zmiany są niezmienne; jeśli rozwiązana ścieżka docelowa zaczyna się od `context/archive/`, przerwij z komunikatem: „This change is archived. Open a new change with `/10x-new` instead.”
+Umiejętności nie mogą zapisywać do `context/archive/`. Zarchiwizowane zmiany są niezmienne; jeśli rozstrzygnięta ścieżka docelowa zaczyna się od `context/archive/`, przerwij z komunikatem: "This change is archived. Open a new change with `/10x-new` instead."
 
 <!-- END @przeprogramowani/10x-cli -->
