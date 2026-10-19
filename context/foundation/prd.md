@@ -3,6 +3,7 @@ project: "10xCards"
 version: 1
 status: draft
 created: 2026-10-15
+updated: 2026-10-19
 context_type: greenfield
 product_type: web-app
 target_scale:
@@ -51,8 +52,8 @@ Główna persona: autor produktu jako jedyny nazwany użytkownik — osoba czyta
 
 #### Acceptance Criteria
 - Gdy pole z tekstem jest puste, aplikacja nie wywołuje AI i pokazuje czytelny komunikat.
-- Tekst ma limit długości (propozycja użytkownika: ok. 10 000 znaków). Po przekroczeniu użytkownik widzi komunikat, a tekst zostaje w polu.
-- Liczba propozycji na jeden tekst: nieustalona (patrz Open Questions).
+- Tekst ma limit długości 10 000 znaków. Po przekroczeniu użytkownik widzi komunikat, a tekst zostaje w polu.
+- Liczba propozycji na jeden tekst: maksymalnie 10. Wartość startowa; może zostać skorygowana po testach na własnych tekstach przy wyborze modelu.
 
 ## Functional Requirements
 
@@ -66,9 +67,9 @@ Główna persona: autor produktu jako jedyny nazwany użytkownik — osoba czyta
 
 ### Generowanie fiszek
 - FR-002: Użytkownik może wkleić tekst i uruchomić generowanie fiszek. Priority: must-have
-  > Socrates: Ryzyko słabej jakości fiszek z długiego tekstu. Resolution: FR zostaje; ryzyko ograniczone limitem długości tekstu (ok. 10 000 znaków, do potwierdzenia), a jakość mierzona metryką akceptowalności 75%.
+  > Socrates: Ryzyko słabej jakości fiszek z długiego tekstu. Resolution: FR zostaje; ryzyko ograniczone limitem długości tekstu (10 000 znaków), a jakość mierzona metryką akceptowalności 75%.
 - FR-003: Użytkownik może zobaczyć listę fiszek zaproponowanych przez AI. Priority: must-have
-  > Socrates: Ryzyko zbyt długiej listy. Resolution: FR zostaje; górna granica liczby propozycji na jeden tekst (wartość do ustalenia przy wyborze modelu i testach na własnych tekstach); wynik ma stały format (przód i tył fiszki).
+  > Socrates: Ryzyko zbyt długiej listy. Resolution: FR zostaje; górna granica liczby propozycji na jeden tekst to 10 (wartość startowa, może zostać skorygowana po testach na własnych tekstach przy wyborze modelu); wynik ma stały format (przód i tył fiszki).
 - FR-004: Użytkownik może zaakceptować, poprawić lub usunąć każdą propozycję. Priority: must-have
   > Socrates: Trzy akcje na karcie / duplikacja edycji z FR-010. Resolution: FR zostaje; świadoma akceptacja lub odrzucenie każdej propozycji jest potrzebna do policzenia metryki 75%, więc brak automatycznego zapisu wszystkiego.
 - FR-005: Użytkownik może zapisać zaakceptowaną fiszkę na swoim koncie od razu po jej akceptacji. Priority: must-have
@@ -129,6 +130,4 @@ Logowanie przez email + hasło; dane fiszek przechowywane na koncie użytkownika
 ## Open Questions
 
 1. **Kryterium „użytkownicy tworzą 75% fiszek z wykorzystaniem AI” jest z definicji spełnione w v1 bez ręcznego tworzenia (100%) — zostawić, zastąpić inną metryką czy przywrócić ręczne tworzenie?** — Owner: user. Nierozstrzygnięte.
-2. **Ile propozycji fiszek AI zwraca na jeden tekst?** — Owner: user. Nierozstrzygnięte.
-3. **Dokładny limit długości wklejanego tekstu (propozycja: ok. 10 000 znaków) — potwierdzić.** — Owner: user.
-4. **Twardy termin dostarczenia MVP: data nieznana — użytkownik sprawdzi termin składania projektu.** — Owner: user. (`hard_deadline: null`)
+2. **Twardy termin dostarczenia MVP: data nieznana — użytkownik sprawdzi termin składania projektu.** — Owner: user. (`hard_deadline: null`)
