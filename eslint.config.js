@@ -78,6 +78,7 @@ const scriptsConfig = defineConfig({
 });
 
 export default defineConfig(
+  { ignores: [".agents/**", ".claude/**"] },
   includeIgnoreFile(gitignorePath),
   baseConfig,
   reactConfig,
