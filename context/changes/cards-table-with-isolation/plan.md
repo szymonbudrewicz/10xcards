@@ -237,11 +237,11 @@ Tabela jest nowa, bez danych do przeniesienia. Rollback kodu (`wrangler rollback
 
 #### Automated
 
-- [x] 2.1 Składnia: `node --check scripts/isolation-check.mjs`
-- [x] 2.2 Lint przechodzi: `npm run lint`
-- [x] 2.3 Skrypt odmawia pracy bez zmiennych: `node scripts/isolation-check.mjs` kończy się kodem 1 z komunikatem
-- [x] 2.4 Skrypt odmawia pracy na adresie spoza pętli zwrotnej bez żadnego żądania sieciowego
-- [ ] 2.5 Zielony job `smoke` na branchu `f-01-cards-table-with-isolation` (PR do `main`), a w logu kroku izolacji widać wszystkie kroki PASS
+- [x] 2.1 Składnia: `node --check scripts/isolation-check.mjs` — 8930c60
+- [x] 2.2 Lint przechodzi: `npm run lint` — 8930c60
+- [x] 2.3 Skrypt odmawia pracy bez zmiennych: `node scripts/isolation-check.mjs` kończy się kodem 1 z komunikatem — 8930c60
+- [x] 2.4 Skrypt odmawia pracy na adresie spoza pętli zwrotnej bez żadnego żądania sieciowego — 8930c60
+- [x] 2.5 Zielony job `smoke` na branchu `f-01-cards-table-with-isolation` (PR do `main`), a w logu kroku izolacji widać wszystkie kroki PASS — 8930c60
 - [ ] 2.6 Wymuszony błąd (tymczasowo usunięta polityka na gałęzi testowej) powoduje czerwony job, potem cofnięty
 
 #### Manual
