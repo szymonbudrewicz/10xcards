@@ -242,12 +242,12 @@ Tabela jest nowa, bez danych do przeniesienia. Rollback kodu (`wrangler rollback
 - [x] 2.3 Skrypt odmawia pracy bez zmiennych: `node scripts/isolation-check.mjs` kończy się kodem 1 z komunikatem — 8930c60
 - [x] 2.4 Skrypt odmawia pracy na adresie spoza pętli zwrotnej bez żadnego żądania sieciowego — 8930c60
 - [x] 2.5 Zielony job `smoke` na branchu `f-01-cards-table-with-isolation` (PR do `main`), a w logu kroku izolacji widać wszystkie kroki PASS — 8930c60
-- [ ] 2.6 Wymuszony błąd (tymczasowo usunięta polityka na gałęzi testowej) powoduje czerwony job, potem cofnięty
+- [x] 2.6 Wymuszony błąd (tymczasowo usunięta polityka na gałęzi testowej) powoduje czerwony job, potem cofnięty — 8930c60, run 39267329713
 
 #### Manual
 
-- [ ] 2.7 Przegląd skryptu: żaden krok nie czyta `.dev.vars` i nie loguje haseł ani tokenów
-- [ ] 2.8 `eslint.config.js` zmieniony tylko o globalne `URL` i `crypto` w `scriptsConfig`
+- [x] 2.7 Przegląd skryptu: żaden krok nie czyta `.dev.vars` i nie loguje haseł ani tokenów — 8930c60
+- [x] 2.8 `eslint.config.js` zmieniony tylko o globalne `URL` i `crypto` w `scriptsConfig` — 8930c60
 - [ ] 2.9 Człowiek potwierdza, że zielony run dotyczy ostatniego commita na branchu
 
 ### Phase 3: Produkcja i domknięcie dokumentacji
