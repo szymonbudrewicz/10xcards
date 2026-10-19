@@ -6,7 +6,7 @@ Status: zatwierdzony 2026-10-17, wykonany 2026-10-18 (patrz „Stan faktyczny").
 
 Pierwsze wdrożenie produkcyjne: Cloudflare Workers + static assets (plan Free), Astro 7.3.2 SSR, `@astrojs/cloudflare` 14.3.1, Supabase zewnętrzny (UE). Cel: działająca aplikacja pod `https://10xcards.<subdomena>.workers.dev` z logowaniem na produkcyjnym Supabase.
 
-Stan wyjściowy: `wrangler.jsonc` gotowy (`name: 10xcards`, `main: @astrojs/cloudflare/entrypoints/server`, `assets.directory: ./dist`, `preview_urls: false`, `observability.enabled: true`). `astro.config.mjs` używa `cloudflare()` i `astro:env` z `SUPABASE_URL`/`SUPABASE_KEY` (secret, optional). CI nie ma joba deploy i celuje w `master`.
+Stan wyjściowy: `wrangler.jsonc` gotowy (`name: 10xcards`, `main: @astrojs/cloudflare/entrypoints/server`, `assets.directory: ./dist`, `preview_urls: false`, `observability.enabled: true`). `astro.config.mjs` używa `cloudflare()` i `astro:env` z `SUPABASE_URL`/`SUPABASE_KEY` (secret, optional). CI nie ma joba deploy i celuje w `main`.
 
 **Używamy wyłącznie `wrangler deploy`. Komendy `wrangler pages ...` NIE dotyczą tego projektu (R1).**
 
@@ -25,7 +25,7 @@ Stan wyjściowy: `wrangler.jsonc` gotowy (`name: 10xcards`, `main: @astrojs/clou
 ### Faza A — przygotowanie
 1. `npm ci`, `npx astro sync`, `npx astro check`, `npm run lint`.
 2. Poprawić prozę w `context/foundation/tech-stack.md` („Cloudflare Pages" → „Cloudflare Workers").
-3. Lokalny test na runtime produkcyjnym (R3): `.dev.vars` (nie commitować) z **tymi samymi danymi Supabase co produkcja** (brak osobnego projektu testowego), potem `npx astro build && npx astro preview --port 4321` w tle i `npm run smoke`. **UWAGA: smoke test pisze do produkcyjnej bazy Supabase** (konto testowe w Auth). Błąd = stop, bez deployu. Konto testowe wymaga ręcznego usunięcia (patrz krok 12).
+3. (Zastąpione, patrz „Stan faktyczny”: smoke z danymi produkcyjnymi nie został uruchomiony; nie wykonywać.) Lokalny test na runtime produkcyjnym (R3): `.dev.vars` (nie commitować) z **tymi samymi danymi Supabase co produkcja** (brak osobnego projektu testowego), potem `npx astro build && npx astro preview --port 4321` w tle i `npm run smoke`. **UWAGA: smoke test pisze do produkcyjnej bazy Supabase** (konto testowe w Auth). Błąd = stop, bez deployu. Konto testowe wymaga ręcznego usunięcia (patrz krok 12).
 
 ### Faza B — sekrety przed pierwszym deployem (R6)
 4. (M1) Zalogowanie; `npx wrangler whoami`.
@@ -49,9 +49,9 @@ Stan wyjściowy: `wrangler.jsonc` gotowy (`name: 10xcards`, `main: @astrojs/clou
 16. Commit zmian dokumentacji, tylko gdy użytkownik poprosi.
 17. **Keep-alive dla Supabase (R9)**, po wdrożeniu. Projekt Free jest wstrzymywany po 7 dniach niskiej aktywności. Propozycja (do zatwierdzenia przed implementacją):
     - Workflow `.github/workflows/keep-alive.yml` z `schedule` (cron raz dziennie) i `workflow_dispatch`, wykonujący `curl -sf` na lekki endpoint aplikacji robiący zapytanie do bazy (np. `/api/health` z `createClient()` z `src/lib/supabase.ts`, obsługa `null`, błąd w formacie `{ error: { code, message } }`, bez logowania treści użytkownika). Adres w sekrecie/zmiennej repo.
-    - Zaplanowane workflow działają tylko na domyślnej gałęzi GitHub, a CI celuje w `master` (R7): ustawić poprawną gałąź przed włączeniem.
+    - Zaplanowane workflow działają tylko na domyślnej gałęzi GitHub, a CI celuje w `main` (domyślna gałąź, R7 rozwiązane): bez dodatkowej zmiany gałęzi.
     - Alternatywa: bezpośrednie wywołanie REST Supabase (`/rest/v1/`) z kluczem publicznym w sekrecie GitHub. Cloudflare Cron Trigger odradzany (zmiany w entrypoincie adaptera).
-18. Przypomnieć o ryzykach otwartych: R7 (brak joba CI deploy, `master` vs `main`), R10 (test generowania LLM).
+18. Przypomnieć o ryzykach otwartych: R7 (brak joba CI deploy; `master` vs `main` rozwiązane, CI celuje w `main`), R10 (test generowania LLM).
 
 ## Stan faktyczny (2026-10-18)
 
@@ -68,16 +68,15 @@ Stan wyjściowy: `wrangler.jsonc` gotowy (`name: 10xcards`, `main: @astrojs/clou
 ## Otwarte punkty
 
 - **R9, keep-alive Supabase:** projekt Free jest wstrzymywany po 7 dniach niskiej aktywności. Propozycja z kroku 17 (workflow `keep-alive.yml`, `/api/health`) czeka na zatwierdzenie.
-- **R7, CI:** brak joba deploy, a CI celuje w `master`, gdy lokalna gałąź to `main`. Zaplanowane workflow działają tylko na domyślnej gałęzi GitHub.
+- **R7, CI:** brak joba deploy. CI celuje w `main` (zgodnie z lokalną gałęzią i domyślną gałęzią GitHub).
 - **R10:** test generowania LLM na produkcji (limit CPU 10 ms na planie Free, błędy 1102) jeszcze niewykonany.
 - **Rejestracja i logowanie na produkcji:** ręczna weryfikacja własnym adresem (poza smoke).
-- **Zmiany bez commita:** `astro.config.mjs`, `scripts/smoke.mjs`, dokumentacja w `context/`.
 
 ## Rollback
 `npx wrangler rollback [VERSION_ID] --message "powód"` (ID z `wrangler versions list --json`). Cofa tylko kod; migracje Supabase zostają (R4). Usunięcie Workera lub projektu Supabase wykonuje wyłącznie człowiek.
 
 ## Poza zakresem
-Job CI do deployu, token API ograniczony do jednego Workera, Cloudflare Access, własna domena, migracja `master`→`main` (R7).
+Job CI do deployu, token API ograniczony do jednego Workera, Cloudflare Access, własna domena.
 
 ## Kryteria sukcesu
 - `wrangler deploy` kończy się kodem 0 i zwraca URL `workers.dev`.

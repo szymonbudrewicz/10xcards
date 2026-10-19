@@ -1,7 +1,11 @@
 // Isolation check: proves that account B cannot read, change, delete or impersonate account A's cards,
-// and that anon has no access. Zero dependencies on purpose. Local Supabase only:
-//   eval "$(npx supabase status -o env | grep -E '^(API_URL|ANON_KEY)=' | sed 's/^API_URL=/export SUPABASE_URL=/;s/^ANON_KEY=/export SUPABASE_KEY=/')"
-//   npm run isolation
+// and that anon has no access. Zero dependencies on purpose. Local Supabase only, with the migrations
+// applied (npx supabase start) and email confirmation disabled (sign up must return a session):
+//   POSIX:
+//     eval "$(npx supabase status -o env | grep -E '^(API_URL|ANON_KEY)=' | sed 's/^API_URL=/export SUPABASE_URL=/;s/^ANON_KEY=/export SUPABASE_KEY=/')"
+//   PowerShell:
+//     npx supabase status -o env | ForEach-Object { if ($_ -match '^API_URL="?([^"]*)"?$') { $env:SUPABASE_URL = $Matches[1] } elseif ($_ -match '^ANON_KEY="?([^"]*)"?$') { $env:SUPABASE_KEY = $Matches[1] } }
+//   then: npm run isolation
 // It creates throwaway accounts, so it refuses to run against anything but a loopback address and
 // never reads .dev.vars (which may point at production).
 
@@ -34,6 +38,7 @@ const base = parsed.origin;
 async function call(path, { method = "GET", token, body, returnRows = false } = {}) {
   const response = await fetch(base + path, {
     method,
+    redirect: "error",
     headers: {
       apikey: key,
       "Content-Type": "application/json",
@@ -54,6 +59,15 @@ async function call(path, { method = "GET", token, body, returnRows = false } = 
 
 function rowsOf(result) {
   return Array.isArray(result.json) ? result.json : [];
+}
+
+function isClientError(result) {
+  return result.status >= 400 && result.status < 500;
+}
+
+// 23514 = check_violation; proves the CHECK constraint fired, not an RLS or request error.
+function isCheckViolation(result) {
+  return result.status === 400 && result.json?.code === "23514";
 }
 
 function describe(result) {
@@ -136,7 +150,7 @@ try {
   const afterBUpdate = rowsOf(await call(byId, { token: a.token }))[0];
   check(
     "update A's card as B changes nothing",
-    rowsOf(bUpdate).length === 0 && afterBUpdate?.front === front,
+    bUpdate.ok && Array.isArray(bUpdate.json) && bUpdate.json.length === 0 && afterBUpdate?.front === front,
     `update as B modified A's row (A's front is now "${afterBUpdate?.front}", ${describe(bUpdate)})`,
   );
 
@@ -145,7 +159,7 @@ try {
   const afterBDelete = rowsOf(await call(byId, { token: a.token }));
   check(
     "delete A's card as B deletes nothing",
-    rowsOf(bDelete).length === 0 && afterBDelete.length === 1,
+    bDelete.ok && Array.isArray(bDelete.json) && bDelete.json.length === 0 && afterBDelete.length === 1,
     `delete as B removed A's row (A now sees ${afterBDelete.length} row(s), ${describe(bDelete)})`,
   );
 
@@ -159,7 +173,7 @@ try {
   const aCountAfterImpersonation = rowsOf(await call("/rest/v1/cards", { token: a.token })).length;
   check(
     "insert as B with A's user_id is rejected",
-    !bImpersonate.ok && aCountAfterImpersonation === 1,
+    isClientError(bImpersonate) && aCountAfterImpersonation === 1,
     `insert as B with A's user_id was accepted (${describe(bImpersonate)}, A now has ${aCountAfterImpersonation} card(s))`,
   );
 
@@ -168,7 +182,7 @@ try {
   const afterReassign = rowsOf(await call(byId, { token: a.token }))[0];
   check(
     "update as A reassigning the card to B is rejected",
-    !reassign.ok && afterReassign?.user_id === a.id,
+    isClientError(reassign) && afterReassign?.user_id === a.id,
     `update as A reassigned the card to B (owner is now ${afterReassign?.user_id ?? "not visible to A"}, ${describe(reassign)})`,
   );
 
@@ -176,25 +190,37 @@ try {
   const blankFront = await call("/rest/v1/cards", { method: "POST", token: a.token, body: { front: "   ", back } });
   check(
     "insert with blank front is rejected",
-    !blankFront.ok,
-    `insert with blank front was accepted (${describe(blankFront)})`,
+    isCheckViolation(blankFront),
+    `insert with blank front was not rejected by the CHECK constraint (${describe(blankFront)})`,
+  );
+  const tabFront = await call("/rest/v1/cards", { method: "POST", token: a.token, body: { front: "\t\t", back } });
+  check(
+    "insert with tab-only front is rejected",
+    isCheckViolation(tabFront),
+    `insert with tab-only front was not rejected by the CHECK constraint (${describe(tabFront)})`,
   );
   const blankBack = await call("/rest/v1/cards", { method: "POST", token: a.token, body: { front, back: "" } });
   check(
     "insert with blank back is rejected",
-    !blankBack.ok,
-    `insert with blank back was accepted (${describe(blankBack)})`,
+    isCheckViolation(blankBack),
+    `insert with blank back was not rejected by the CHECK constraint (${describe(blankBack)})`,
   );
 
   // anon: a permission error or zero rows are both fine, rows never.
   const anonSelect = await call("/rest/v1/cards");
   check(
     "select as anon returns a permission error or zero rows",
-    rowsOf(anonSelect).length === 0,
-    `select as anon returned ${rowsOf(anonSelect).length} row(s) (${describe(anonSelect)})`,
+    anonSelect.status === 401 ||
+      anonSelect.status === 403 ||
+      (anonSelect.status === 200 && Array.isArray(anonSelect.json) && anonSelect.json.length === 0),
+    `select as anon was neither denied nor empty (${describe(anonSelect)})`,
   );
   const anonInsert = await call("/rest/v1/cards", { method: "POST", body: { front, back } });
-  check("insert as anon is rejected", !anonInsert.ok, `insert as anon was accepted (${describe(anonInsert)})`);
+  check(
+    "insert as anon is rejected",
+    isClientError(anonInsert),
+    `insert as anon was accepted (${describe(anonInsert)})`,
+  );
 
   // Positive paths: A can still use the policies, and this doubles as cleanup.
   const ownUpdate = await call(byId, {

@@ -1,7 +1,7 @@
 ---
 change_id: cards-table-with-isolation
 title: Tabela fiszek z izolacją danych per użytkownik (F-01)
-status: implemented
+status: impl_reviewed
 created: 2026-10-19
 updated: 2026-10-20
 ---
