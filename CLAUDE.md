@@ -10,6 +10,7 @@ Docs under `context/` are written in Polish; `context/archive/` is immutable —
 
 - `npx astro check` — type check (CI runs it after `npx astro sync`)
 - `npm run smoke` — dependency-free auth-flow smoke test (`scripts/smoke.mjs`) against a running server; `BASE_URL` defaults to `http://localhost:4321`. Run after dependency upgrades.
+- `npm run isolation` — proves account B cannot read/change/delete/impersonate account A's cards and anon has no access (`scripts/isolation-check.mjs`). Needs `SUPABASE_URL`/`SUPABASE_KEY` from `npx supabase status -o env` (API_URL, ANON_KEY) in the environment; refuses any non-loopback host and never reads `.dev.vars`. Never run it against production.
 
 No unit-test runner is configured. CI (`.github/workflows`) runs on pushes and pull requests to `main` (lint, `astro check`, build, plus the `smoke` job); there is no deploy job.
 

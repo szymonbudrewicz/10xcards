@@ -225,22 +225,22 @@ Tabela jest nowa, bez danych do przeniesienia. Rollback kodu (`wrangler rollback
 
 #### Automated
 
-- [x] 1.1 Plik migracji istnieje i ma poprawną nazwę: `ls supabase/migrations/*_create_cards.sql`
-- [x] 1.2 Lint i typy bez zmian: `npm run lint` oraz `npx astro check`
-- [ ] 1.3 Zielony job `smoke` na branchu `f-01-cards-table-with-isolation` (PR do `main`): krok `supabase start` stosuje migrację bez błędu
+- [x] 1.1 Plik migracji istnieje i ma poprawną nazwę: `ls supabase/migrations/*_create_cards.sql` — fba2940
+- [x] 1.2 Lint i typy bez zmian: `npm run lint` oraz `npx astro check` — fba2940
+- [x] 1.3 Zielony job `smoke` na branchu `f-01-cards-table-with-isolation` (PR do `main`): krok `supabase start` stosuje migrację bez błędu — fba2940
 
 #### Manual
 
-- [x] 1.4 Przeczytana migracja: RLS włączony, cztery polityki, brak polityk dla `anon`, brak kolumn powtórek i liczników
+- [x] 1.4 Przeczytana migracja: RLS włączony, cztery polityki, brak polityk dla `anon`, brak kolumn powtórek i liczników — fba2940
 
 ### Phase 2: Skrypt izolacji kont A/B i krok w CI
 
 #### Automated
 
-- [ ] 2.1 Składnia: `node --check scripts/isolation-check.mjs`
-- [ ] 2.2 Lint przechodzi: `npm run lint`
-- [ ] 2.3 Skrypt odmawia pracy bez zmiennych: `node scripts/isolation-check.mjs` kończy się kodem 1 z komunikatem
-- [ ] 2.4 Skrypt odmawia pracy na adresie spoza pętli zwrotnej bez żadnego żądania sieciowego
+- [x] 2.1 Składnia: `node --check scripts/isolation-check.mjs`
+- [x] 2.2 Lint przechodzi: `npm run lint`
+- [x] 2.3 Skrypt odmawia pracy bez zmiennych: `node scripts/isolation-check.mjs` kończy się kodem 1 z komunikatem
+- [x] 2.4 Skrypt odmawia pracy na adresie spoza pętli zwrotnej bez żadnego żądania sieciowego
 - [ ] 2.5 Zielony job `smoke` na branchu `f-01-cards-table-with-isolation` (PR do `main`), a w logu kroku izolacji widać wszystkie kroki PASS
 - [ ] 2.6 Wymuszony błąd (tymczasowo usunięta polityka na gałęzi testowej) powoduje czerwony job, potem cofnięty
 

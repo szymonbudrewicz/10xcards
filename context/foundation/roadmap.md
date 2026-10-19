@@ -41,7 +41,7 @@ Ręczne robienie dobrych fiszek zajmuje więcej czasu niż samo przeczytanie mat
 
 | ID   | Change ID                  | Outcome (user can …)                                                              | Prerequisites | PRD refs                         | Status   |
 | ---- | -------------------------- | --------------------------------------------------------------------------------- | ------------- | -------------------------------- | -------- |
-| F-01 | cards-table-with-isolation | (foundation) tabela fiszek z izolacją danych per użytkownik jest na produkcji     | —             | NFR: użytkownik widzi wyłącznie swoje fiszki; Access Control | planning |
+| F-01 | cards-table-with-isolation | (foundation) tabela fiszek z izolacją danych per użytkownik jest na produkcji     | —             | NFR: użytkownik widzi wyłącznie swoje fiszki; Access Control | in-progress |
 | S-01 | account-lifecycle-on-prod  | zarejestrować się, zalogować i wylogować na produkcji                             | —             | US-01, FR-001, FR-008, FR-009    | ready    |
 | S-02 | generate-card-proposals    | wkleić tekst i zobaczyć listę propozycji fiszek (przód/tył) od AI                 | —             | US-01, FR-002, FR-003, FR-011    | ready    |
 | S-03 | accept-and-save-cards      | zaakceptować, poprawić lub usunąć każdą propozycję; zaakceptowane zapisują się od razu | S-02, F-01 | US-01, FR-004, FR-005, FR-012    | proposed |
@@ -83,7 +83,7 @@ Co już jest w kodzie na dzień `2026-10-19` (zbadane automatycznie, potwierdzon
 - **Blockers:** — (migracja na produkcyjną bazę to ręczna bramka człowieka, zgodnie z `deploy-plan.md` M3)
 - **Unknowns:** —
 - **Risk:** Dane i izolacja to jedyne ryzyko, którego nie da się bezpiecznie dołożyć „przy okazji" pierwszego zapisu; kolumny terminów powtórek i liczniki NIE należą tu, dochodzą w pierwszych wycinkach, które ich używają.
-- **Status:** planning
+- **Status:** in-progress
 
 ## Slices
 
