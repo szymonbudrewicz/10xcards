@@ -3,7 +3,7 @@
 
 import { readFileSync } from "node:fs";
 
-const BASE_URL =process.env.BASE_URL ?? "http://localhost:4321";
+const BASE_URL = process.env.BASE_URL ?? "http://localhost:4321";
 const email = `smoke-${Date.now()}@example.com`;
 const password = "Smoke-Test-Passw0rd!";
 const jar = new Map();
@@ -48,7 +48,7 @@ function supabaseCredentials() {
           .split(/\r?\n/)
           .map((line) => line.match(/^\s*([A-Z_]+)\s*=\s*"?([^"\r\n]*?)"?\s*$/))
           .filter(Boolean)
-          .map((m) => [m[1], m[2]])
+          .map((m) => [m[1], m[2]]),
       );
       url ??= vars.SUPABASE_URL;
       key ??= vars.SUPABASE_KEY;
