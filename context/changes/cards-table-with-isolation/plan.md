@@ -225,13 +225,13 @@ Tabela jest nowa, bez danych do przeniesienia. Rollback kodu (`wrangler rollback
 
 #### Automated
 
-- [ ] 1.1 Plik migracji istnieje i ma poprawną nazwę: `ls supabase/migrations/*_create_cards.sql`
-- [ ] 1.2 Lint i typy bez zmian: `npm run lint` oraz `npx astro check`
+- [x] 1.1 Plik migracji istnieje i ma poprawną nazwę: `ls supabase/migrations/*_create_cards.sql`
+- [x] 1.2 Lint i typy bez zmian: `npm run lint` oraz `npx astro check`
 - [ ] 1.3 Zielony job `smoke` na branchu `f-01-cards-table-with-isolation` (PR do `main`): krok `supabase start` stosuje migrację bez błędu
 
 #### Manual
 
-- [ ] 1.4 Przeczytana migracja: RLS włączony, cztery polityki, brak polityk dla `anon`, brak kolumn powtórek i liczników
+- [x] 1.4 Przeczytana migracja: RLS włączony, cztery polityki, brak polityk dla `anon`, brak kolumn powtórek i liczników
 
 ### Phase 2: Skrypt izolacji kont A/B i krok w CI
 
