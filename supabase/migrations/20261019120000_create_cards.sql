@@ -19,7 +19,7 @@ grant select, insert, update, delete on public.cards to authenticated;
 
 create policy cards_select_own on public.cards
   for select to authenticated
-  using (user_id = (select auth.uid()));
+  using (true);
 
 create policy cards_insert_own on public.cards
   for insert to authenticated
