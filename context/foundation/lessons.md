@@ -15,3 +15,10 @@
 - **Problem**: `SUPABASE_URL` był najpierw pusty, potem błędny. Objaw: najpierw komunikat „Supabase is not configured" (createClient() zwraca null), po wpisaniu błędnej wartości błąd 500. `wrangler secret list` pokazuje same nazwy, więc obie nazwy były „obecne" mimo złej wartości. Wcześniej zdarzył się też adres panelu zamiast adresu API (`.../dashboard/project/<ref>`, odpowiedź HTML, a nie JSON).
 - **Rule**: Przed deployem sprawdź kształt wartości, bez wypisywania sekretów: `SUPABASE_URL` niepusty i w formie `https://<ref>.supabase.co`, `SUPABASE_KEY` jeden klucz (prefiks `sb_pub`, długość ok. 46). `secret list` nie dowodzi poprawności wartości, potwierdza ją dopiero żądanie do `/auth/v1/health` lub smoke.
 - **Applies to**: plan, implement, impl-review
+
+## Jawne uprawnienia tabel: revoke all przed grant
+
+- **Context**: supabase/migrations/20261019120000_create_cards.sql:16-18 (nowe tabele w schemacie public).
+- **Problem**: `grant select, insert, update, delete` tylko dodaje uprawnienia. Domyślne uprawnienia Supabase w `public` dają `authenticated` także TRUNCATE, REFERENCES i TRIGGER, których RLS nie obejmuje, a komentarz w migracji twierdził „dokładnie cztery operacje”.
+- **Rule**: Każda migracja z nowym `grant` na tabeli zaczyna się od `revoke all on <tabela> from anon, authenticated`, a dopiero potem nadaje potrzebne operacje.
+- **Applies to**: plan, implement, impl-review
