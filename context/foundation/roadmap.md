@@ -3,7 +3,7 @@ project: "10xCards"
 version: 1
 status: draft
 created: 2026-10-19
-updated: 2026-10-19
+updated: 2026-10-20
 prd_version: 1
 main_goal: speed
 top_blocker: decisions
@@ -187,4 +187,4 @@ Co już jest w kodzie na dzień `2026-10-19` (zbadane automatycznie, potwierdzon
 
 (Puste. `/10x-archive` dopisuje wpisy, gdy zmiana o pasującym `Change ID` zostaje zarchiwizowana.)
 
-- **F-01: (foundation) tabela fiszek z RLS (przód, tył, właściciel; każdy użytkownik widzi i zmienia wyłącznie własne wiersze) jest na produkcji, a izolacja kont A/B jest dowiedziona skryptem w CI.** — Archived 2026-10-19 → `context/archive/2026-10-19-cards-table-with-isolation/`. Lesson: —.
+- **F-01: (foundation) tabela fiszek z RLS (przód, tył, właściciel; każdy użytkownik widzi i zmienia wyłącznie własne wiersze) jest na produkcji, a izolacja kont A/B jest dowiedziona skryptem w CI.** — Archived 2026-10-20 → `context/archive/2026-10-19-cards-table-with-isolation/`. Lesson: —.
