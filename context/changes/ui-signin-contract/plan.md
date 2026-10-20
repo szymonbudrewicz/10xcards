@@ -454,30 +454,30 @@ Nie dotyczy: brak danych. Wycofanie to `git revert` commitów faz. `.dark` na `<
 
 #### Automated
 
-- [x] 2.1 `grep -nE '#[0-9a-fA-F]{3,8}' src/styles/global.css` nie zwraca linii z `bg-cosmic`
-- [x] 2.2 `npx astro check` przechodzi
-- [x] 2.3 `npm run build` przechodzi
+- [x] 2.1 `grep -nE '#[0-9a-fA-F]{3,8}' src/styles/global.css` nie zwraca linii z `bg-cosmic` — 142e36c
+- [x] 2.2 `npx astro check` przechodzi — 142e36c
+- [x] 2.3 `npm run build` przechodzi — 142e36c
 
 #### Manual
 
-- [x] 2.4 Zrzuty `/auth/signin`, `/`, `/dashboard` (desktop) wyglądają jak przed fazą, a gradient jest widoczny
-- [x] 2.5 Banner braku konfiguracji (jeśli występuje) wygląda bez zmian
+- [x] 2.4 Zrzuty `/auth/signin`, `/`, `/dashboard` (desktop) wyglądają jak przed fazą, a gradient jest widoczny — 142e36c
+- [x] 2.5 Banner braku konfiguracji (jeśli występuje) wygląda bez zmian — 142e36c
 
 ### Phase 3: Jeden widok
 
 #### Automated
 
-- [ ] 3.1 Skan literałów `/10x-ui` na plikach widoku daje 0 trafień
-- [ ] 3.2 Ten sam skan na `src/pages/auth/signup.astro src/components/auth/SignUpForm.tsx` daje 0 trafień
-- [ ] 3.3 `npx astro check` przechodzi
-- [ ] 3.4 `npm run lint` przechodzi
-- [ ] 3.5 `npm run build` przechodzi
+- [x] 3.1 Skan literałów `/10x-ui` na plikach widoku daje 0 trafień
+- [x] 3.2 Ten sam skan na `src/pages/auth/signup.astro src/components/auth/SignUpForm.tsx` daje 0 trafień
+- [x] 3.3 `npx astro check` przechodzi
+- [x] 3.4 `npm run lint` przechodzi
+- [x] 3.5 `npm run build` przechodzi
 
 #### Manual
 
-- [ ] 3.6 Zrzut `/auth/signin` (desktop i 390 px) jest bliski zrzutowi sprzed zmiany, a różnice są wymienione w `tokens.md`
-- [ ] 3.7 `/auth/signup` wygląda spójnie z logowaniem
-- [ ] 3.8 Logowanie i rejestracja działają tak jak przed fazą (walidacja klienta, pokazywanie hasła, wysyłka)
+- [x] 3.6 Zrzut `/auth/signin` (desktop i 390 px) jest bliski zrzutowi sprzed zmiany, a różnice są wymienione w `tokens.md`
+- [x] 3.7 `/auth/signup` wygląda spójnie z logowaniem
+- [x] 3.8 Logowanie i rejestracja działają tak jak przed fazą (walidacja klienta, pokazywanie hasła, wysyłka)
 
 ### Phase 4: Punkty wejścia
 
