@@ -36,27 +36,33 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --background-accent: oklch(0.97 0 0);
+  --link: oklch(0.205 0 0);
 }
 
+/* App runs in .dark (class on <html> in Layout.astro). "Cosmic" values come from the
+   former view literals; mapping and sources: context/changes/ui-signin-contract/tokens.md */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
+  --background: oklch(0.166 0.026 269.4);
+  --background-accent: oklch(0.201 0.041 269.8);
+  --foreground: oklch(1 0 0);
+  --card: oklch(1 0 0 / 10%);
+  --card-foreground: oklch(1 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
+  --primary: oklch(0.558 0.288 302.321);
+  --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --muted-foreground: oklch(0.932 0.032 255.585 / 60%);
+  --accent: oklch(1 0 0 / 10%);
+  --accent-foreground: oklch(1 0 0);
+  --link: oklch(0.827 0.119 306.383);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --input: oklch(1 0 0 / 20%);
+  --ring: oklch(0.714 0.203 305.504);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -95,6 +101,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-link: var(--link);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -111,7 +118,7 @@
 }
 
 @utility bg-cosmic {
-  background-image: linear-gradient(to bottom, #0a0e1a, #0f1529, #0a0e1a);
+  background-image: linear-gradient(to bottom, var(--background), var(--background-accent), var(--background));
 }
 
 @layer base {

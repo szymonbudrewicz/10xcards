@@ -441,27 +441,27 @@ Nie dotyczy: brak danych. Wycofanie to `git revert` commitów faz. `.dark` na `<
 
 #### Automated
 
-- [x] 1.1 4 nowe pliki istnieją w `src/components/ui/`, a `git diff --stat src/components/ui/button.tsx` jest pusty
-- [x] 1.2 `npx astro check` przechodzi
-- [x] 1.3 `npm run lint` przechodzi
-- [x] 1.4 `npm run build` przechodzi
+- [x] 1.1 4 nowe pliki istnieją w `src/components/ui/`, a `git diff --stat src/components/ui/button.tsx` jest pusty — 78948d0
+- [x] 1.2 `npx astro check` przechodzi — 78948d0
+- [x] 1.3 `npm run lint` przechodzi — 78948d0
+- [x] 1.4 `npm run build` przechodzi — 78948d0
 
 #### Manual
 
-- [x] 1.5 `/auth/signin` wygląda tak samo jak przed fazą (nic go jeszcze nie importuje)
+- [x] 1.5 `/auth/signin` wygląda tak samo jak przed fazą (nic go jeszcze nie importuje) — 78948d0
 
 ### Phase 2: Wartości tokenów
 
 #### Automated
 
-- [ ] 2.1 `grep -nE '#[0-9a-fA-F]{3,8}' src/styles/global.css` nie zwraca linii z `bg-cosmic`
-- [ ] 2.2 `npx astro check` przechodzi
-- [ ] 2.3 `npm run build` przechodzi
+- [x] 2.1 `grep -nE '#[0-9a-fA-F]{3,8}' src/styles/global.css` nie zwraca linii z `bg-cosmic`
+- [x] 2.2 `npx astro check` przechodzi
+- [x] 2.3 `npm run build` przechodzi
 
 #### Manual
 
-- [ ] 2.4 Zrzuty `/auth/signin`, `/`, `/dashboard` (desktop) wyglądają jak przed fazą, a gradient jest widoczny
-- [ ] 2.5 Banner braku konfiguracji (jeśli występuje) wygląda bez zmian
+- [x] 2.4 Zrzuty `/auth/signin`, `/`, `/dashboard` (desktop) wyglądają jak przed fazą, a gradient jest widoczny
+- [x] 2.5 Banner braku konfiguracji (jeśli występuje) wygląda bez zmian
 
 ### Phase 3: Jeden widok
 
