@@ -92,7 +92,7 @@ const steps = [
   [
     "signin accepts correct password",
     () => request("/api/auth/signin", { method: "POST", form: { email, password } }),
-    { status: 302, location: "/", exact: true },
+    { status: 302, location: "/dashboard", exact: true },
   ],
   ["dashboard renders for signed-in user", () => request("/dashboard"), { status: 200 }],
   ["signout clears session", () => request("/api/auth/signout", { method: "POST" }), { status: 302, location: "/" }],

@@ -467,31 +467,31 @@ Nie dotyczy: brak danych. Wycofanie to `git revert` commitów faz. `.dark` na `<
 
 #### Automated
 
-- [x] 3.1 Skan literałów `/10x-ui` na plikach widoku daje 0 trafień
-- [x] 3.2 Ten sam skan na `src/pages/auth/signup.astro src/components/auth/SignUpForm.tsx` daje 0 trafień
-- [x] 3.3 `npx astro check` przechodzi
-- [x] 3.4 `npm run lint` przechodzi
-- [x] 3.5 `npm run build` przechodzi
+- [x] 3.1 Skan literałów `/10x-ui` na plikach widoku daje 0 trafień — 31e043d
+- [x] 3.2 Ten sam skan na `src/pages/auth/signup.astro src/components/auth/SignUpForm.tsx` daje 0 trafień — 31e043d
+- [x] 3.3 `npx astro check` przechodzi — 31e043d
+- [x] 3.4 `npm run lint` przechodzi — 31e043d
+- [x] 3.5 `npm run build` przechodzi — 31e043d
 
 #### Manual
 
-- [x] 3.6 Zrzut `/auth/signin` (desktop i 390 px) jest bliski zrzutowi sprzed zmiany, a różnice są wymienione w `tokens.md`
-- [x] 3.7 `/auth/signup` wygląda spójnie z logowaniem
-- [x] 3.8 Logowanie i rejestracja działają tak jak przed fazą (walidacja klienta, pokazywanie hasła, wysyłka)
+- [x] 3.6 Zrzut `/auth/signin` (desktop i 390 px) jest bliski zrzutowi sprzed zmiany, a różnice są wymienione w `tokens.md` — 31e043d
+- [x] 3.7 `/auth/signup` wygląda spójnie z logowaniem — 31e043d
+- [x] 3.8 Logowanie i rejestracja działają tak jak przed fazą (walidacja klienta, pokazywanie hasła, wysyłka) — 31e043d
 
 ### Phase 4: Punkty wejścia
 
 #### Automated
 
-- [ ] 4.1 `npx astro check` przechodzi
-- [ ] 4.2 `npm run lint` przechodzi
+- [x] 4.1 `npx astro check` przechodzi
+- [x] 4.2 `npm run lint` przechodzi
 - [ ] 4.3 `npm run smoke` przechodzi na lokalnym serwerze z lokalnym Supabase
 
 #### Manual
 
-- [ ] 4.4 Zalogowany wchodzi na `/auth/signin` → trafia na `/dashboard`
-- [ ] 4.5 `/auth/signin?error=Twoje%20konto%20zablokowane` pokazuje ogólny komunikat, a nie ten tekst
-- [ ] 4.6 Złe hasło pokazuje „Nieprawidłowy e-mail lub hasło.”
+- [x] 4.4 Zalogowany wchodzi na `/auth/signin` → trafia na `/dashboard`
+- [x] 4.5 `/auth/signin?error=Twoje%20konto%20zablokowane` pokazuje ogólny komunikat, a nie ten tekst
+- [x] 4.6 Złe hasło pokazuje „Nieprawidłowy e-mail lub hasło.”
 
 ### Phase 5: Stany i bramka wizualna
 
