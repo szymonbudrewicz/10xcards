@@ -483,29 +483,29 @@ Nie dotyczy: brak danych. Wycofanie to `git revert` commitów faz. `.dark` na `<
 
 #### Automated
 
-- [x] 4.1 `npx astro check` przechodzi
-- [x] 4.2 `npm run lint` przechodzi
+- [x] 4.1 `npx astro check` przechodzi — 9e3df00
+- [x] 4.2 `npm run lint` przechodzi — 9e3df00
 - [ ] 4.3 `npm run smoke` przechodzi na lokalnym serwerze z lokalnym Supabase
 
 #### Manual
 
-- [x] 4.4 Zalogowany wchodzi na `/auth/signin` → trafia na `/dashboard`
-- [x] 4.5 `/auth/signin?error=Twoje%20konto%20zablokowane` pokazuje ogólny komunikat, a nie ten tekst
-- [x] 4.6 Złe hasło pokazuje „Nieprawidłowy e-mail lub hasło.”
+- [x] 4.4 Zalogowany wchodzi na `/auth/signin` → trafia na `/dashboard` — 9e3df00
+- [x] 4.5 `/auth/signin?error=Twoje%20konto%20zablokowane` pokazuje ogólny komunikat, a nie ten tekst — 9e3df00
+- [x] 4.6 Złe hasło pokazuje „Nieprawidłowy e-mail lub hasło.” — 9e3df00
 
 ### Phase 5: Stany i bramka wizualna
 
 #### Automated
 
-- [ ] 5.1 `npm run build` przechodzi, a `dist` nie serwuje `/dev/kitchen-sink` (w `npm run preview` odpowiedź 404)
-- [ ] 5.2 Skan literałów na plikach widoku nadal daje 0 trafień
-- [ ] 5.3 4 zrzuty istnieją w `context/changes/ui-signin-contract/screenshots/`
+- [x] 5.1 `npm run build` przechodzi, a `dist` nie serwuje `/dev/kitchen-sink` (w `npm run preview` odpowiedź 404)
+- [x] 5.2 Skan literałów na plikach widoku nadal daje 0 trafień
+- [x] 5.3 4 zrzuty istnieją w `context/changes/ui-signin-contract/screenshots/`
 
 #### Manual
 
-- [ ] 5.4 Każda komórka macierzy jest widoczna na zrzucie lub oznaczona N/A z powodem
-- [ ] 5.5 Fokus z klawiatury (Tab) jest widoczny na polu e-mail, polu hasła, przełączniku i przycisku, w tej kolejności
-- [ ] 5.6 Czytnik ekranu / devtools: pole z błędem ma `aria-invalid="true"` i jest powiązane z komunikatem
+- [x] 5.4 Każda komórka macierzy jest widoczna na zrzucie lub oznaczona N/A z powodem
+- [x] 5.5 Fokus z klawiatury (Tab) jest widoczny na polu e-mail, polu hasła, przełączniku i przycisku, w tej kolejności
+- [x] 5.6 Czytnik ekranu / devtools: pole z błędem ma `aria-invalid="true"` i jest powiązane z komunikatem
 
 ### Phase 6: Utrwalenie kontraktu
 

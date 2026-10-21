@@ -4,10 +4,7 @@ import SignInForm from "@/components/auth/SignInForm";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { signInErrorMessage } from "@/lib/auth-errors";
 
-if (Astro.locals.user) {
-  return Astro.redirect("/dashboard");
-}
-
+// Signed-in users are redirected to /dashboard in src/middleware.ts.
 const error = signInErrorMessage(Astro.url.searchParams.get("error"));
 ---
 
