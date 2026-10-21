@@ -22,3 +22,10 @@
 - **Problem**: `grant select, insert, update, delete` tylko dodaje uprawnienia. Domyślne uprawnienia Supabase w `public` dają `authenticated` także TRUNCATE, REFERENCES i TRIGGER, których RLS nie obejmuje, a komentarz w migracji twierdził „dokładnie cztery operacje”.
 - **Rule**: Każda migracja z nowym `grant` na tabeli zaczyna się od `revoke all on <tabela> from anon, authenticated`, a dopiero potem nadaje potrzebne operacje.
 - **Applies to**: plan, implement, impl-review
+
+## Bramki weryfikacji oceniaj po kodzie wyjścia; w `.astro` bez `return` we frontmatterze
+
+- **Context**: `src/pages/auth/signin.astro` i `src/pages/dev/kitchen-sink.astro` (zmiana `ui-signin-contract`, fazy 4–5). `.husky/pre-commit` istnieje, ale husky nie jest podłączony (brak skryptu `prepare`).
+- **Problem**: `return Astro.redirect(...)` / `return new Response(...)` na najwyższym poziomie frontmattera wywracał ESLint (`@typescript-eslint/no-misused-promises`: "Expected node to have a parent"). Bramka lintu była oceniana przez `grep` po tekście wyjścia, więc wyjątek przeszedł jako PASS, a pre-commit go nie złapał, bo się nie uruchamia.
+- **Rule**: Wynik bramki (lint, check, build) oceniaj po kodzie wyjścia polecenia, nie po treści wyjścia. Przekierowania i odpowiedzi 404 zależne od ścieżki lub sesji umieszczaj w `src/middleware.ts`, nie jako `return` we frontmatterze `.astro`. Nie zakładaj, że pre-commit cokolwiek sprawdza; egzekwuje to CI.
+- **Applies to**: implement, impl-review

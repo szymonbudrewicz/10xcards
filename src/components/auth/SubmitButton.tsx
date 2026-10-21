@@ -1,32 +1,32 @@
 import type { ReactNode } from "react";
 import { useFormStatus } from "react-dom";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface SubmitButtonProps {
   pendingText: string;
   icon: ReactNode;
   children: ReactNode;
+  /** Forces the loading state (kitchen-sink only); app forms rely on useFormStatus. */
+  pending?: boolean;
 }
 
-export function SubmitButton({ pendingText, icon, children }: SubmitButtonProps) {
-  const { pending } = useFormStatus();
+export function SubmitButton({ pendingText, icon, children, pending }: SubmitButtonProps) {
+  const status = useFormStatus();
+  const isPending = pending ?? status.pending;
 
   return (
-    <Button
-      type="submit"
-      disabled={pending}
-      className="w-full rounded-lg bg-purple-600 px-4 py-2 font-medium text-white transition-colors hover:bg-purple-500"
-    >
-      {pending ? (
-        <span className="flex items-center gap-2">
-          <span className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+    <Button type="submit" size="lg" disabled={isPending} className="w-full">
+      {isPending ? (
+        <>
+          <Loader2 className="size-4 animate-spin" />
           {pendingText}
-        </span>
+        </>
       ) : (
-        <span className="flex items-center gap-2">
+        <>
           {icon}
           {children}
-        </span>
+        </>
       )}
     </Button>
   );

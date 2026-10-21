@@ -33,6 +33,14 @@ No unit-test runner is configured. CI (`.github/workflows`) runs on pushes and p
 - Wklejony tekst użytkownika nie może być zapisywany ani logowany. Trwałe są tylko fiszki i liczniki propozycji/akceptacji.
 - Błędy API mają kształt { error: { code, message } }, z kodem w snake_case i komunikatem po polsku.
 
+## UI
+
+- Tokens: `src/styles/global.css` (`:root`/`.dark` → `@theme inline`); the app runs in `.dark` (class on `<html>` in `Layout.astro`). Value sources: `context/changes/ui-signin-contract/tokens.md`.
+- Components: check `src/components/ui/` before creating one; add missing ones with `npx shadcn@latest add <name>`, then point `cn` imports to `@/lib/utils` and use single `@radix-ui/react-*` packages (the `radix-ui` umbrella crashes the Workers dev runtime).
+- Views use token roles only (`bg-primary`, `text-muted-foreground`, `text-link`): no palette classes (`bg-purple-600`, `text-white/40`), hex/oklch or arbitrary values. `npm run lint:ui` enforces this for cleaned views (list in `scripts/ui-literal-scan.mjs`) and runs in CI.
+- Visual states of the sign-in view: `/dev/kitchen-sink` (dev only, 404 elsewhere via `src/middleware.ts`).
+- Don't run `npm run build` while `astro dev` is running: it overwrites the dev Vite cache (500 "file does not exist … deps_ssr").
+
 ## 10x course tooling
 
 - 10xDevs skills are in `.claude/skills/`. Read each CLI skill's `references/compatibility.md` before running `10x_cli` commands.
@@ -41,53 +49,19 @@ No unit-test runner is configured. CI (`.github/workflows`) runs on pushes and p
 - Rules-file filter: add a rule only if the agent couldn't know it from public training data. Recurring pitfalls go to `context/foundation/lessons.md` via `/10x-lesson` (append-only).
 <!-- BEGIN @przeprogramowani/10x-cli -->
 
-## Zestaw narzędzi AI 10xDevs — Moduł 2, Lekcja 4
+## Zestaw narzędzi AI 10xDevs — Moduł 2, Lekcja 5 (interfejs 10xDevs 4.0)
 
-Przygotuj się na trudniejszy strumień implementacji z **łańcuchem planowania opartym na badaniach**:
+**W przypadku pracy nad interfejsem widoku, który już się renderuje, zacznij od `/10x-ui <view>`.** To
+punkt wejścia: krótki audyt wstępny, sugerowany identyfikator zmiany oraz polecenie `/10x-new` do
+uruchomienia, a następnie opis audytu dla `/10x-research`. Zmiana wizualna przechodzi przez ten sam łańcuch
+co każda inna zmiana (`/10x-new` → `/10x-research` → `/10x-plan` → `/10x-implement` →
+`/10x-impl-review`); `/10x-ui <change-id>` wznawia pracę od pierwszego kroku, który nie został jeszcze wykonany. Przenosi
+zasady:
+kiedy rozpocząć i który widok wybrać, audyt do opłat, kontrakt systemu projektowego w formie,
+w jakiej realizuje go to repozytorium, stany komponentów, bramkę zrzutu ekranu oraz zasadę, która
+utrzymuje następnego agenta przy kontrakcie. Jego `references/` zawiera listę kontrolną jakości.
 
-```
-internal research (/10x-research) + external research (exa.ai, Context7) -> /10x-plan -> /10x-implement -> success
-```
-
-Lekcja koncentruje się na rozróżnianiu badań wewnętrznych od zewnętrznych oraz wykorzystywaniu dowodów do uzasadniania decyzji planistycznych.
-
-### Router zadań — od czego zacząć
-
-| Umiejętność | Użyj jej, gdy |
-| --- | --- |
-| **Badania wewnętrzne (temat lekcji)** | |
-| `/10x-research <change-id>` | Potrzebujesz dowodów z istniejącej bazy kodu — wzorców, konwencji, punktów integracji lub istniejących implementacji. Uruchamia równoległe subagentów w repozytorium i zapisuje ustrukturyzowane ustalenia w `research.md`. |
-| **Badania zewnętrzne (temat lekcji)** | |
-| exa.ai | Potrzebujesz natywnego dla AI wyszukiwania w sieci do porównywania bibliotek, sprawdzonych praktyk lub kontekstu ekosystemu, na które baza kodu nie może odpowiedzieć. |
-| Context7 (`resolve-library-id` → `get-library-docs`) | Potrzebujesz aktualnej, bieżącej dokumentacji dla konkretnej biblioteki lub frameworka. Najpierw rozwiązuje identyfikator biblioteki, a następnie pobiera odpowiednie strony dokumentacji. |
-| **Koło zapasowe do ramowania problemu** | |
-| `/10x-frame <change-id>` | Plan nie może się ustabilizować, plan nie przynosi oczekiwanych rezultatów lub utrzymujący się dryf ciągle psuje implementację. Użyj jako wyjścia awaryjnego dla osobnego problemu (zademonstrowanego na przykładzie Space Explorers), a nie jako rytuału przed badaniami. |
-| **Planowanie i wykonanie** | |
-| `/10x-plan <change-id>` / `/10x-implement <change-id> phase <n>` | Użyj tego samego łańcucha planowania i wykonania co w Lekcji 2, teraz z dowodami z wcześniejszych badań zasilającymi plan. |
-
-### Dyscyplina badawcza
-
-- Badania wewnętrzne (`/10x-research`) odpowiadają na pytanie „co nasza baza kodu już robi?” — wzorce, schematy, konwencje, punkty integracji.
-- Badania zewnętrzne (exa.ai, Context7) odpowiadają na pytanie „co powinniśmy zrobić?” — możliwości bibliotek, dokumentacja API, sprawdzone praktyki ekosystemu.
-- Połącz oba rodzaje jako dane wejściowe do `/10x-plan` poparte dowodami. Plan bez dowodów badawczych dla nietrywialnego strumienia to zgadywanie.
-- Dokumentacja przyjazna agentom (`llms.txt`, markdown-for-agents, endpointy `/md`) jest sygnałem jakości przy wyborze biblioteki — biblioteki publikujące dokumentację czytelną dla agentów integrują się szybciej.
-
-### `/10x-frame` jako koło zapasowe
-
-Trzy sygnały, że należy sięgnąć po `/10x-frame`:
-1. Plan nie może się ustabilizować — badania otwierają coraz więcej pytań zamiast zawężać je do kontraktu.
-2. Plan nie przynosi rezultatów — implementacja wielokrotnie nie spełnia kryteriów sukcesu.
-3. Utrzymujący się dryf — implementacja ciągle odbiega od planu w sposób sugerujący, że problem został błędnie ujęty.
-
-Zademonstrowano na przykładzie Space Explorers, a nie na ścieżce SRS. Jest to wyjście awaryjne, a nie obowiązkowy krok.
-
-### Ścieżki używane w tej lekcji
-
-- `context/changes/<change-id>/research.md` - wynik badań wewnętrznych
-- `context/changes/<change-id>/frame.md` - wynik ramowania problemu, gdy jest potrzebny
-- `context/changes/<change-id>/plan.md` - kontrakt implementacyjny poparty dowodami
-- `context/foundation/lessons.md` - powtarzające się reguły i pułapki
-
-Umiejętności nie mogą zapisywać do `context/archive/`. Zarchiwizowane zmiany są niezmienne; jeśli rozwiązana ścieżka docelowa zaczyna się od `context/archive/`, przerwij z komunikatem: „This change is archived. Open a new change with `/10x-new` instead.”
+Tworzenie widoku po raz pierwszy nie jest zadaniem dla `/10x-ui` — utwórz go za pomocą
+zwykłego łańcucha, a następnie wróć do niego z `/10x-ui`.
 
 <!-- END @przeprogramowani/10x-cli -->

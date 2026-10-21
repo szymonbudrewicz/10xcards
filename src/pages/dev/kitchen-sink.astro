@@ -1,0 +1,16 @@
+---
+// Dev-only visual gate for the sign-in view: every state from the /10x-ui matrix side by side.
+// Outside `astro dev`, src/middleware.ts answers every /dev/* path with 404.
+import Layout from "@/layouts/Layout.astro";
+import SignInStates from "@/components/dev/SignInStates";
+---
+
+<Layout title="Kitchen sink">
+  <main class="bg-cosmic min-h-screen p-4 sm:p-8">
+    <h1 class="text-foreground mb-2 text-2xl font-bold">Kitchen sink: /auth/signin</h1>
+    <p class="text-muted-foreground mb-6 text-sm">
+      Stany z macierzy /10x-ui. Empty: N/A, bo widok nie wyświetla danych, a jego odpowiednikiem jest default.
+    </p>
+    <SignInStates />
+  </main>
+</Layout>

@@ -9,6 +9,7 @@
     "astro": "astro",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "lint:ui": "node scripts/ui-literal-scan.mjs",
     "format": "prettier --write .",
     "smoke": "node scripts/smoke.mjs",
     "isolation": "node scripts/isolation-check.mjs"
@@ -19,6 +20,7 @@
     "@astrojs/react": "^6.0.5",
     "@astrojs/sitemap": "^3.7.4",
     "@eslint/config-helpers": "^0.7.0",
+    "@radix-ui/react-label": "^2.1.17",
     "@radix-ui/react-slot": "^1.1.2",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.99.1",
@@ -58,7 +60,8 @@
   },
   "lint-staged": {
     "*.{ts,tsx,astro}": [
-      "eslint --fix"
+      "eslint --fix",
+      "node scripts/ui-literal-scan.mjs"
     ],
     "*.{json,css,md}": [
       "prettier --write"
