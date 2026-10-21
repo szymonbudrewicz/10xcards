@@ -51,3 +51,7 @@ Polecenie: `npm run lint:ui` (`scripts/ui-literal-scan.mjs`, lista oczyszczonych
 ## Test reguły w nowej sesji (6.5)
 
 Nowa sesja agenta (bez historii) dostała polecenie: dodaj pod polem hasła link „Nie pamiętasz hasła?” do `/auth/forgot-password`. Agent umieścił link w `SignInForm.tsx` z klasą `text-link text-sm hover:underline` (rola, nie kolor palety) i sam uruchomił `npm run lint:ui` (clean). Zmiana testowa została cofnięta.
+
+## Klucze dodane do `:root` (jasna paleta)
+
+`--background-accent` (`oklch(0.97 0 0)`) i `--link` (`oklch(0.205 0 0)`, jak `--primary` startera) dodane do `:root`, żeby nowe role miały wartość także poza `.dark`. Pozostałe wartości `:root` bez zmian. Aplikacja dziś zawsze działa w `.dark`, więc nic się nie zmienia na ekranie.

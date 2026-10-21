@@ -22,7 +22,7 @@ const CLEANED = [
 const PALETTE =
   "slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|white|black";
 const LITERAL = new RegExp(
-  String.raw`#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(|oklch\(|-\[[0-9.]+(px|rem)\]|\b(bg|text|border|ring|outline|from|via|to|fill|stroke|shadow|divide)-(${PALETTE})\b`,
+  String.raw`#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(|oklch\(|-\[[0-9.]+(px|rem|em|%|vh|vw)\]|\b(bg|text|border(-[xytrbl])?|ring(-offset)?|outline|placeholder|caret|accent|decoration|from|via|to|fill|stroke|shadow|divide)-(${PALETTE})\b`,
 );
 
 const toRepoPath = (file) => relative(process.cwd(), resolve(file)).replaceAll("\\", "/");

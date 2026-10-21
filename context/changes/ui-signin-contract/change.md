@@ -1,9 +1,9 @@
 ---
 change_id: ui-signin-contract
 title: Ui signin contract
-status: implementing
+status: impl_reviewed
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-21
 archived_at: null
 ---
 

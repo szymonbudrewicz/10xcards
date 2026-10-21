@@ -511,11 +511,11 @@ Nie dotyczy: brak danych. Wycofanie to `git revert` commitów faz. `.dark` na `<
 
 #### Automated
 
-- [x] 6.1 `node scripts/ui-literal-scan.mjs src/pages/auth/signin.astro` kończy się kodem 0
-- [x] 6.2 Ten sam skrypt na pliku z dopisaną tymczasowo klasą `bg-purple-600` (tylko lokalnie, bez commita) kończy się kodem 1
-- [x] 6.3 `npm run lint` przechodzi
+- [x] 6.1 `node scripts/ui-literal-scan.mjs src/pages/auth/signin.astro` kończy się kodem 0 — 4dc7600
+- [x] 6.2 Ten sam skrypt na pliku z dopisaną tymczasowo klasą `bg-purple-600` (tylko lokalnie, bez commita) kończy się kodem 1 — 4dc7600
+- [x] 6.3 `npm run lint` przechodzi — 4dc7600
 
 #### Manual
 
-- [x] 6.4 Treść reguły UI w `CLAUDE.md` zatwierdzona przez użytkownika
-- [x] 6.5 Nowa sesja agenta, poproszona o drobną zmianę w widoku logowania (np. dodanie linku „Nie pamiętasz hasła?”), sięga po tokeny i `ui/*`
+- [x] 6.4 Treść reguły UI w `CLAUDE.md` zatwierdzona przez użytkownika — 4dc7600
+- [x] 6.5 Nowa sesja agenta, poproszona o drobną zmianę w widoku logowania (np. dodanie linku „Nie pamiętasz hasła?”), sięga po tokeny i `ui/*` — 4dc7600
