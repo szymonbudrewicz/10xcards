@@ -497,25 +497,25 @@ Nie dotyczy: brak danych. Wycofanie to `git revert` commitów faz. `.dark` na `<
 
 #### Automated
 
-- [x] 5.1 `npm run build` przechodzi, a `dist` nie serwuje `/dev/kitchen-sink` (w `npm run preview` odpowiedź 404)
-- [x] 5.2 Skan literałów na plikach widoku nadal daje 0 trafień
-- [x] 5.3 4 zrzuty istnieją w `context/changes/ui-signin-contract/screenshots/`
+- [x] 5.1 `npm run build` przechodzi, a `dist` nie serwuje `/dev/kitchen-sink` (w `npm run preview` odpowiedź 404) — e497461
+- [x] 5.2 Skan literałów na plikach widoku nadal daje 0 trafień — e497461
+- [x] 5.3 4 zrzuty istnieją w `context/changes/ui-signin-contract/screenshots/` — e497461
 
 #### Manual
 
-- [x] 5.4 Każda komórka macierzy jest widoczna na zrzucie lub oznaczona N/A z powodem
-- [x] 5.5 Fokus z klawiatury (Tab) jest widoczny na polu e-mail, polu hasła, przełączniku i przycisku, w tej kolejności
-- [x] 5.6 Czytnik ekranu / devtools: pole z błędem ma `aria-invalid="true"` i jest powiązane z komunikatem
+- [x] 5.4 Każda komórka macierzy jest widoczna na zrzucie lub oznaczona N/A z powodem — e497461
+- [x] 5.5 Fokus z klawiatury (Tab) jest widoczny na polu e-mail, polu hasła, przełączniku i przycisku, w tej kolejności — e497461
+- [x] 5.6 Czytnik ekranu / devtools: pole z błędem ma `aria-invalid="true"` i jest powiązane z komunikatem — e497461
 
 ### Phase 6: Utrwalenie kontraktu
 
 #### Automated
 
-- [ ] 6.1 `node scripts/ui-literal-scan.mjs src/pages/auth/signin.astro` kończy się kodem 0
-- [ ] 6.2 Ten sam skrypt na pliku z dopisaną tymczasowo klasą `bg-purple-600` (tylko lokalnie, bez commita) kończy się kodem 1
-- [ ] 6.3 `npm run lint` przechodzi
+- [x] 6.1 `node scripts/ui-literal-scan.mjs src/pages/auth/signin.astro` kończy się kodem 0
+- [x] 6.2 Ten sam skrypt na pliku z dopisaną tymczasowo klasą `bg-purple-600` (tylko lokalnie, bez commita) kończy się kodem 1
+- [x] 6.3 `npm run lint` przechodzi
 
 #### Manual
 
-- [ ] 6.4 Treść reguły UI w `CLAUDE.md` zatwierdzona przez użytkownika
-- [ ] 6.5 Nowa sesja agenta, poproszona o drobną zmianę w widoku logowania (np. dodanie linku „Nie pamiętasz hasła?”), sięga po tokeny i `ui/*`
+- [x] 6.4 Treść reguły UI w `CLAUDE.md` zatwierdzona przez użytkownika
+- [x] 6.5 Nowa sesja agenta, poproszona o drobną zmianę w widoku logowania (np. dodanie linku „Nie pamiętasz hasła?”), sięga po tokeny i `ui/*`

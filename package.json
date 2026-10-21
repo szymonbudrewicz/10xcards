@@ -9,6 +9,7 @@
     "astro": "astro",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "lint:ui": "node scripts/ui-literal-scan.mjs",
     "format": "prettier --write .",
     "smoke": "node scripts/smoke.mjs",
     "isolation": "node scripts/isolation-check.mjs"
@@ -59,7 +60,8 @@
   },
   "lint-staged": {
     "*.{ts,tsx,astro}": [
-      "eslint --fix"
+      "eslint --fix",
+      "node scripts/ui-literal-scan.mjs"
     ],
     "*.{json,css,md}": [
       "prettier --write"

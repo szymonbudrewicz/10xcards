@@ -34,4 +34,20 @@ Pozostałe role (`--popover`, `--secondary`, `--muted`, `--chart-*`, `--sidebar-
 
 ## Skan literałów
 
-Uzupełniane w fazie 6.
+Wzorzec z `/10x-ui`, uruchamiany na 6 plikach widoku: `src/pages/auth/signin.astro` i `src/components/auth/{SignInForm,FormField,PasswordToggle,ServerError,SubmitButton}.tsx`.
+
+| Moment | Trafienia (linie) | Użycia tokenów |
+|---|---|---|
+| Przed zmianą (`0fee682`) | 13 | 0 |
+| Po fazie 3 (`31e043d`) | 0 | widok w całości na rolach i `ui/*` |
+| Po fazie 6 | 0 (plus 0 w `signup` i kitchen-sink) | — |
+
+Polecenie: `npm run lint:ui` (`scripts/ui-literal-scan.mjs`, lista oczyszczonych plików w skrypcie). Uruchamiane w CI (job `ci`) i w `lint-staged`.
+
+## Do decyzji później
+
+- **husky nie jest podłączony** (brak skryptu `prepare`, brak `core.hooksPath`), więc `.husky/pre-commit` i `lint-staged` nie uruchamiają się przy commitach. Kontrolę egzekwuje CI. Włączenie husky to osobna zmiana: każdy commit uruchamiałby `eslint --fix` z typami.
+
+## Test reguły w nowej sesji (6.5)
+
+Nowa sesja agenta (bez historii) dostała polecenie: dodaj pod polem hasła link „Nie pamiętasz hasła?” do `/auth/forgot-password`. Agent umieścił link w `SignInForm.tsx` z klasą `text-link text-sm hover:underline` (rola, nie kolor palety) i sam uruchomił `npm run lint:ui` (clean). Zmiana testowa została cofnięta.
