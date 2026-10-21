@@ -217,11 +217,11 @@ Po merge produkcja ma ustawienia zgodne z PRD i działający kod, a pełny cykl 
 
 #### Automated
 
-- [x] 1.1 `npm run lint` kończy się kodem 0
-- [x] 1.2 `npm run lint:ui` kończy się kodem 0
-- [x] 1.3 `npx astro check` kończy się kodem 0
-- [x] 1.4 `npm run build` kończy się kodem 0 (bez działającego `astro dev`)
-- [x] 1.5 `git diff main -- scripts/smoke.mjs` zmienia wyłącznie linię 7, a `git diff main --stat` nie zawiera `context/foundation/roadmap.md`
+- [x] 1.1 `npm run lint` kończy się kodem 0 — ef2ec33
+- [x] 1.2 `npm run lint:ui` kończy się kodem 0 — ef2ec33
+- [x] 1.3 `npx astro check` kończy się kodem 0 — ef2ec33
+- [x] 1.4 `npm run build` kończy się kodem 0 (bez działającego `astro dev`) — ef2ec33
+- [x] 1.5 `git diff main -- scripts/smoke.mjs` zmienia wyłącznie linię 7, a `git diff main --stat` nie zawiera `context/foundation/roadmap.md` — ef2ec33
 
 #### Manual
 
