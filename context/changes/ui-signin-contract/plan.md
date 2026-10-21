@@ -485,7 +485,7 @@ Nie dotyczy: brak danych. Wycofanie to `git revert` commitów faz. `.dark` na `<
 
 - [x] 4.1 `npx astro check` przechodzi — 9e3df00
 - [x] 4.2 `npm run lint` przechodzi — 9e3df00
-- [ ] 4.3 `npm run smoke` przechodzi na lokalnym serwerze z lokalnym Supabase
+- [x] 4.3 `npm run smoke` przechodzi na lokalnym serwerze z lokalnym Supabase — b46cd7c
 
 #### Manual
 
