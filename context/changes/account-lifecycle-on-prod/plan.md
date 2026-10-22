@@ -231,11 +231,11 @@ Po merge produkcja ma ustawienia zgodne z PRD i działający kod, a pełny cykl 
 
 #### Automated
 
-- [x] 2.1 Joby `ci` i `smoke` zielone na PR (`gh pr checks`), a w logu smoke 9× PASS
+- [x] 2.1 Joby `ci` i `smoke` zielone na PR (`gh pr checks`), a w logu smoke 9× PASS — 29367de
 
 #### Manual
 
-- [x] 2.2 Solo Code Review (`/10x-impl-review account-lifecycle-on-prod`) bez otwartych uwag krytycznych
+- [x] 2.2 Solo Code Review (`/10x-impl-review account-lifecycle-on-prod`) bez otwartych uwag krytycznych — 29367de
 - [ ] 2.3 PR zmergowany do `main` przez człowieka
 
 ### Phase 3: Dowód na produkcji
