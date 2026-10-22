@@ -1,10 +1,10 @@
 ---
 change_id: account-lifecycle-on-prod
 title: Account lifecycle on prod
-status: implemented
+status: archived
 created: 2026-10-21
 updated: 2026-10-22
-archived_at: null
+archived_at: 2026-10-22T14:41:05Z
 ---
 
 ## Notes
