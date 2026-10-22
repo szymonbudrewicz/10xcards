@@ -2,8 +2,9 @@
 import Layout from "@/layouts/Layout.astro";
 import SignUpForm from "@/components/auth/SignUpForm";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { signUpErrorMessage } from "@/lib/auth-errors";
 
-const error = Astro.url.searchParams.get("error");
+const error = signUpErrorMessage(Astro.url.searchParams.get("error"));
 ---
 
 <Layout title="Sign up">
