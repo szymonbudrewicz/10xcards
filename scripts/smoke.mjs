@@ -2,6 +2,7 @@
 // Zero dependencies on purpose. Run against a live server: BASE_URL=http://localhost:4321 node scripts/smoke.mjs
 
 import { readFileSync } from "node:fs";
+import { MOCK_AI_ERROR_MARKER } from "./mock-openrouter.mjs";
 
 const BASE_URL = process.env.BASE_URL ?? "http://localhost:4321";
 const email = process.env.SMOKE_EMAIL?.replace("{ts}", String(Date.now())) ?? `smoke-${Date.now()}@example.com`;
@@ -42,6 +43,20 @@ async function request(path, { method = "GET", form, json } = {}) {
 
 // Validation-only calls to /api/generate: none of them reaches the AI provider.
 const generate = (text) => () => request("/api/generate", { method: "POST", json: { text } });
+
+// Steps that do reach the AI run only when the app is known to point at scripts/mock-openrouter.mjs.
+const AI_MOCK = process.env.SMOKE_AI_MOCK === "1";
+const aiSkip = AI_MOCK ? undefined : "SMOKE_AI_MOCK!=1, app may call real OpenRouter";
+
+function validProposals(body) {
+  const list = body?.proposals;
+  return (
+    Array.isArray(list) &&
+    list.length >= 1 &&
+    list.length <= 10 &&
+    list.every((p) => typeof p.front === "string" && p.front.trim() && typeof p.back === "string" && p.back.trim())
+  );
+}
 
 // Supabase credentials (env first, then .dev.vars) let us verify the account really exists in Auth.
 function supabaseCredentials() {
@@ -108,20 +123,36 @@ const steps = [
   ["dashboard renders for signed-in user", () => request("/dashboard"), { status: 200 }],
   ["generate rejects blank text", generate("   "), { status: 400, code: "text_empty" }],
   ["generate rejects text over 10 000 chars", generate("a".repeat(10_001)), { status: 400, code: "text_too_long" }],
+  [
+    "generate returns proposals (AI mock)",
+    generate("Fotosynteza zachodzi w chloroplastach i uwalnia tlen."),
+    { status: 200, check: validProposals, skip: aiSkip },
+  ],
+  [
+    "generate maps AI failure to ai_failed (AI mock)",
+    generate(`Tekst testowy ${MOCK_AI_ERROR_MARKER}`),
+    { status: 502, code: "ai_failed", skip: aiSkip },
+  ],
   ["signout clears session", () => request("/api/auth/signout", { method: "POST" }), { status: 302, location: "/" }],
   ["dashboard redirects after signout", () => request("/dashboard"), { status: 302, location: "/auth/signin" }],
 ];
 
 let failed = 0;
 for (const [name, run, expected] of steps) {
+  if (expected.skip) {
+    console.log(`SKIP  ${name}  (${expected.skip})`);
+    continue;
+  }
   const actual = await run();
   const ok =
     actual.status === expected.status &&
     (expected.location === undefined ||
       (expected.exact ? actual.location === expected.location : actual.location.startsWith(expected.location))) &&
-    (expected.code === undefined || actual.body?.error?.code === expected.code);
+    (expected.code === undefined || actual.body?.error?.code === expected.code) &&
+    (expected.check === undefined || expected.check(actual.body));
   const actualCode = actual.body?.error?.code ?? "";
-  console.log(`${ok ? "PASS" : "FAIL"}  ${name}  -> ${actual.status} ${actual.location}${actualCode}`);
+  const proposalCount = Array.isArray(actual.body?.proposals) ? `proposals=${actual.body.proposals.length}` : "";
+  console.log(`${ok ? "PASS" : "FAIL"}  ${name}  -> ${actual.status} ${actual.location}${actualCode}${proposalCount}`);
   if (!ok) {
     failed++;
     console.log(`      expected ${expected.status} ${expected.location ?? ""}${expected.code ?? ""}`);

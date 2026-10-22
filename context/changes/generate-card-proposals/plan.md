@@ -335,28 +335,28 @@ Brak zmian w bazie. Wycofanie: `wrangler rollback`. Sekret można zostawić, bez
 
 #### Automated
 
-- [x] 1.1 Typy przechodzą: `npx astro check`
-- [x] 1.2 Lint przechodzi: `npm run lint`
-- [x] 1.3 Build przechodzi: `npm run build`
+- [x] 1.1 Typy przechodzą: `npx astro check` — 2ae0721
+- [x] 1.2 Lint przechodzi: `npm run lint` — 2ae0721
+- [x] 1.3 Build przechodzi: `npm run build` — 2ae0721
 - [ ] 1.4 Smoke przechodzi lokalnie na `npm run preview` (z lokalnym Supabase), z nowymi krokami 401/400/400: `npm run smoke`
 
 #### Manual
 
-- [x] 1.5 Z prawdziwym `OPENROUTER_API_KEY` w `.dev.vars`: `POST /api/generate` z zalogowaną sesją i krótkim artykułem zwraca 200 z 1–10 propozycjami przód/tył
-- [x] 1.6 Bez `OPENROUTER_API_KEY` endpoint zwraca 503 `ai_not_configured`, a baner pokazuje komunikat OpenRouter
-- [x] 1.7 Logi `astro dev` po generowaniu nie zawierają fragmentu wklejonego tekstu
+- [x] 1.5 Z prawdziwym `OPENROUTER_API_KEY` w `.dev.vars`: `POST /api/generate` z zalogowaną sesją i krótkim artykułem zwraca 200 z 1–10 propozycjami przód/tył — 2ae0721
+- [x] 1.6 Bez `OPENROUTER_API_KEY` endpoint zwraca 503 `ai_not_configured`, a baner pokazuje komunikat OpenRouter — 2ae0721
+- [x] 1.7 Logi `astro dev` po generowaniu nie zawierają fragmentu wklejonego tekstu — 2ae0721
 
 ### Phase 2: Atrapa AI w CI
 
 #### Automated
 
-- [ ] 2.1 Lint przechodzi: `npm run lint`
+- [x] 2.1 Lint przechodzi: `npm run lint`
 - [ ] 2.2 Lokalnie: atrapa + `npm run preview` z `OPENROUTER_BASE_URL` atrapy + `SMOKE_AI_MOCK=1 npm run smoke` przechodzi z krokami 200 i 502
 - [ ] 2.3 Job `smoke` w CI na PR przechodzi z krokami 200 i 502 (widoczne `PASS` w logu)
 
 #### Manual
 
-- [ ] 2.4 Smoke bez `SMOKE_AI_MOCK` wypisuje `SKIP` dla kroków AI i nie wywołuje OpenRouter
+- [x] 2.4 Smoke bez `SMOKE_AI_MOCK` wypisuje `SKIP` dla kroków AI i nie wywołuje OpenRouter
 
 ### Phase 3: Ekran /generate
 
