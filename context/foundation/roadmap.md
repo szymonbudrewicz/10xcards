@@ -43,7 +43,7 @@ Ręczne robienie dobrych fiszek zajmuje więcej czasu niż samo przeczytanie mat
 | ---- | -------------------------- | --------------------------------------------------------------------------------- | ------------- | -------------------------------- | -------- |
 | F-01 | cards-table-with-isolation | (foundation) tabela fiszek z izolacją danych per użytkownik jest na produkcji     | —             | NFR: użytkownik widzi wyłącznie swoje fiszki; Access Control | done |
 | S-01 | account-lifecycle-on-prod  | zarejestrować się, zalogować i wylogować na produkcji                             | —             | US-01, FR-001, FR-008, FR-009    | done     |
-| S-02 | generate-card-proposals    | wkleić tekst i zobaczyć listę propozycji fiszek (przód/tył) od AI                 | —             | US-01, FR-002, FR-003, FR-011    | planning |
+| S-02 | generate-card-proposals    | wkleić tekst i zobaczyć listę propozycji fiszek (przód/tył) od AI                 | —             | US-01, FR-002, FR-003, FR-011    | in-progress |
 | S-03 | accept-and-save-cards      | zaakceptować, poprawić lub usunąć każdą propozycję; zaakceptowane zapisują się od razu | S-02, F-01 | US-01, FR-004, FR-005, FR-012    | proposed |
 | S-04 | manage-saved-cards         | zobaczyć listę zapisanych fiszek oraz je edytować i usuwać                        | S-03          | FR-010                           | proposed |
 | S-05 | srs-review-session         | przejść sesję powtórek, ocenić fiszkę i mieć wyznaczony termin powrotu            | S-03          | US-01, FR-006, FR-013            | proposed |
@@ -113,7 +113,7 @@ Co już jest w kodzie na dzień `2026-10-19` (zbadane automatycznie, potwierdzon
   - Decyzja (rozstrzygnięte, PRD): limit długości wklejanego tekstu to 10 000 znaków.
   - Który model AI i czy mieści się w 30 s oraz w limitach runtime'u wdrożenia (ryzyko R10 z `deploy-plan.md`)? — Owner: team. Block: no (mierzone w tym wycinku).
 - **Risk:** Największa niepewność produktu i jedyny płatny element; wklejony tekst nie może być zapisywany ani logowany, a endpoint wymaga sesji (401), zgodnie z `lessons.md`. Wycinek zwraca propozycje bez ich zapisu, więc nie czeka na `F-01`.
-- **Status:** planning
+- **Status:** in-progress (fazy 1–3 zmergowane w PR #10; zostaje faza 4: sekret OpenRouter i wdrożenie na produkcję — `/10x-implement generate-card-proposals phase 4`)
 
 ### S-03: Akceptacja i zapis fiszek na koncie
 
@@ -159,7 +159,7 @@ Co już jest w kodzie na dzień `2026-10-19` (zbadane automatycznie, potwierdzon
 | ---------- | -------------------------- | ------------------------------------------------------------- | --------------------- | ----- |
 | F-01       | cards-table-with-isolation | Tabela fiszek z izolacją danych per użytkownik                | yes                   | Run `/10x-plan cards-table-with-isolation`; migracja na produkcję = ręczna bramka |
 | S-01       | account-lifecycle-on-prod  | Weryfikacja rejestracji, logowania i wylogowania na produkcji | yes                   | Run `/10x-plan account-lifecycle-on-prod` |
-| S-02       | generate-card-proposals    | Generowanie propozycji fiszek z wklejonego tekstu             | yes                   | Run `/10x-plan generate-card-proposals` |
+| S-02       | generate-card-proposals    | Generowanie propozycji fiszek z wklejonego tekstu             | yes                   | Fazy 1–3 w `main` (PR #10); zostaje faza 4 (produkcja) |
 | S-03       | accept-and-save-cards      | Akceptacja, edycja i zapis fiszek (gwiazda przewodnia)        | no                    | Czeka na S-02 i F-01 |
 | S-04       | manage-saved-cards         | Lista zapisanych fiszek z edycją i usuwaniem                  | no                    | Czeka na S-03 |
 | S-05       | srs-review-session         | Sesja powtórek z terminem powrotu                             | no                    | Czeka na S-03 |
