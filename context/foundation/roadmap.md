@@ -3,7 +3,7 @@ project: "10xCards"
 version: 1
 status: draft
 created: 2026-10-19
-updated: 2026-10-20
+updated: 2026-10-22
 prd_version: 1
 main_goal: speed
 top_blocker: decisions
@@ -42,7 +42,7 @@ Ręczne robienie dobrych fiszek zajmuje więcej czasu niż samo przeczytanie mat
 | ID   | Change ID                  | Outcome (user can …)                                                              | Prerequisites | PRD refs                         | Status   |
 | ---- | -------------------------- | --------------------------------------------------------------------------------- | ------------- | -------------------------------- | -------- |
 | F-01 | cards-table-with-isolation | (foundation) tabela fiszek z izolacją danych per użytkownik jest na produkcji     | —             | NFR: użytkownik widzi wyłącznie swoje fiszki; Access Control | done |
-| S-01 | account-lifecycle-on-prod  | zarejestrować się, zalogować i wylogować na produkcji                             | —             | US-01, FR-001, FR-008, FR-009    | ready    |
+| S-01 | account-lifecycle-on-prod  | zarejestrować się, zalogować i wylogować na produkcji                             | —             | US-01, FR-001, FR-008, FR-009    | done     |
 | S-02 | generate-card-proposals    | wkleić tekst i zobaczyć listę propozycji fiszek (przód/tył) od AI                 | —             | US-01, FR-002, FR-003, FR-011    | planning |
 | S-03 | accept-and-save-cards      | zaakceptować, poprawić lub usunąć każdą propozycję; zaakceptowane zapisują się od razu | S-02, F-01 | US-01, FR-004, FR-005, FR-012    | proposed |
 | S-04 | manage-saved-cards         | zobaczyć listę zapisanych fiszek oraz je edytować i usuwać                        | S-03          | FR-010                           | proposed |
@@ -98,7 +98,7 @@ Co już jest w kodzie na dzień `2026-10-19` (zbadane automatycznie, potwierdzon
 - **Unknowns:**
   - Rejestracja i logowanie na produkcji nie zostały zweryfikowane ręcznie (smoke pomija je, bo hostowany dostawca odrzuca adresy `example.com`) — Owner: user. Block: no.
 - **Risk:** Przepływ już istnieje, więc to głównie weryfikacja i domknięcie luk; dlatego wycinek jest mały i równoległy, a nie przed gwiazdą przewodnią.
-- **Status:** ready
+- **Status:** done
 
 ### S-02: Generowanie propozycji fiszek z wklejonego tekstu
 
@@ -188,3 +188,4 @@ Co już jest w kodzie na dzień `2026-10-19` (zbadane automatycznie, potwierdzon
 (Puste. `/10x-archive` dopisuje wpisy, gdy zmiana o pasującym `Change ID` zostaje zarchiwizowana.)
 
 - **F-01: (foundation) tabela fiszek z RLS (przód, tył, właściciel; każdy użytkownik widzi i zmienia wyłącznie własne wiersze) jest na produkcji, a izolacja kont A/B jest dowiedziona skryptem w CI.** — Archived 2026-10-20 → `context/archive/2026-10-19-cards-table-with-isolation/`. Lesson: —.
+- **S-01: user can zarejestrować konto emailem i hasłem, zalogować się i wylogować na wdrożonej aplikacji.** — Archived 2026-10-22 → `context/archive/2026-10-21-account-lifecycle-on-prod/`. Lesson: —.
