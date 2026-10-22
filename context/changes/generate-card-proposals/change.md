@@ -1,9 +1,9 @@
 ---
 change_id: generate-card-proposals
 title: Generate card proposals
-status: planned
+status: impl_reviewed
 created: 2026-10-20
-updated: 2026-10-20
+updated: 2026-10-22
 archived_at: null
 ---
 

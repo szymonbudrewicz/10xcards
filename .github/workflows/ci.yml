@@ -45,6 +45,8 @@ jobs:
         run: |
           source supabase.env
           printf 'SUPABASE_URL=%s\nSUPABASE_KEY=%s\n' "$API_URL" "$ANON_KEY" > .env
+          # Fake key + local OpenRouter mock: CI never calls the real AI provider.
+          printf 'OPENROUTER_API_KEY=ci-mock-key\nOPENROUTER_BASE_URL=http://127.0.0.1:4399/api/v1\n' >> .env
           cp .env .dev.vars
       - name: Check data isolation between accounts
         run: |
@@ -53,8 +55,11 @@ jobs:
       - run: npm run build
       - name: Run smoke test against production preview
         run: |
+          node scripts/mock-openrouter.mjs &
+          for i in $(seq 1 30); do curl -sf -o /dev/null http://127.0.0.1:4399/health && break; sleep 1; done
+          curl -sf -o /dev/null http://127.0.0.1:4399/health
           npm run preview -- --port 4321 &
           for i in $(seq 1 60); do curl -sf -o /dev/null http://localhost:4321/ && break; sleep 1; done
-          BASE_URL=http://localhost:4321 npm run smoke
+          BASE_URL=http://localhost:4321 SMOKE_AI_MOCK=1 npm run smoke
       - if: always()
         run: supabase stop --no-backup

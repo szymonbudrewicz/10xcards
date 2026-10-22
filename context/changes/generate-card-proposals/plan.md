@@ -335,46 +335,46 @@ Brak zmian w bazie. Wycofanie: `wrangler rollback`. Sekret można zostawić, bez
 
 #### Automated
 
-- [ ] 1.1 Typy przechodzą: `npx astro check`
-- [ ] 1.2 Lint przechodzi: `npm run lint`
-- [ ] 1.3 Build przechodzi: `npm run build`
-- [ ] 1.4 Smoke przechodzi lokalnie na `npm run preview` (z lokalnym Supabase), z nowymi krokami 401/400/400: `npm run smoke`
+- [x] 1.1 Typy przechodzą: `npx astro check` — 2ae0721
+- [x] 1.2 Lint przechodzi: `npm run lint` — 2ae0721
+- [x] 1.3 Build przechodzi: `npm run build` — 2ae0721
+- [x] 1.4 Smoke przechodzi lokalnie na `npm run preview` (z lokalnym Supabase), z nowymi krokami 401/400/400: `npm run smoke` — 2ae0721
 
 #### Manual
 
-- [ ] 1.5 Z prawdziwym `OPENROUTER_API_KEY` w `.dev.vars`: `POST /api/generate` z zalogowaną sesją i krótkim artykułem zwraca 200 z 1–10 propozycjami przód/tył
-- [ ] 1.6 Bez `OPENROUTER_API_KEY` endpoint zwraca 503 `ai_not_configured`, a baner pokazuje komunikat OpenRouter
-- [ ] 1.7 Logi `astro dev` po generowaniu nie zawierają fragmentu wklejonego tekstu
+- [x] 1.5 Z prawdziwym `OPENROUTER_API_KEY` w `.dev.vars`: `POST /api/generate` z zalogowaną sesją i krótkim artykułem zwraca 200 z 1–10 propozycjami przód/tył — 2ae0721
+- [x] 1.6 Bez `OPENROUTER_API_KEY` endpoint zwraca 503 `ai_not_configured`, a baner pokazuje komunikat OpenRouter — 2ae0721
+- [x] 1.7 Logi `astro dev` po generowaniu nie zawierają fragmentu wklejonego tekstu — 2ae0721
 
 ### Phase 2: Atrapa AI w CI
 
 #### Automated
 
-- [ ] 2.1 Lint przechodzi: `npm run lint`
-- [ ] 2.2 Lokalnie: atrapa + `npm run preview` z `OPENROUTER_BASE_URL` atrapy + `SMOKE_AI_MOCK=1 npm run smoke` przechodzi z krokami 200 i 502
-- [ ] 2.3 Job `smoke` w CI na PR przechodzi z krokami 200 i 502 (widoczne `PASS` w logu)
+- [x] 2.1 Lint przechodzi: `npm run lint` — ab7a812
+- [x] 2.2 Lokalnie: atrapa + `npm run preview` z `OPENROUTER_BASE_URL` atrapy + `SMOKE_AI_MOCK=1 npm run smoke` przechodzi z krokami 200 i 502 — ab7a812
+- [x] 2.3 Job `smoke` w CI na PR przechodzi z krokami 200 i 502 (widoczne `PASS` w logu) — ab7a812
 
 #### Manual
 
-- [ ] 2.4 Smoke bez `SMOKE_AI_MOCK` wypisuje `SKIP` dla kroków AI i nie wywołuje OpenRouter
+- [x] 2.4 Smoke bez `SMOKE_AI_MOCK` wypisuje `SKIP` dla kroków AI i nie wywołuje OpenRouter — ab7a812
 
 ### Phase 3: Ekran /generate
 
 #### Automated
 
-- [ ] 3.1 Typy przechodzą: `npx astro check`
-- [ ] 3.2 Lint przechodzi: `npm run lint`
-- [ ] 3.3 Build przechodzi: `npm run build`
-- [ ] 3.4 Smoke z atrapą przechodzi z krokami `/generate` 302/200: `SMOKE_AI_MOCK=1 npm run smoke`
+- [x] 3.1 Typy przechodzą: `npx astro check` — 5beb8cb
+- [x] 3.2 Lint przechodzi: `npm run lint` — 5beb8cb
+- [x] 3.3 Build przechodzi: `npm run build` — 5beb8cb
+- [x] 3.4 Smoke z atrapą przechodzi z krokami `/generate` 302/200: `SMOKE_AI_MOCK=1 npm run smoke` — 5beb8cb
 
 #### Manual
 
-- [ ] 3.5 Pusty tekst: komunikat bez wywołania sieci (zakładka Network)
-- [ ] 3.6 Tekst > 10 000 znaków: komunikat i tekst zostaje w polu
-- [ ] 3.7 W trakcie generowania przycisk jest nieaktywny i nie da się wysłać drugiego żądania
-- [ ] 3.8 Błąd AI (tekst ze znacznikiem `SMOKE_AI_ERROR` przy atrapie): czytelny komunikat, tekst zostaje w polu
-- [ ] 3.9 Z prawdziwym kluczem: propozycje przód/tył pojawiają się na liście
-- [ ] 3.10 Link z `/dashboard` prowadzi do `/generate`; po wylogowaniu `/generate` przekierowuje na logowanie
+- [x] 3.5 Pusty tekst: komunikat bez wywołania sieci (zakładka Network) — 5beb8cb
+- [x] 3.6 Tekst > 10 000 znaków: komunikat i tekst zostaje w polu — 5beb8cb
+- [x] 3.7 W trakcie generowania przycisk jest nieaktywny i nie da się wysłać drugiego żądania — 5beb8cb
+- [x] 3.8 Błąd AI (tekst ze znacznikiem `SMOKE_AI_ERROR` przy atrapie): czytelny komunikat, tekst zostaje w polu — 5beb8cb
+- [x] 3.9 Z prawdziwym kluczem: propozycje przód/tył pojawiają się na liście — 5beb8cb
+- [x] 3.10 Link z `/dashboard` prowadzi do `/generate`; po wylogowaniu `/generate` przekierowuje na logowanie — 5beb8cb
 
 ### Phase 4: Produkcja
 
