@@ -338,7 +338,7 @@ Brak zmian w bazie. Wycofanie: `wrangler rollback`. Sekret można zostawić, bez
 - [x] 1.1 Typy przechodzą: `npx astro check` — 2ae0721
 - [x] 1.2 Lint przechodzi: `npm run lint` — 2ae0721
 - [x] 1.3 Build przechodzi: `npm run build` — 2ae0721
-- [ ] 1.4 Smoke przechodzi lokalnie na `npm run preview` (z lokalnym Supabase), z nowymi krokami 401/400/400: `npm run smoke`
+- [x] 1.4 Smoke przechodzi lokalnie na `npm run preview` (z lokalnym Supabase), z nowymi krokami 401/400/400: `npm run smoke` — 2ae0721
 
 #### Manual
 
@@ -350,13 +350,13 @@ Brak zmian w bazie. Wycofanie: `wrangler rollback`. Sekret można zostawić, bez
 
 #### Automated
 
-- [x] 2.1 Lint przechodzi: `npm run lint`
-- [ ] 2.2 Lokalnie: atrapa + `npm run preview` z `OPENROUTER_BASE_URL` atrapy + `SMOKE_AI_MOCK=1 npm run smoke` przechodzi z krokami 200 i 502
-- [ ] 2.3 Job `smoke` w CI na PR przechodzi z krokami 200 i 502 (widoczne `PASS` w logu)
+- [x] 2.1 Lint przechodzi: `npm run lint` — ab7a812
+- [x] 2.2 Lokalnie: atrapa + `npm run preview` z `OPENROUTER_BASE_URL` atrapy + `SMOKE_AI_MOCK=1 npm run smoke` przechodzi z krokami 200 i 502 — ab7a812
+- [x] 2.3 Job `smoke` w CI na PR przechodzi z krokami 200 i 502 (widoczne `PASS` w logu) — ab7a812
 
 #### Manual
 
-- [x] 2.4 Smoke bez `SMOKE_AI_MOCK` wypisuje `SKIP` dla kroków AI i nie wywołuje OpenRouter
+- [x] 2.4 Smoke bez `SMOKE_AI_MOCK` wypisuje `SKIP` dla kroków AI i nie wywołuje OpenRouter — ab7a812
 
 ### Phase 3: Ekran /generate
 
