@@ -236,19 +236,19 @@ Po merge produkcja ma ustawienia zgodne z PRD i działający kod, a pełny cykl 
 #### Manual
 
 - [x] 2.2 Solo Code Review (`/10x-impl-review account-lifecycle-on-prod`) bez otwartych uwag krytycznych — 29367de
-- [ ] 2.3 PR zmergowany do `main` przez człowieka
+- [x] 2.3 PR zmergowany do `main` przez człowieka
 
 ### Phase 3: Dowód na produkcji
 
 #### Automated
 
-- [ ] 3.1 Smoke na produkcji kończy się kodem 0 z 9× PASS
-- [ ] 3.2 `curl -sI https://10xcards.szymon-10x.workers.dev/auth/signin` zwraca 200
+- [x] 3.1 Smoke na produkcji kończy się kodem 0 z 9× PASS
+- [x] 3.2 `curl -sI https://10xcards.szymon-10x.workers.dev/auth/signin` zwraca 200
 
 #### Manual
 
-- [ ] 3.3 „Confirm email” wyłączone w Supabase
-- [ ] 3.4 Deploy z `main` zatwierdzony przez człowieka i zakończony kodem 0
-- [ ] 3.5 Ręczny test w przeglądarce: rejestracja, komunikat po rejestracji, logowanie, dashboard, wylogowanie
-- [ ] 3.6 Konta testowe usunięte w Supabase → Authentication → Users
-- [ ] 3.7 Dowód zapisany w `deploy-plan.md`, `infrastructure.md` i `change.md`
+- [x] 3.3 „Confirm email” wyłączone w Supabase
+- [x] 3.4 Deploy z `main` zatwierdzony przez człowieka i zakończony kodem 0
+- [x] 3.5 Ręczny test w przeglądarce: rejestracja, komunikat po rejestracji, logowanie, dashboard, wylogowanie
+- [x] 3.6 Konta testowe usunięte w Supabase → Authentication → Users
+- [x] 3.7 Dowód zapisany w `deploy-plan.md`, `infrastructure.md` i `change.md`
