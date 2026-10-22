@@ -1,9 +1,9 @@
 ---
 change_id: account-lifecycle-on-prod
 title: Account lifecycle on prod
-status: implementing
+status: impl_reviewed
 created: 2026-10-21
-updated: 2026-10-21
+updated: 2026-10-22
 archived_at: null
 ---
 

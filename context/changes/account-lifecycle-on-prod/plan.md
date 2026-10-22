@@ -45,7 +45,7 @@ Najpierw kod w worktree (faza 1), potem PR i zielony job `smoke` jako dowód, ż
 ## Critical Implementation Details
 
 - **Unikalność adresu:** przy wyłączonym potwierdzaniu ponowna rejestracja tego samego adresu kończy się błędem `user_already_exists`, więc `SMOKE_EMAIL` musi zawierać `{ts}`, zamieniane w linii 7 na `Date.now()` (aliasy `+` w Gmailu trafiają do tej samej skrzynki).
-- **Kolejność w fazie 3:** wyłączenie „Confirm email” przed smoke; deploy z `main` po merge. Jeśli S-02 zmergował się wcześniej, `main` zawiera `/api/generate` i może wymagać sekretu `OPENROUTER_API_KEY` na Workerze; sprawdzić przed deployem (`wrangler secret list`) i w razie braku zatrzymać się i zapytać człowieka.
+- **Kolejność w fazie 3:** wyłączenie „Confirm email” przed `wrangler deploy` (krok 3.3 przed 3.4), bo nowa treść `confirm-email.astro` jest prawdziwa dopiero przy wyłączonym potwierdzaniu; deploy z `main` po merge. Jeśli S-02 zmergował się wcześniej, `main` zawiera `/api/generate` i może wymagać sekretu `OPENROUTER_API_KEY` na Workerze; sprawdzić przed deployem (`wrangler secret list`) i w razie braku zatrzymać się i zapytać człowieka.
 
 ## Faza 1: Adres smoke i poprawki rejestracji
 
@@ -231,11 +231,11 @@ Po merge produkcja ma ustawienia zgodne z PRD i działający kod, a pełny cykl 
 
 #### Automated
 
-- [ ] 2.1 Joby `ci` i `smoke` zielone na PR (`gh pr checks`), a w logu smoke 9× PASS
+- [x] 2.1 Joby `ci` i `smoke` zielone na PR (`gh pr checks`), a w logu smoke 9× PASS
 
 #### Manual
 
-- [ ] 2.2 Solo Code Review (`/10x-impl-review account-lifecycle-on-prod`) bez otwartych uwag krytycznych
+- [x] 2.2 Solo Code Review (`/10x-impl-review account-lifecycle-on-prod`) bez otwartych uwag krytycznych
 - [ ] 2.3 PR zmergowany do `main` przez człowieka
 
 ### Phase 3: Dowód na produkcji
