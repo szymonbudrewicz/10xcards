@@ -33,7 +33,11 @@ export const POST: APIRoute = async (context) => {
     return jsonError(400, "text_empty", "Wklej tekst, z którego mają powstać fiszki.");
   }
   if (text.length > MAX_TEXT_LENGTH) {
-    return jsonError(400, "text_too_long", "Tekst może mieć najwyżej 10 000 znaków.");
+    return jsonError(
+      400,
+      "text_too_long",
+      `Tekst może mieć najwyżej ${MAX_TEXT_LENGTH.toLocaleString("pl-PL")} znaków.`,
+    );
   }
 
   const apiKey = OPENROUTER_API_KEY?.trim();

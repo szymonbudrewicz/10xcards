@@ -30,6 +30,8 @@ export function useGenerateProposals() {
     inFlight.current = true;
     setIsLoading(true);
     setError(null);
+    // Old cards belong to the previous text: never show them next to a new result or error.
+    setProposals(null);
 
     try {
       const response = await fetch("/api/generate", {

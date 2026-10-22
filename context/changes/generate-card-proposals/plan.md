@@ -362,19 +362,19 @@ Brak zmian w bazie. Wycofanie: `wrangler rollback`. Sekret można zostawić, bez
 
 #### Automated
 
-- [x] 3.1 Typy przechodzą: `npx astro check`
-- [x] 3.2 Lint przechodzi: `npm run lint`
-- [x] 3.3 Build przechodzi: `npm run build`
-- [ ] 3.4 Smoke z atrapą przechodzi z krokami `/generate` 302/200: `SMOKE_AI_MOCK=1 npm run smoke`
+- [x] 3.1 Typy przechodzą: `npx astro check` — 5beb8cb
+- [x] 3.2 Lint przechodzi: `npm run lint` — 5beb8cb
+- [x] 3.3 Build przechodzi: `npm run build` — 5beb8cb
+- [x] 3.4 Smoke z atrapą przechodzi z krokami `/generate` 302/200: `SMOKE_AI_MOCK=1 npm run smoke` — 5beb8cb
 
 #### Manual
 
-- [x] 3.5 Pusty tekst: komunikat bez wywołania sieci (zakładka Network)
-- [x] 3.6 Tekst > 10 000 znaków: komunikat i tekst zostaje w polu
-- [x] 3.7 W trakcie generowania przycisk jest nieaktywny i nie da się wysłać drugiego żądania
-- [x] 3.8 Błąd AI (tekst ze znacznikiem `SMOKE_AI_ERROR` przy atrapie): czytelny komunikat, tekst zostaje w polu
-- [x] 3.9 Z prawdziwym kluczem: propozycje przód/tył pojawiają się na liście
-- [x] 3.10 Link z `/dashboard` prowadzi do `/generate`; po wylogowaniu `/generate` przekierowuje na logowanie
+- [x] 3.5 Pusty tekst: komunikat bez wywołania sieci (zakładka Network) — 5beb8cb
+- [x] 3.6 Tekst > 10 000 znaków: komunikat i tekst zostaje w polu — 5beb8cb
+- [x] 3.7 W trakcie generowania przycisk jest nieaktywny i nie da się wysłać drugiego żądania — 5beb8cb
+- [x] 3.8 Błąd AI (tekst ze znacznikiem `SMOKE_AI_ERROR` przy atrapie): czytelny komunikat, tekst zostaje w polu — 5beb8cb
+- [x] 3.9 Z prawdziwym kluczem: propozycje przód/tył pojawiają się na liście — 5beb8cb
+- [x] 3.10 Link z `/dashboard` prowadzi do `/generate`; po wylogowaniu `/generate` przekierowuje na logowanie — 5beb8cb
 
 ### Phase 4: Produkcja
 

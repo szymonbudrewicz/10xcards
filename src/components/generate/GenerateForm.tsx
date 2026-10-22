@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { MAX_TEXT_LENGTH } from "@/types";
 
 const EMPTY_MESSAGE = "Wklej tekst, z którego mają powstać fiszki.";
-const TOO_LONG_MESSAGE = "Tekst może mieć najwyżej 10 000 znaków.";
+const TOO_LONG_MESSAGE = `Tekst może mieć najwyżej ${MAX_TEXT_LENGTH.toLocaleString("pl-PL")} znaków.`;
 const NO_PROPOSALS_MESSAGE = "AI nie znalazło w tym tekście materiału na fiszki.";
 
 export default function GenerateForm() {
@@ -69,29 +69,32 @@ export default function GenerateForm() {
         </Button>
       </form>
 
-      {proposals && (
-        <section aria-live="polite" className="space-y-3">
-          <h2 className="text-lg font-semibold">Propozycje fiszek</h2>
-          {proposals.length === 0 ? (
-            <p className="text-muted-foreground text-sm">{NO_PROPOSALS_MESSAGE}</p>
-          ) : (
-            <ul className="space-y-3">
-              {proposals.map((p, i) => (
-                <li key={i} className="border-border bg-muted/30 grid gap-2 rounded-lg border p-4 sm:grid-cols-2">
-                  <div>
-                    <p className="text-muted-foreground text-xs uppercase">Przód</p>
-                    <p className="text-sm">{p.front}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground text-xs uppercase">Tył</p>
-                    <p className="text-sm">{p.back}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      )}
+      {/* Always mounted, so screen readers announce results inserted later. */}
+      <div aria-live="polite">
+        {proposals && (
+          <section className="space-y-3">
+            <h2 className="text-lg font-semibold">Propozycje fiszek</h2>
+            {proposals.length === 0 ? (
+              <p className="text-muted-foreground text-sm">{NO_PROPOSALS_MESSAGE}</p>
+            ) : (
+              <ul className="space-y-3">
+                {proposals.map((p, i) => (
+                  <li key={i} className="border-border bg-muted/30 grid gap-2 rounded-lg border p-4 sm:grid-cols-2">
+                    <div>
+                      <p className="text-muted-foreground text-xs uppercase">Przód</p>
+                      <p className="text-sm">{p.front}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground text-xs uppercase">Tył</p>
+                      <p className="text-sm">{p.back}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        )}
+      </div>
     </div>
   );
 }
