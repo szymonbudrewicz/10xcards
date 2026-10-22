@@ -1,0 +1,28 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import GenerateForm from "@/components/generate/GenerateForm";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+// Anonymous users are redirected to /auth/signin in src/middleware.ts.
+---
+
+<Layout title="Generuj fiszki">
+  <div class="bg-cosmic flex min-h-screen items-start justify-center p-4 sm:items-center">
+    <Card className="w-full max-w-2xl rounded-2xl px-2 py-8 backdrop-blur-xl">
+      <CardHeader>
+        <CardTitle className="text-2xl font-bold">
+          <h1>Generuj fiszki</h1>
+        </CardTitle>
+        <p class="text-muted-foreground text-sm">
+          Wklej tekst, a AI zaproponuje do 10 fiszek.{" "}
+          <a href="/dashboard" class="text-link hover:underline">
+            Wróć do panelu
+          </a>
+        </p>
+      </CardHeader>
+      <CardContent>
+        <GenerateForm client:load />
+      </CardContent>
+    </Card>
+  </div>
+</Layout>

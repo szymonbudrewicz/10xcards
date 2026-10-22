@@ -1,7 +1,7 @@
 import { defineMiddleware } from "astro:middleware";
 import { createClient } from "@/lib/supabase";
 
-const PROTECTED_ROUTES = ["/dashboard"];
+const PROTECTED_ROUTES = ["/dashboard", "/generate"];
 
 export const onRequest = defineMiddleware(async (context, next) => {
   // Dev-only pages (e.g. /dev/kitchen-sink) do not exist outside `astro dev`.

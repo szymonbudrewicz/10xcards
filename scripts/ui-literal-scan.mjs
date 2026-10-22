@@ -17,6 +17,8 @@ const CLEANED = [
   "src/components/auth/ServerError.tsx",
   "src/components/auth/SubmitButton.tsx",
   "src/components/dev/SignInStates.tsx",
+  "src/pages/generate.astro",
+  "src/components/generate/GenerateForm.tsx",
 ];
 
 const PALETTE =

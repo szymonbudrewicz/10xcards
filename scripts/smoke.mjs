@@ -99,6 +99,7 @@ async function accountExists() {
 const steps = [
   ["home renders", () => request("/"), { status: 200 }],
   ["dashboard redirects anonymous user", () => request("/dashboard"), { status: 302, location: "/auth/signin" }],
+  ["generate page redirects anonymous user", () => request("/generate"), { status: 302, location: "/auth/signin" }],
   [
     "generate rejects anonymous user",
     generate("Fotosynteza zachodzi w chloroplastach."),
@@ -121,6 +122,7 @@ const steps = [
     { status: 302, location: "/dashboard", exact: true },
   ],
   ["dashboard renders for signed-in user", () => request("/dashboard"), { status: 200 }],
+  ["generate page renders for signed-in user", () => request("/generate"), { status: 200 }],
   ["generate rejects blank text", generate("   "), { status: 400, code: "text_empty" }],
   ["generate rejects text over 10 000 chars", generate("a".repeat(10_001)), { status: 400, code: "text_too_long" }],
   [
