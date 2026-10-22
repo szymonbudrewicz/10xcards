@@ -4,7 +4,7 @@
 import { readFileSync } from "node:fs";
 
 const BASE_URL = process.env.BASE_URL ?? "http://localhost:4321";
-const email = `smoke-${Date.now()}@example.com`;
+const email = process.env.SMOKE_EMAIL?.replace("{ts}", String(Date.now())) ?? `smoke-${Date.now()}@example.com`;
 const password = "Smoke-Test-Passw0rd!";
 const jar = new Map();
 
