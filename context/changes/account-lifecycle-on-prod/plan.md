@@ -225,7 +225,7 @@ Po merge produkcja ma ustawienia zgodne z PRD i działający kod, a pełny cykl 
 
 #### Manual
 
-- [ ] 1.6 Przegląd diffu: brak tekstu z URL wyświetlanego na `/auth/signup`, polskie komunikaty dla znanych kodów
+- [x] 1.6 Przegląd diffu: brak tekstu z URL wyświetlanego na `/auth/signup`, polskie komunikaty dla znanych kodów
 
 ### Phase 2: PR i CI
 
