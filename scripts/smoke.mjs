@@ -22,7 +22,7 @@ function storeCookies(response) {
   }
 }
 
-async function request(path, { method = "GET", form } = {}) {
+async function request(path, { method = "GET", form, json } = {}) {
   const response = await fetch(BASE_URL + path, {
     method,
     redirect: "manual",
@@ -30,12 +30,18 @@ async function request(path, { method = "GET", form } = {}) {
       Cookie: cookieHeader(),
       Origin: BASE_URL,
       ...(form ? { "Content-Type": "application/x-www-form-urlencoded" } : {}),
+      ...(json !== undefined ? { "Content-Type": "application/json" } : {}),
     },
-    body: form ? new URLSearchParams(form).toString() : undefined,
+    body: form ? new URLSearchParams(form).toString() : json !== undefined ? JSON.stringify(json) : undefined,
   });
   storeCookies(response);
-  return { status: response.status, location: response.headers.get("location") ?? "" };
+  const isJson = (response.headers.get("content-type") ?? "").includes("application/json");
+  const body = isJson ? await response.json().catch(() => null) : null;
+  return { status: response.status, location: response.headers.get("location") ?? "", body };
 }
+
+// Validation-only calls to /api/generate: none of them reaches the AI provider.
+const generate = (text) => () => request("/api/generate", { method: "POST", json: { text } });
 
 // Supabase credentials (env first, then .dev.vars) let us verify the account really exists in Auth.
 function supabaseCredentials() {
@@ -79,6 +85,11 @@ const steps = [
   ["home renders", () => request("/"), { status: 200 }],
   ["dashboard redirects anonymous user", () => request("/dashboard"), { status: 302, location: "/auth/signin" }],
   [
+    "generate rejects anonymous user",
+    generate("Fotosynteza zachodzi w chloroplastach."),
+    { status: 401, code: "unauthorized" },
+  ],
+  [
     "signup creates account",
     () => request("/api/auth/signup", { method: "POST", form: { email, password } }),
     { status: 302, location: "/auth/confirm-email" },
@@ -95,6 +106,8 @@ const steps = [
     { status: 302, location: "/dashboard", exact: true },
   ],
   ["dashboard renders for signed-in user", () => request("/dashboard"), { status: 200 }],
+  ["generate rejects blank text", generate("   "), { status: 400, code: "text_empty" }],
+  ["generate rejects text over 10 000 chars", generate("a".repeat(10_001)), { status: 400, code: "text_too_long" }],
   ["signout clears session", () => request("/api/auth/signout", { method: "POST" }), { status: 302, location: "/" }],
   ["dashboard redirects after signout", () => request("/dashboard"), { status: 302, location: "/auth/signin" }],
 ];
@@ -105,11 +118,13 @@ for (const [name, run, expected] of steps) {
   const ok =
     actual.status === expected.status &&
     (expected.location === undefined ||
-      (expected.exact ? actual.location === expected.location : actual.location.startsWith(expected.location)));
-  console.log(`${ok ? "PASS" : "FAIL"}  ${name}  -> ${actual.status} ${actual.location}`);
+      (expected.exact ? actual.location === expected.location : actual.location.startsWith(expected.location))) &&
+    (expected.code === undefined || actual.body?.error?.code === expected.code);
+  const actualCode = actual.body?.error?.code ?? "";
+  console.log(`${ok ? "PASS" : "FAIL"}  ${name}  -> ${actual.status} ${actual.location}${actualCode}`);
   if (!ok) {
     failed++;
-    console.log(`      expected ${expected.status} ${expected.location ?? ""}`);
+    console.log(`      expected ${expected.status} ${expected.location ?? ""}${expected.code ?? ""}`);
   }
 }
 
