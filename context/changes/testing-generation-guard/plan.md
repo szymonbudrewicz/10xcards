@@ -461,20 +461,20 @@ Nie dotyczy (brak zmian danych i kodu produkcyjnego).
 
 #### Automated
 
-- [x] 4.1 `npm run test:mutation` kończy się kodem 0 i generuje raport HTML
-- [x] 4.2 `npm test`, `npx astro check` i `npm run lint` przechodzą po nowych asercjach
+- [x] 4.1 `npm run test:mutation` kończy się kodem 0 i generuje raport HTML — 3ba38eb
+- [x] 4.2 `npm test`, `npx astro check` i `npm run lint` przechodzą po nowych asercjach — 3ba38eb
 
 #### Manual
 
-- [x] 4.3 Każdy żywy mutant ma decyzję w `stryker-report.md`
+- [x] 4.3 Każdy żywy mutant ma decyzję w `stryker-report.md` — 3ba38eb
 
 ### Phase 5: Cookbook i synchronizacja
 
 #### Automated
 
-- [ ] 5.1 `npm test`, `npx astro check`, `npm run lint` przechodzą
-- [ ] 5.2 §6.1 i §6.2 test-planu bez „TBD — see §3 Phase 1”
+- [x] 5.1 `npm test`, `npx astro check`, `npm run lint` przechodzą
+- [x] 5.2 §6.1 i §6.2 test-planu bez „TBD — see §3 Phase 1”
 
 #### Manual
 
-- [ ] 5.3 §6 test-planu i notka w `CLAUDE.md` zrozumiałe dla kolejnego autora testu
+- [x] 5.3 §6 test-planu i notka w `CLAUDE.md` zrozumiałe dla kolejnego autora testu

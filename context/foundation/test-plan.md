@@ -76,7 +76,7 @@ aktualizuje go, gdy artefakty pojawiają się na dysku.
 
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|---|---|---|---|---|---|
-| 1 | Ochrona generowania | Udowodnić, że generowanie odrzuca złe wejście i brak sesji bez wywołania AI i zwraca czytelny błąd; postawić runner testów | #4, #5 | unit + integration (Vitest) | planned | testing-generation-guard |
+| 1 | Ochrona generowania | Udowodnić, że generowanie odrzuca złe wejście i brak sesji bez wywołania AI i zwraca czytelny błąd; postawić runner testów | #4, #5 | unit + integration (Vitest) | complete | testing-generation-guard |
 | 2 | E2E kluczowego przepływu | Udowodnić w przeglądarce, że użytkownik loguje się, wkleja tekst i widzi propozycje (mock AI), a przy błędzie zachowuje tekst; uruchamiane w CI (wymóg certyfikacji) | #6, #4 | e2e (Playwright) | not started | — |
 | 3 | Zapis i izolacja fiszek | Po S-03: udowodnić, że zaakceptowana fiszka trwale ląduje na koncie właściciela z licznikiem i jest niedostępna dla innego konta; rozszerzyć e2e o akceptację i zapis | #1, #3 | integration + e2e | not started | — |
 | 4 | Bramki jakości i smoke produkcji | Zablokować w CI testy z faz 1–3 jako wymagane; dodać smoke po wdrożeniu i lokalny hook po edycji | #2 | gates, post-edit-hook, smoke | not started | — |
@@ -88,15 +88,17 @@ Klasyczna baza testów projektu. Narzędzia AI-native mają datę `checked:`.
 
 | Layer | Tool | Version | Notes |
 |---|---|---|---|
-| unit + integration | Vitest | 5.0.5 (npm, checked: 2026-10-22) | none yet — see Phase 1 |
+| unit + integration | Vitest | 5.0.5 (npm, checked: 2026-10-22) | installed in Phase 1; `npm test`, testy w `tests/`, krok w jobie CI `ci` |
+| mutation (ad hoc) | Stryker + `@stryker-mutator/vitest-runner` | 10.0.0 (npm, checked: 2026-10-23) | `npm run test:mutation`, lokalnie, nie w CI; na Windows + Vitest 5 wynik niewiarygodny (zob. 6.6) |
 | API mocking | lokalny mock OpenRouter (`scripts/mock-openrouter.mjs`) | n/a | istnieje dla smoke; dostawca AI mockowany tylko na granicy sieci |
 | e2e | Playwright | 1.64.1 (npm, checked: 2026-10-22) | none yet — see Phase 2 |
 | smoke (istniejące) | `scripts/smoke.mjs`, `scripts/isolation-check.mjs` | n/a | bez zależności, uruchamiane w jobie CI `smoke` na lokalnym Supabase |
 | (optional) AI-native | post-edit hook agenta — checked: 2026-10-22 | n/a | When NOT to use: jako zamiennik CI ani do uruchamiania e2e po każdej edycji (za wolne) |
 | (optional) AI-native | Playwright CLI / MCP do eksploracji przeglądarki przez agenta — checked: 2026-10-22 | n/a | When NOT to use: jako bramka; deterministyczny test e2e jest sygnałem, eksploracja agenta tylko pomaga go napisać |
 
-Profil bazy testów: `none` — brak konfiguracji runnera i plików testowych w
-kodzie aplikacji; istnieją dwa skrypty sprawdzające w CI (smoke, isolation).
+Profil bazy testów: `none` przy pisaniu planu (2026-10-22) — brak runnera i plików
+testowych; istniały dwa skrypty sprawdzające w CI (smoke, isolation). Od §3 Phase 1
+(2026-10-23): Vitest w `tests/`, `npm test` w jobie `ci`.
 
 **Stack grounding tools (current session):**
 - Docs: none — Context7 / docs MCP not available in current session; wersje sprawdzone przez `npm view`; checked: 2026-10-22
@@ -113,7 +115,7 @@ Bramki, które zmiana musi przejść przed produkcją. „Required after §3 Pha
 |---|---|---|---|
 | lint + lint:ui + typecheck (`astro check`) + build | CI (job `ci`) | required (wired) | dryf składni, typów, literałów UI |
 | isolation A/B + smoke na buildzie | CI (job `smoke`) | required (wired) | wyciek danych między kontami, zepsuty auth i generowanie |
-| unit + integration | local + CI | required after §3 Phase 1 | regresje walidacji, 401, kształtu błędu, zapisu |
+| unit + integration (`npm test`) | local + CI (job `ci`) | required (wired, §3 Phase 1) | regresje walidacji, 401, kształtu błędu, prywatności, zapisu |
 | e2e on critical flows | CI on PR | required after §3 Phase 2 | zepsuty kluczowy przepływ użytkownika |
 | post-edit hook | local (agent loop) | recommended after §3 Phase 4 | regresje w chwili edycji |
 | pre-prod / post-deploy smoke | po wdrożeniu | optional, wired in §3 Phase 4 | awarie specyficzne dla produkcji |
@@ -128,11 +130,20 @@ wdrożeniu odpowiedniej fazy; do tego czasu brzmi „TBD — see §3 Phase <N>�
 
 ### 6.1 Adding a unit test
 
-- TBD — see §3 Phase 1 (walidacja wejścia generowania z wyrocznią z PRD).
+- Plik w `tests/<obszar>/<moduł>.test.ts` (nigdy w `src/pages/` — Astro robi z każdego pliku trasę). Importy przez `@/`.
+- Granicę z siecią stubuj przez `stubFetch()` z `tests/helpers/api-context.ts` (podmienia globalny `fetch`), a odpowiedź dostawcy buduj `openRouterCompletion(...)`. Nie mockuj modułów projektu.
+- Wartości oczekiwane bierz z PRD/kontraktu jako literały (`10_000`, `10`), nigdy z importowanych stałych typu `MAX_TEXT_LENGTH` — inaczej test jest lustrem implementacji.
+- Jedna właściwość = jeden `it.each` z przypadkami brzegowymi (pusty, białe znaki, granica, błąd zależności), nie kopie testów.
+- Przykład: `tests/services/card-generation.test.ts` (limit 10, odrzucanie pustych kart, klasyfikacja błędów AI).
 
 ### 6.2 Adding an integration test for an API endpoint
 
-- TBD — see §3 Phase 1 (401 bez sesji, brak wywołania AI, kształt błędu) i Phase 3 (zapis z odczytem stanu z bazy, dwa konta).
+- Wywołuj eksportowany handler bezpośrednio: `POST(apiContext({ user, body | rawBody }))` — bez serwera; `user: null` = brak sesji, `SIGNED_IN_USER` = zalogowany.
+- `astro:env/server` jest aliasowany w `vitest.config.ts` na `tests/stubs/astro-env-server.ts`; inną wartość w jednym teście daj przez `vi.mock("astro:env/server")` z getterem i `vi.hoisted` (wzór: przypadek 503 w `tests/api/generate.test.ts`).
+- Dowód „AI nie zostało wywołane” = `expect(fetchSpy).not.toHaveBeenCalled()`, nie sam status; adres wywołania odczytuj przez `requestedUrl(fetchSpy)`. Sprawdzaj status + `error.code` (kontrakt) i że `message` jest niepusty; dokładnej treści komunikatu nie przypinaj.
+- Prywatność: wklej unikalny znacznik, szpieguj `console.*` i sprawdź, że znacznik nie pada w żadnym logu ani w odpowiedzi — w gałęziach, które logują, sprawdź też, że log powstał (inaczej test jest pusty).
+- Każdy nowy test zweryfikuj ręcznie: zepsuj chronione zachowanie w `src/`, pada dokładnie ten test, `git checkout -- <plik>`.
+- Zapis z odczytem stanu z bazy i dwa konta — TBD — see §3 Phase 3.
 
 ### 6.3 Adding an e2e test
 
@@ -149,6 +160,11 @@ wdrożeniu odpowiedniej fazy; do tego czasu brzmi „TBD — see §3 Phase <N>�
 ### 6.6 Per-rollout-phase notes
 
 (Uzupełniane po każdej fazie.)
+
+**Phase 1 — Ochrona generowania** (`testing-generation-guard`, 2026-10-23): 31 testów (endpoint + serwis), `npm test` w jobie `ci`.
+- Znana rozbieżność, nietestowana: limit liczony w jednostkach UTF-16, więc emoji liczy się jako 2 znaki, a PRD mówi „10 000 znaków”. Decyzja produktowa, otwarta.
+- Zachowanie tekstu w polu po błędzie i blokada podwójnego kliknięcia to zachowanie przeglądarki → §3 Phase 2 (e2e).
+- Stryker (ad hoc): na Windows z Vitest 5 wynik 4,58% był niewiarygodny (przeżył mutant wycinający całą funkcję); dowodem jakości zostało ręczne psucie. Szczegóły: `context/changes/testing-generation-guard/stryker-report.md`.
 
 ## 7. What We Deliberately Don't Test
 
