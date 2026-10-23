@@ -449,24 +449,24 @@ Nie dotyczy (brak zmian danych i kodu produkcyjnego).
 
 #### Automated
 
-- [x] 3.1 `npm test` przechodzi z testami serwisu i prywatności
-- [x] 3.2 `npx astro check` i `npm run lint` przechodzą
+- [x] 3.1 `npm test` przechodzi z testami serwisu i prywatności — ccfa022
+- [x] 3.2 `npx astro check` i `npm run lint` przechodzą — ccfa022
 
 #### Manual
 
-- [x] 3.3 Celowe psucie (usunięcie `.slice`) → pada test 12 → 10; po cofnięciu zielono
-- [x] 3.4 Celowe psucie (`text` w `console.error`) → padają testy prywatności; po cofnięciu zielono
+- [x] 3.3 Celowe psucie (usunięcie `.slice`) → pada test 12 → 10; po cofnięciu zielono — ccfa022
+- [x] 3.4 Celowe psucie (`text` w `console.error`) → padają testy prywatności; po cofnięciu zielono — ccfa022
 
 ### Phase 4: Stryker — jednorazowa kontrola jakości testów
 
 #### Automated
 
-- [ ] 4.1 `npm run test:mutation` kończy się kodem 0 i generuje raport HTML
-- [ ] 4.2 `npm test`, `npx astro check` i `npm run lint` przechodzą po nowych asercjach
+- [x] 4.1 `npm run test:mutation` kończy się kodem 0 i generuje raport HTML
+- [x] 4.2 `npm test`, `npx astro check` i `npm run lint` przechodzą po nowych asercjach
 
 #### Manual
 
-- [ ] 4.3 Każdy żywy mutant ma decyzję w `stryker-report.md`
+- [x] 4.3 Każdy żywy mutant ma decyzję w `stryker-report.md`
 
 ### Phase 5: Cookbook i synchronizacja
 
