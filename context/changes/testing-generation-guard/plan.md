@@ -423,27 +423,27 @@ Nie dotyczy (brak zmian danych i kodu produkcyjnego).
 
 #### Automated
 
-- [x] 1.1 `npm test` przechodzi i pokazuje test 401
-- [x] 1.2 `npx astro check` przechodzi (testy i config są typowane)
-- [x] 1.3 `npm run lint` przechodzi
-- [x] 1.4 `npm run build` przechodzi (Astro nie tworzy trasy z plików testowych)
+- [x] 1.1 `npm test` przechodzi i pokazuje test 401 — 2c80001
+- [x] 1.2 `npx astro check` przechodzi (testy i config są typowane) — 2c80001
+- [x] 1.3 `npm run lint` przechodzi — 2c80001
+- [x] 1.4 `npm run build` przechodzi (Astro nie tworzy trasy z plików testowych) — 2c80001
 
 #### Manual
 
-- [x] 1.5 Celowe psucie sprawdzenia sesji → pada test 401; po cofnięciu zielono
+- [x] 1.5 Celowe psucie sprawdzenia sesji → pada test 401; po cofnięciu zielono — 2c80001
 - [ ] 1.6 Job `ci` na PR pokazuje krok `npm test` jako zielony
 
 ### Phase 2: Kontrakt walidacji wejścia
 
 #### Automated
 
-- [ ] 2.1 `npm test` przechodzi z testami walidacji
-- [ ] 2.2 `npx astro check` i `npm run lint` przechodzą
+- [x] 2.1 `npm test` przechodzi z testami walidacji
+- [x] 2.2 `npx astro check` i `npm run lint` przechodzą
 
 #### Manual
 
-- [ ] 2.3 Celowe psucie `>` → `>=` → pada test granicy 10 000; po cofnięciu zielono
-- [ ] 2.4 Celowe psucie (usunięcie `.trim()`) → pada przypadek białych znaków; po cofnięciu zielono
+- [x] 2.3 Celowe psucie `>` → `>=` → pada test granicy 10 000; po cofnięciu zielono
+- [x] 2.4 Celowe psucie (usunięcie `.trim()`) → pada przypadek białych znaków; po cofnięciu zielono
 
 ### Phase 3: Granica z AI i prywatność
 
