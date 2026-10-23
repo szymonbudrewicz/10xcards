@@ -3,10 +3,11 @@
 // error-code contract in context/changes/generate-card-proposals/plan.md. Not the implementation.
 // Risks: test-plan.md §2 #4 and #5.
 
+import { inspect } from "node:util";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { POST } from "@/pages/api/generate";
 import type { ApiError } from "@/types";
-import { apiContext, SIGNED_IN_USER, stubFetch } from "../helpers/api-context";
+import { apiContext, openRouterCompletion, requestedUrl, SIGNED_IN_USER, stubFetch } from "../helpers/api-context";
 
 // The API key is read per request, so a test can switch it off (503 case) through this getter.
 const env = vi.hoisted((): { openRouterApiKey: string | undefined } => ({ openRouterApiKey: "test-openrouter-key" }));
@@ -95,5 +96,85 @@ describe("POST /api/generate — input validation (risks #4, #5)", () => {
     expect(error.error.code).toBe("ai_not_configured");
     expect(error.error.message.trim()).not.toBe("");
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+});
+
+const timeout = (): Response => {
+  throw new DOMException("The operation was aborted.", "TimeoutError");
+};
+
+describe("POST /api/generate — AI failures (risk #4)", () => {
+  it.each([
+    {
+      name: "an HTTP error from the AI",
+      respond: () => Response.json({}, { status: 500 }),
+      status: 502,
+      code: "ai_failed",
+    },
+    {
+      name: "an unreadable AI answer",
+      respond: () => openRouterCompletion("To nie jest JSON"),
+      status: 502,
+      code: "ai_failed",
+    },
+    { name: "an AI timeout", respond: timeout, status: 504, code: "ai_timeout" },
+  ])("answers $status $code for $name, as a readable JSON error", async ({ respond, status, code }) => {
+    stubFetch(respond);
+
+    const response = await POST(apiContext({ user: SIGNED_IN_USER, body: { text: "Fotosynteza." } }));
+    const error = (await response.json()) as ApiError;
+
+    expect(response.status).toBe(status);
+    expect(error.error.code).toBe(code);
+    expect(error.error.message.trim()).not.toBe("");
+  });
+});
+
+describe("POST /api/generate — pasted text stays private (risk #5)", () => {
+  const LOG_METHODS = ["log", "info", "warn", "error", "debug"] as const;
+
+  function spyOnConsole() {
+    return LOG_METHODS.map((method) => vi.spyOn(console, method).mockImplementation(() => undefined));
+  }
+
+  it.each([
+    { name: "401 anonymous", user: null, body: { text: MARKER } },
+    { name: "400 too long", user: SIGNED_IN_USER, body: { text: TOO_LONG } },
+    { name: "400 not JSON", user: SIGNED_IN_USER, rawBody: `{"text": "${MARKER}` },
+    { name: "503 no API key", user: SIGNED_IN_USER, body: { text: MARKER }, noKey: true },
+    {
+      name: "502 AI error",
+      user: SIGNED_IN_USER,
+      body: { text: MARKER },
+      respond: () => Response.json({}, { status: 500 }),
+      logs: true,
+    },
+    { name: "504 AI timeout", user: SIGNED_IN_USER, body: { text: MARKER }, respond: timeout, logs: true },
+    { name: "200 success", user: SIGNED_IN_USER, body: { text: MARKER } },
+  ])("$name: the pasted text is in no log line and not echoed in the response", async (testCase) => {
+    if (testCase.noKey) env.openRouterApiKey = "";
+    stubFetch(
+      testCase.respond ?? (() => openRouterCompletion({ proposals: [{ front: "Pytanie", back: "Odpowiedź" }] })),
+    );
+    const spies = spyOnConsole();
+
+    const response = await POST(apiContext({ user: testCase.user, body: testCase.body, rawBody: testCase.rawBody }));
+    const responseText = await response.text();
+
+    const logged = spies.flatMap((spy): unknown[] => spy.mock.calls.flat()).map((arg) => inspect(arg, { depth: 10 }));
+    // Error branches do log: prove the spy saw that line, so "no marker" is not vacuous.
+    if (testCase.logs) expect(logged.length).toBeGreaterThan(0);
+    for (const line of logged) expect(line).not.toContain(MARKER);
+    expect(responseText).not.toContain(MARKER);
+  });
+
+  it("on success, the only outbound request is the single AI call", async () => {
+    const fetchSpy = stubFetch(() => openRouterCompletion({ proposals: [{ front: "Pytanie", back: "Odpowiedź" }] }));
+
+    const response = await POST(apiContext({ user: SIGNED_IN_USER, body: { text: MARKER } }));
+
+    expect(response.status).toBe(200);
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    expect(requestedUrl(fetchSpy)).toBe("http://ai.test/api/v1/chat/completions");
   });
 });

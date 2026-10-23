@@ -33,6 +33,13 @@ export function openRouterCompletion(content: unknown): Response {
  * `respond` builds each response (or throws to simulate a network error / timeout).
  * Undo with vi.unstubAllGlobals() in afterEach.
  */
+/** URL of the n-th request made through a stubFetch spy, whatever form fetch got it in. */
+export function requestedUrl(fetchSpy: ReturnType<typeof stubFetch>, n = 0): string {
+  const input = fetchSpy.mock.calls[n][0];
+  if (typeof input === "string") return input;
+  return input instanceof URL ? input.href : input.url;
+}
+
 export function stubFetch(respond: () => Response | Promise<Response> = () => openRouterCompletion({ proposals: [] })) {
   const fetchSpy = vi.fn((_input: RequestInfo | URL, _init?: RequestInit) => Promise.resolve().then(respond));
   vi.stubGlobal("fetch", fetchSpy);

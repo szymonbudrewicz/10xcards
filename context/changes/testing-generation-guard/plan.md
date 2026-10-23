@@ -437,25 +437,25 @@ Nie dotyczy (brak zmian danych i kodu produkcyjnego).
 
 #### Automated
 
-- [x] 2.1 `npm test` przechodzi z testami walidacji
-- [x] 2.2 `npx astro check` i `npm run lint` przechodzą
+- [x] 2.1 `npm test` przechodzi z testami walidacji — 8965cca
+- [x] 2.2 `npx astro check` i `npm run lint` przechodzą — 8965cca
 
 #### Manual
 
-- [x] 2.3 Celowe psucie `>` → `>=` → pada test granicy 10 000; po cofnięciu zielono
-- [x] 2.4 Celowe psucie (usunięcie `.trim()`) → pada przypadek białych znaków; po cofnięciu zielono
+- [x] 2.3 Celowe psucie `>` → `>=` → pada test granicy 10 000; po cofnięciu zielono — 8965cca
+- [x] 2.4 Celowe psucie (usunięcie `.trim()`) → pada przypadek białych znaków; po cofnięciu zielono — 8965cca
 
 ### Phase 3: Granica z AI i prywatność
 
 #### Automated
 
-- [ ] 3.1 `npm test` przechodzi z testami serwisu i prywatności
-- [ ] 3.2 `npx astro check` i `npm run lint` przechodzą
+- [x] 3.1 `npm test` przechodzi z testami serwisu i prywatności
+- [x] 3.2 `npx astro check` i `npm run lint` przechodzą
 
 #### Manual
 
-- [ ] 3.3 Celowe psucie (usunięcie `.slice`) → pada test 12 → 10; po cofnięciu zielono
-- [ ] 3.4 Celowe psucie (`text` w `console.error`) → padają testy prywatności; po cofnięciu zielono
+- [x] 3.3 Celowe psucie (usunięcie `.slice`) → pada test 12 → 10; po cofnięciu zielono
+- [x] 3.4 Celowe psucie (`text` w `console.error`) → padają testy prywatności; po cofnięciu zielono
 
 ### Phase 4: Stryker — jednorazowa kontrola jakości testów
 
