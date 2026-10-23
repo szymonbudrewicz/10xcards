@@ -431,7 +431,7 @@ Nie dotyczy (brak zmian danych i kodu produkcyjnego).
 #### Manual
 
 - [x] 1.5 Celowe psucie sprawdzenia sesji → pada test 401; po cofnięciu zielono — 2c80001
-- [ ] 1.6 Job `ci` na PR pokazuje krok `npm test` jako zielony
+- [x] 1.6 Job `ci` na PR pokazuje krok `npm test` jako zielony — 7584ceb
 
 ### Phase 2: Kontrakt walidacji wejścia
 
@@ -472,9 +472,9 @@ Nie dotyczy (brak zmian danych i kodu produkcyjnego).
 
 #### Automated
 
-- [x] 5.1 `npm test`, `npx astro check`, `npm run lint` przechodzą
-- [x] 5.2 §6.1 i §6.2 test-planu bez „TBD — see §3 Phase 1”
+- [x] 5.1 `npm test`, `npx astro check`, `npm run lint` przechodzą — 8d1ba99
+- [x] 5.2 §6.1 i §6.2 test-planu bez „TBD — see §3 Phase 1” — 8d1ba99
 
 #### Manual
 
-- [x] 5.3 §6 test-planu i notka w `CLAUDE.md` zrozumiałe dla kolejnego autora testu
+- [x] 5.3 §6 test-planu i notka w `CLAUDE.md` zrozumiałe dla kolejnego autora testu — 8d1ba99

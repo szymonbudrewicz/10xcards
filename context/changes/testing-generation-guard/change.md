@@ -1,7 +1,7 @@
 ---
 change_id: testing-generation-guard
 title: Test rollout phase 1 — generation guard (bad input, AI errors, 401, no text leaks)
-status: implementing
+status: implemented
 created: 2026-10-22
 updated: 2026-10-23
 archived_at: null
