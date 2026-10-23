@@ -76,7 +76,7 @@ aktualizuje go, gdy artefakty pojawiają się na dysku.
 
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|---|---|---|---|---|---|
-| 1 | Ochrona generowania | Udowodnić, że generowanie odrzuca złe wejście i brak sesji bez wywołania AI i zwraca czytelny błąd; postawić runner testów | #4, #5 | unit + integration (Vitest) | not started | — |
+| 1 | Ochrona generowania | Udowodnić, że generowanie odrzuca złe wejście i brak sesji bez wywołania AI i zwraca czytelny błąd; postawić runner testów | #4, #5 | unit + integration (Vitest) | planned | testing-generation-guard |
 | 2 | E2E kluczowego przepływu | Udowodnić w przeglądarce, że użytkownik loguje się, wkleja tekst i widzi propozycje (mock AI), a przy błędzie zachowuje tekst; uruchamiane w CI (wymóg certyfikacji) | #6, #4 | e2e (Playwright) | not started | — |
 | 3 | Zapis i izolacja fiszek | Po S-03: udowodnić, że zaakceptowana fiszka trwale ląduje na koncie właściciela z licznikiem i jest niedostępna dla innego konta; rozszerzyć e2e o akceptację i zapis | #1, #3 | integration + e2e | not started | — |
 | 4 | Bramki jakości i smoke produkcji | Zablokować w CI testy z faz 1–3 jako wymagane; dodać smoke po wdrożeniu i lokalny hook po edycji | #2 | gates, post-edit-hook, smoke | not started | — |
