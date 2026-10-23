@@ -28,3 +28,7 @@ pnpm-debug.log*
 .idea/
 # Playwright CLI output (may contain credentials)
 .playwright-cli/
+
+# Stryker (mutation testing, run ad hoc)
+reports/
+.stryker-tmp/
