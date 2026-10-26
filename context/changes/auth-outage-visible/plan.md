@@ -151,6 +151,10 @@ Udowodnić, że G1 jest zamknięte: ponowny audyt w trybie weryfikacji i ręczna
 
 ---
 
+**Notatka z wykonania (Faza 2, 2026-10-26):** krok 2.2 wykonał agent na `astro preview` z `CLOUDFLARE_ENV=e2e`. Zamiast `npx supabase stop` zatrzymał tylko kontener auth (`docker stop supabase_auth_10x-astro-starter`), bo to szybsze, odwracalne i nie wymaga ponownego `supabase start -x …`. Wynik: `/generate` → 503 z komunikatem, `/api/generate` → 503 `auth_unavailable`, w logu `auth: getUser failed { name: 'AuthRetryableFetchError', status: 503 }`. Po `docker start` znów 200. Szczegóły: `context/audits/observability/2026-10-26_verify-generowanie.md` §8.
+
+---
+
 ## Testing Strategy
 
 ### Unit Tests:
@@ -179,21 +183,21 @@ Udowodnić, że G1 jest zamknięte: ponowny audyt w trybie weryfikacji i ręczna
 
 #### Automated
 
-- [x] 1.1 Nowe testy z punktów 2–3 są czerwone na niezmienionym kodzie (przypadki awarii i `rejected`), wynik zapisany w notatce fazy
-- [x] 1.2 `npm test` przechodzi w całości (nowe testy zielone, stare bez zmian)
-- [x] 1.3 `npx astro check` bez błędów
-- [x] 1.4 `npm run lint` bez błędów
+- [x] 1.1 Nowe testy z punktów 2–3 są czerwone na niezmienionym kodzie (przypadki awarii i `rejected`), wynik zapisany w notatce fazy — e0037a2
+- [x] 1.2 `npm test` przechodzi w całości (nowe testy zielone, stare bez zmian) — e0037a2
+- [x] 1.3 `npx astro check` bez błędów — e0037a2
+- [x] 1.4 `npm run lint` bez błędów — e0037a2
 
 #### Manual
 
-- [x] 1.5 Przegląd diffu: logi zawierają tylko `name`/`status`/`code`, bez `message`, emaila i ciasteczek
+- [x] 1.5 Przegląd diffu: logi zawierają tylko `name`/`status`/`code`, bez `message`, emaila i ciasteczek — e0037a2
 
 ### Phase 2: Potwierdzenie
 
 #### Automated
 
-- [ ] 2.1 Raport weryfikacyjny istnieje i oznacza G1 jako `fixed`
+- [x] 2.1 Raport weryfikacyjny istnieje i oznacza G1 jako `fixed`
 
 #### Manual
 
-- [ ] 2.2 Lokalnie: po `npx supabase stop` odświeżenie `/generate` daje 503 z komunikatem, a terminal pokazuje `auth: getUser failed`
+- [x] 2.2 Lokalnie: po `npx supabase stop` odświeżenie `/generate` daje 503 z komunikatem, a terminal pokazuje `auth: getUser failed`
