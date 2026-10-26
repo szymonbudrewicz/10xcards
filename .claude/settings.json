@@ -25,5 +25,18 @@
     "deny": [
       "Bash(rm -rf *)"
     ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel 2>/dev/null || echo \"$CLAUDE_PROJECT_DIR\")/.claude/hooks/end-of-turn.mjs\"",
+            "timeout": 300
+          }
+        ]
+      }
+    ]
   }
 }
