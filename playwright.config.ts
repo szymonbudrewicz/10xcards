@@ -13,6 +13,9 @@ if (existsSync(E2E_ENV_FILE)) process.loadEnvFile(E2E_ENV_FILE);
 const PORT = Number(process.env.E2E_PORT ?? 4321);
 const baseURL = `http://localhost:${PORT}`;
 
+// Local OpenRouter mock (scripts/mock-openrouter.mjs). Must match OPENROUTER_BASE_URL in .dev.vars.e2e.
+const MOCK_PORT = 4399;
+
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
@@ -33,19 +36,29 @@ export default defineConfig({
       dependencies: ["setup"],
     },
   ],
-  webServer: {
-    // Production-like build + preview on the Workers runtime, on the port above.
-    command: `npm run build && npm run preview -- --port ${PORT}`,
-    url: baseURL,
-    reuseExistingServer: !process.env.CI,
-    timeout: 180_000,
-    env: {
-      // The Cloudflare adapter reads .dev.vars.<CLOUDFLARE_ENV> instead of .dev.vars,
-      // at build time (copied into dist/server) and in preview.
-      CLOUDFLARE_ENV: "e2e",
-      // Astro 7 moves `astro preview` into a background daemon when it detects an agent;
-      // keep it in the foreground so Playwright owns the server.
-      ASTRO_PREVIEW_BACKGROUND: "1",
+  webServer: [
+    {
+      // The app calls OpenRouter server-side, so page.route() cannot catch it: the app calls
+      // this local mock instead (OPENROUTER_BASE_URL in .dev.vars.e2e points at it).
+      command: "node scripts/mock-openrouter.mjs",
+      env: { MOCK_OPENROUTER_PORT: String(MOCK_PORT) },
+      url: `http://127.0.0.1:${MOCK_PORT}/health`,
+      reuseExistingServer: !process.env.CI,
     },
-  },
+    {
+      // Production-like build + preview on the Workers runtime, on the port above.
+      command: `npm run build && npm run preview -- --port ${PORT}`,
+      url: baseURL,
+      reuseExistingServer: !process.env.CI,
+      timeout: 180_000,
+      env: {
+        // The Cloudflare adapter reads .dev.vars.<CLOUDFLARE_ENV> instead of .dev.vars,
+        // at build time (copied into dist/server) and in preview.
+        CLOUDFLARE_ENV: "e2e",
+        // Astro 7 moves `astro preview` into a background daemon when it detects an agent;
+        // keep it in the foreground so Playwright owns the server.
+        ASTRO_PREVIEW_BACKGROUND: "1",
+      },
+    },
+  ],
 });
