@@ -72,26 +72,3 @@ each to your tool's idiom:
 
 If you work on a non-Playwright stack, write these mappings into your seed test
 and your E2E prompts so the agent produces idiomatic, stable tests for your tool.
-
-## Project conventions (10xCards)
-
-Local additions for this repo, on top of the rules above. Keep them when syncing the skill.
-
-- **Env and backend.** E2E reads `.dev.vars.e2e` (local Supabase from `npx supabase start`,
-  `E2E_USERNAME` / `E2E_PASSWORD`). The `webServer` sets `CLOUDFLARE_ENV=e2e`, so the
-  Cloudflare adapter reads that file instead of `.dev.vars`, which points at production.
-  Never point an E2E run at `.dev.vars`.
-- **AI is mocked server-side** by `scripts/mock-openrouter.mjs` on `127.0.0.1:4399`
-  (`OPENROUTER_BASE_URL` in `.dev.vars.e2e`). Import `MOCK_PROPOSALS` and
-  `MOCK_AI_ERROR_MARKER` from it instead of copying the values; a source text containing
-  the marker makes the AI call fail. `page.route()` cannot intercept this call.
-- **Locator names come from the snapshot, in the view's language:** app views are Polish
-  ("Generuj", "Tekst do nauki"), the auth views are English ("Sign in", "Email").
-- **Requests from the test (`page.request`, cleanup) need an `Origin: <baseURL>` header**
-  on POST/PATCH/DELETE: Astro's origin check answers 403 without it.
-- **Never sign the shared test user out** in a spec: Supabase sign-out can revoke the
-  session saved in `playwright/.auth/user.json` that every other spec loads.
-- **Files:** specs are `tests/e2e/*.spec.ts` (Vitest only collects `tests/**/*.test.ts`);
-  nothing under `src/pages/` (Astro turns every file there into a route).
-- **Privacy:** pasted source text is never logged or stored — a mock or helper must not
-  print request bodies.

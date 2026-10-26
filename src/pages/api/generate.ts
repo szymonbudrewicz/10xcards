@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { z } from "zod";
 import { OPENROUTER_API_KEY, OPENROUTER_BASE_URL } from "astro:env/server";
 import { jsonError, jsonOk } from "@/lib/api-response";
+import { AUTH_UNAVAILABLE_MESSAGE } from "@/lib/auth-session";
 import { CardGenerationError, generateCardProposals } from "@/lib/services/card-generation";
 import { MAX_TEXT_LENGTH, type GenerateProposalsResponse } from "@/types";
 
@@ -12,6 +13,10 @@ const requestSchema = z.object({ text: z.string() });
 
 export const POST: APIRoute = async (context) => {
   // Session first, before reading the body, so an anonymous request never reaches the AI.
+  // An auth outage is not a missing session: 503, not 401 (the middleware already logged it).
+  if (context.locals.authUnavailable) {
+    return jsonError(503, "auth_unavailable", AUTH_UNAVAILABLE_MESSAGE);
+  }
   if (!context.locals.user) {
     return jsonError(401, "unauthorized", "Zaloguj się, aby generować fiszki.");
   }

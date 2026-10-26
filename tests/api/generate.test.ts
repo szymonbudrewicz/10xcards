@@ -44,6 +44,22 @@ describe("POST /api/generate — session (risk #5)", () => {
   });
 });
 
+describe("POST /api/generate — Supabase Auth outage (audit G1)", () => {
+  it("answers 503 auth_unavailable instead of 401 and never calls the AI provider", async () => {
+    const fetchSpy = stubFetch();
+
+    const response = await POST(
+      apiContext({ user: null, authUnavailable: true, body: { text: "Fotosynteza zachodzi w chloroplastach." } }),
+    );
+    const body = (await response.json()) as ApiError;
+
+    expect(response.status).toBe(503);
+    expect(body.error.code).toBe("auth_unavailable");
+    expect(body.error.message.trim()).not.toBe("");
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+});
+
 describe("POST /api/generate — input validation (risks #4, #5)", () => {
   it.each([
     { name: "empty text", body: { text: "" }, code: "text_empty" },

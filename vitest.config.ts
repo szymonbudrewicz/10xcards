@@ -8,6 +8,7 @@ export default defineConfig({
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
       "astro:env/server": fileURLToPath(new URL("./tests/stubs/astro-env-server.ts", import.meta.url)),
+      "astro:middleware": fileURLToPath(new URL("./tests/stubs/astro-middleware.ts", import.meta.url)),
     },
   },
   test: {
