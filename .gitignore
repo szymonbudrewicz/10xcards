@@ -32,3 +32,12 @@ pnpm-debug.log*
 # Stryker (mutation testing, run ad hoc)
 reports/
 .stryker-tmp/
+
+# Playwright
+playwright/.auth/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+# E2E env for the local Supabase stack (holds E2E_USERNAME / E2E_PASSWORD)
+.dev.vars.e2e
