@@ -53,6 +53,10 @@ jobs:
         run: |
           source supabase.env
           SUPABASE_URL="$API_URL" SUPABASE_KEY="$ANON_KEY" npm run isolation
+      - name: Run integration tests against local Supabase
+        run: |
+          source supabase.env
+          SUPABASE_URL="$API_URL" SUPABASE_KEY="$ANON_KEY" npm run test:integration
       - run: npm run build
       - name: Run smoke test against production preview
         run: |

@@ -1,5 +1,5 @@
 import { fileURLToPath } from "node:url";
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 
 // Plain Vite config on purpose: Astro's getViteConfig would load the Cloudflare adapter (workerd).
 // Tests live in tests/, never in src/pages/ (Astro turns every file there into a route).
@@ -14,5 +14,7 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["tests/**/*.test.ts"],
+    // Integration tests need a local Supabase; they run through vitest.integration.config.ts (npm run test:integration).
+    exclude: [...configDefaults.exclude, "tests/integration/**"],
   },
 });
