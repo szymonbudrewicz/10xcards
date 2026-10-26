@@ -6,6 +6,8 @@ export const SIGNED_IN_USER = { id: "00000000-0000-4000-8000-000000000001", emai
 
 interface ContextOptions {
   user: typeof SIGNED_IN_USER | null;
+  /** Set by the middleware when Supabase Auth could not be reached (default false). */
+  authUnavailable?: boolean;
   /** Sent as JSON. */
   body?: unknown;
   /** Sent as-is (for malformed bodies). Wins over `body`. */
@@ -13,13 +15,13 @@ interface ContextOptions {
 }
 
 /** Minimal APIContext for calling an endpoint handler directly: the handler reads only `locals` and `request`. */
-export function apiContext({ user, body, rawBody }: ContextOptions): APIContext {
+export function apiContext({ user, authUnavailable = false, body, rawBody }: ContextOptions): APIContext {
   const request = new Request("http://localhost/api/generate", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: rawBody ?? JSON.stringify(body),
   });
-  return { locals: { user }, request } as unknown as APIContext;
+  return { locals: { user, authUnavailable }, request } as unknown as APIContext;
 }
 
 /** Response body OpenRouter sends for a chat completion whose content is `content`. */
