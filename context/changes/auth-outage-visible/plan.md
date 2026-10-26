@@ -196,8 +196,8 @@ Udowodnić, że G1 jest zamknięte: ponowny audyt w trybie weryfikacji i ręczna
 
 #### Automated
 
-- [x] 2.1 Raport weryfikacyjny istnieje i oznacza G1 jako `fixed`
+- [x] 2.1 Raport weryfikacyjny istnieje i oznacza G1 jako `fixed` — 556dd6f
 
 #### Manual
 
-- [x] 2.2 Lokalnie: po `npx supabase stop` odświeżenie `/generate` daje 503 z komunikatem, a terminal pokazuje `auth: getUser failed`
+- [x] 2.2 Lokalnie: po `npx supabase stop` odświeżenie `/generate` daje 503 z komunikatem, a terminal pokazuje `auth: getUser failed` — 556dd6f

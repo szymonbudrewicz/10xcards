@@ -1,7 +1,7 @@
 ---
 change_id: auth-outage-visible
 title: Awaria Supabase widoczna w logach i jako 503 zamiast wylogowania
-status: implementing
+status: implemented
 created: 2026-10-26
 updated: 2026-10-26
 archived_at: null
