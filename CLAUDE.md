@@ -2,7 +2,7 @@
 
 ## Project
 
-**10xCards** — AI-generated flashcards with spaced repetition (PRD: `@context/foundation/prd.md`, stack: `@context/foundation/tech-stack.md`, shaping notes: `@context/foundation/shape-notes.md`). Auth and AI card-proposal generation (`/generate`, `POST /api/generate`) exist; saving cards, card management and review sessions are not yet implemented.
+**10xCards** — AI-generated flashcards with spaced repetition (PRD: `@context/foundation/prd.md`, stack: `@context/foundation/tech-stack.md`, shaping notes: `@context/foundation/shape-notes.md`). Auth, AI card-proposal generation (`/generate`, `POST /api/generate`) and accepting proposals as saved cards (`POST /api/cards` → `accept_proposal()`, counters in `generations`; editor `src/components/cards/CardEditor.tsx`, shared with card management) exist; managing saved cards and review sessions are not yet implemented.
 
 Docs under `context/` are written in Polish; `context/archive/` is immutable — never write there (open a new change with `/10x-new` instead). `AGENTS.md` just points at this file.
 

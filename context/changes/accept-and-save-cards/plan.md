@@ -453,30 +453,30 @@ Migracja tylko dodaje: nową tabelę i dwie nullowalne kolumny w `cards`, więc 
 
 #### Automated
 
-- [x] 2.1 Testy jednostkowe przechodzą: `npm test`
-- [x] 2.2 Testy integracyjne nadal przechodzą: `npm run test:integration`
-- [x] 2.3 Lint i typy: `npm run lint`, `npx astro check`
+- [x] 2.1 Testy jednostkowe przechodzą: `npm test` — 29535ec
+- [x] 2.2 Testy integracyjne nadal przechodzą: `npm run test:integration` — 29535ec
+- [x] 2.3 Lint i typy: `npm run lint`, `npx astro check` — 29535ec
 
 #### Manual
 
-- [x] 2.4 Przy `npm run dev` na lokalnym Supabase `POST /api/generate` zwraca `generationId`, a w tabeli `generations` jest wiersz z `proposed_count` równym liczbie propozycji
-- [x] 2.5 `POST /api/cards` wysłany dwa razy (np. z DevTools) daje 201, potem 200 i jedną fiszkę
+- [x] 2.4 Przy `npm run dev` na lokalnym Supabase `POST /api/generate` zwraca `generationId`, a w tabeli `generations` jest wiersz z `proposed_count` równym liczbie propozycji — 29535ec
+- [x] 2.5 `POST /api/cards` wysłany dwa razy (np. z DevTools) daje 201, potem 200 i jedną fiszkę — 29535ec
 
 ### Phase 3: UI — CardEditor i akcje na propozycjach
 
 #### Automated
 
-- [ ] 3.1 `npm run lint`, `npm run lint:ui`, `npx astro check`
-- [ ] 3.2 `npm test` przechodzi
-- [ ] 3.3 `npm run build` przechodzi (przy zatrzymanym `astro dev`)
+- [x] 3.1 `npm run lint`, `npm run lint:ui`, `npx astro check`
+- [x] 3.2 `npm test` przechodzi
+- [x] 3.3 `npm run build` przechodzi (przy zatrzymanym `astro dev`)
 
 #### Manual
 
-- [ ] 3.4 Na `/generate` (lokalny Supabase, mock AI): „Akceptuj” zapisuje fiszkę i pokazuje „Zapisano”; „Popraw” → zmiana → „Zapisz” zapisuje poprawioną treść; „Usuń” znika z listy
-- [ ] 3.5 Pusta treść w edytorze blokuje zapis z komunikatem po polsku
-- [ ] 3.6 Przy zatrzymanym Supabase błąd zapisu zostawia propozycję (i otwarty edytor) z komunikatem i „Spróbuj ponownie”, a po wznowieniu ponowienie działa
-- [ ] 3.7 Szybkie podwójne kliknięcie „Akceptuj” daje jedną fiszkę i `accepted = 1`
-- [ ] 3.8 Widok wygląda spójnie z resztą w motywie `.dark`, a fokus z klawiatury jest widoczny
+- [x] 3.4 Na `/generate` (lokalny Supabase, mock AI): „Akceptuj” zapisuje fiszkę i pokazuje „Zapisano”; „Popraw” → zmiana → „Zapisz” zapisuje poprawioną treść; „Usuń” znika z listy
+- [x] 3.5 Pusta treść w edytorze blokuje zapis z komunikatem po polsku
+- [x] 3.6 Przy zatrzymanym Supabase błąd zapisu zostawia propozycję (i otwarty edytor) z komunikatem i „Spróbuj ponownie”, a po wznowieniu ponowienie działa
+- [x] 3.7 Szybkie podwójne kliknięcie „Akceptuj” daje jedną fiszkę i `accepted = 1`
+- [x] 3.8 Widok wygląda spójnie z resztą w motywie `.dark`, a fokus z klawiatury jest widoczny
 
 ### Phase 4: E2E — akceptacja w przeglądarce i Playwright w CI
 
