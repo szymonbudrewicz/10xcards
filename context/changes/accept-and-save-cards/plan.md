@@ -466,25 +466,25 @@ Migracja tylko dodaje: nową tabelę i dwie nullowalne kolumny w `cards`, więc 
 
 #### Automated
 
-- [x] 3.1 `npm run lint`, `npm run lint:ui`, `npx astro check`
-- [x] 3.2 `npm test` przechodzi
-- [x] 3.3 `npm run build` przechodzi (przy zatrzymanym `astro dev`)
+- [x] 3.1 `npm run lint`, `npm run lint:ui`, `npx astro check` — c085a30
+- [x] 3.2 `npm test` przechodzi — c085a30
+- [x] 3.3 `npm run build` przechodzi (przy zatrzymanym `astro dev`) — c085a30
 
 #### Manual
 
-- [x] 3.4 Na `/generate` (lokalny Supabase, mock AI): „Akceptuj” zapisuje fiszkę i pokazuje „Zapisano”; „Popraw” → zmiana → „Zapisz” zapisuje poprawioną treść; „Usuń” znika z listy
-- [x] 3.5 Pusta treść w edytorze blokuje zapis z komunikatem po polsku
-- [x] 3.6 Przy zatrzymanym Supabase błąd zapisu zostawia propozycję (i otwarty edytor) z komunikatem i „Spróbuj ponownie”, a po wznowieniu ponowienie działa
-- [x] 3.7 Szybkie podwójne kliknięcie „Akceptuj” daje jedną fiszkę i `accepted = 1`
-- [x] 3.8 Widok wygląda spójnie z resztą w motywie `.dark`, a fokus z klawiatury jest widoczny
+- [x] 3.4 Na `/generate` (lokalny Supabase, mock AI): „Akceptuj” zapisuje fiszkę i pokazuje „Zapisano”; „Popraw” → zmiana → „Zapisz” zapisuje poprawioną treść; „Usuń” znika z listy — c085a30
+- [x] 3.5 Pusta treść w edytorze blokuje zapis z komunikatem po polsku — c085a30
+- [x] 3.6 Przy zatrzymanym Supabase błąd zapisu zostawia propozycję (i otwarty edytor) z komunikatem i „Spróbuj ponownie”, a po wznowieniu ponowienie działa — c085a30
+- [x] 3.7 Szybkie podwójne kliknięcie „Akceptuj” daje jedną fiszkę i `accepted = 1` — c085a30
+- [x] 3.8 Widok wygląda spójnie z resztą w motywie `.dark`, a fokus z klawiatury jest widoczny — c085a30
 
 ### Phase 4: E2E — akceptacja w przeglądarce i Playwright w CI
 
 #### Automated
 
-- [ ] 4.1 Lokalnie `npx playwright test` przechodzi (wszystkie spece, w tym nowy)
+- [x] 4.1 Lokalnie `npx playwright test` przechodzi (wszystkie spece, w tym nowy)
 - [ ] 4.2 W CI job `smoke` uruchamia Playwright i przechodzi na PR
-- [ ] 4.3 `npm run lint`, `npx astro check`
+- [x] 4.3 `npm run lint`, `npx astro check`
 
 #### Manual
 
