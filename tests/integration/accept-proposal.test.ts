@@ -245,3 +245,22 @@ describe("accept_proposal — rejected calls leave the database unchanged", () =
     expect(await allCardsOf(a)).toBe(aCardsBefore);
   });
 });
+
+describe("accept_proposal — accepted never exceeds proposed (risk #1, FR-012)", () => {
+  it("accept → delete the card → accept again at the ceiling fails with generations_accepted_count_range", async () => {
+    const generationId = await newGeneration(a, 1);
+    const card = await acceptOk(a, generationId, 0, "Przód", "Tył");
+    // Deleting a card is allowed over REST and frees the (generation_id, proposal_index) slot.
+    const deleted = await a.from("cards").delete().eq("id", card.id).select("id");
+    if (deleted.error) throw new Error(`delete card failed: ${deleted.error.message}`);
+    expect(deleted.data).toHaveLength(1);
+
+    const { data, error } = await accept(a, generationId, 0, "Przód ponownie", "Tył ponownie");
+
+    expect(data).toBeNull();
+    expect(error?.code).toBe("23514");
+    // The endpoint tells this apart from a blank card by the constraint name in the PostgREST message.
+    expect(error?.message).toContain('violates check constraint "generations_accepted_count_range"');
+    expect(await stateOf(a, generationId)).toEqual({ proposedCount: 1, acceptedCount: 1, cards: [] });
+  });
+});

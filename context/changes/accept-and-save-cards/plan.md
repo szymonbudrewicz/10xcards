@@ -437,30 +437,30 @@ Migracja tylko dodaje: nową tabelę i dwie nullowalne kolumny w `cards`, więc 
 
 #### Automated
 
-- [x] 1.1 Migracja aplikuje się na czystej bazie: `npx supabase db reset`
-- [x] 1.2 Skrypt izolacji przechodzi z nowymi asercjami: `npm run isolation`
-- [x] 1.3 Testy integracyjne przechodzą: `npm run test:integration`
-- [x] 1.4 `npm test` nadal przechodzi bez uruchomionej bazy (nie zbiera `tests/integration/**`)
-- [x] 1.5 Lint i typy przechodzą: `npm run lint`, `npx astro check`
+- [x] 1.1 Migracja aplikuje się na czystej bazie: `npx supabase db reset` — a7e8e69
+- [x] 1.2 Skrypt izolacji przechodzi z nowymi asercjami: `npm run isolation` — a7e8e69
+- [x] 1.3 Testy integracyjne przechodzą: `npm run test:integration` — a7e8e69
+- [x] 1.4 `npm test` nadal przechodzi bez uruchomionej bazy (nie zbiera `tests/integration/**`) — a7e8e69
+- [x] 1.5 Lint i typy przechodzą: `npm run lint`, `npx astro check` — a7e8e69
 
 #### Manual
 
-- [x] 1.6 W lokalnym Studio/psql `generations` ma RLS, granty tylko `select, insert` dla `authenticated` i żadnych dla `anon`; funkcja ma `security definer` i `search_path=''`
+- [x] 1.6 W lokalnym Studio/psql `generations` ma RLS, granty tylko `select, insert` dla `authenticated` i żadnych dla `anon`; funkcja ma `security definer` i `search_path=''` — a7e8e69
 - [ ] 1.7 Job `smoke` w CI wykonuje `test:integration` i przechodzi
-- [x] 1.8 Testy integracyjne zweryfikowane przez psucie (test-plan §6.2): przed psuciem działająca migracja jest dodana do indeksu (`git add <plik>`, bo to nowy plik i `git checkout` bez tego jej nie przywróci); usunięcie `on conflict do nothing` albo warunku inkrementu (licznik rośnie bezwarunkowo) w funkcji → po `npx supabase db reset` pada test idempotencji; usunięcie sprawdzenia zakresu indeksu → pada test zakresu; potem przywrócenie wersji z indeksu (`git checkout -- <plik>`) albo ręczne cofnięcie, potwierdzone pustym `git diff -- <plik>`, i ponowny `db reset`
+- [x] 1.8 Testy integracyjne zweryfikowane przez psucie (test-plan §6.2): przed psuciem działająca migracja jest dodana do indeksu (`git add <plik>`, bo to nowy plik i `git checkout` bez tego jej nie przywróci); usunięcie `on conflict do nothing` albo warunku inkrementu (licznik rośnie bezwarunkowo) w funkcji → po `npx supabase db reset` pada test idempotencji; usunięcie sprawdzenia zakresu indeksu → pada test zakresu; potem przywrócenie wersji z indeksu (`git checkout -- <plik>`) albo ręczne cofnięcie, potwierdzone pustym `git diff -- <plik>`, i ponowny `db reset` — a7e8e69
 
 ### Phase 2: API — zapis generowania i endpoint akceptacji
 
 #### Automated
 
-- [ ] 2.1 Testy jednostkowe przechodzą: `npm test`
-- [ ] 2.2 Testy integracyjne nadal przechodzą: `npm run test:integration`
-- [ ] 2.3 Lint i typy: `npm run lint`, `npx astro check`
+- [x] 2.1 Testy jednostkowe przechodzą: `npm test`
+- [x] 2.2 Testy integracyjne nadal przechodzą: `npm run test:integration`
+- [x] 2.3 Lint i typy: `npm run lint`, `npx astro check`
 
 #### Manual
 
-- [ ] 2.4 Przy `npm run dev` na lokalnym Supabase `POST /api/generate` zwraca `generationId`, a w tabeli `generations` jest wiersz z `proposed_count` równym liczbie propozycji
-- [ ] 2.5 `POST /api/cards` wysłany dwa razy (np. z DevTools) daje 201, potem 200 i jedną fiszkę
+- [x] 2.4 Przy `npm run dev` na lokalnym Supabase `POST /api/generate` zwraca `generationId`, a w tabeli `generations` jest wiersz z `proposed_count` równym liczbie propozycji
+- [x] 2.5 `POST /api/cards` wysłany dwa razy (np. z DevTools) daje 201, potem 200 i jedną fiszkę
 
 ### Phase 3: UI — CardEditor i akcje na propozycjach
 
