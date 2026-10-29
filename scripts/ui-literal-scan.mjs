@@ -21,6 +21,9 @@ const CLEANED = [
   "src/components/generate/GenerateForm.tsx",
   "src/components/generate/ProposalItem.tsx",
   "src/components/cards/CardEditor.tsx",
+  "src/pages/cards.astro",
+  "src/components/cards/SavedCardList.tsx",
+  "src/components/cards/SavedCardItem.tsx",
 ];
 
 const PALETTE =

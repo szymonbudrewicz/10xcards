@@ -325,34 +325,34 @@ Migracja zmienia tylko uprawnienia, bez danych. Wycofanie: nowa migracja z `gran
 
 #### Automated
 
-- [x] 1.1 Migracja aplikuje się na czystej bazie: `npx supabase db reset`
-- [x] 1.2 Skrypt izolacji nadal przechodzi: `npm run isolation`
-- [x] 1.3 Testy integracyjne przechodzą (stare i nowe): `npm run test:integration`
-- [x] 1.4 Testy jednostkowe przechodzą: `npm test`
-- [x] 1.5 Lint i typy: `npm run lint`, `npx astro check`
+- [x] 1.1 Migracja aplikuje się na czystej bazie: `npx supabase db reset` — 785f7e7
+- [x] 1.2 Skrypt izolacji nadal przechodzi: `npm run isolation` — 785f7e7
+- [x] 1.3 Testy integracyjne przechodzą (stare i nowe): `npm run test:integration` — 785f7e7
+- [x] 1.4 Testy jednostkowe przechodzą: `npm test` — 785f7e7
+- [x] 1.5 Lint i typy: `npm run lint`, `npx astro check` — 785f7e7
 
 #### Manual
 
-- [x] 1.6 W psql/Studio `\dp public.cards` pokazuje dla `authenticated` `select, insert, delete` na tabeli i `update` tylko na `front`, `back`; `anon` bez uprawnień
-- [x] 1.7 Testy integracyjne zweryfikowane przez psucie: tymczasowe przywrócenie pełnego `grant update on public.cards` (po `git add` migracji) → po `db reset` pada test `42501`; tymczasowe dodanie `generation_id` do `update` w `updateCard` → pada test „tylko treść”; potem `git checkout -- <plik>`, pusty `git diff`, ponowny `db reset`
-- [x] 1.8 Ręczny `PATCH`/`DELETE` przez DevTools przy `npm run dev` daje 200/204, a powtórny DELETE 404
+- [x] 1.6 W psql/Studio `\dp public.cards` pokazuje dla `authenticated` `select, insert, delete` na tabeli i `update` tylko na `front`, `back`; `anon` bez uprawnień — 785f7e7
+- [x] 1.7 Testy integracyjne zweryfikowane przez psucie: tymczasowe przywrócenie pełnego `grant update on public.cards` (po `git add` migracji) → po `db reset` pada test `42501`; tymczasowe dodanie `generation_id` do `update` w `updateCard` → pada test „tylko treść”; potem `git checkout -- <plik>`, pusty `git diff`, ponowny `db reset` — 785f7e7
+- [x] 1.8 Ręczny `PATCH`/`DELETE` przez DevTools przy `npm run dev` daje 200/204, a powtórny DELETE 404 — 785f7e7
 
 ### Phase 2: UI — strona `/cards` z edycją i usuwaniem
 
 #### Automated
 
-- [ ] 2.1 `npm run lint`, `npm run lint:ui`, `npx astro check`
-- [ ] 2.2 `npm test` przechodzi
-- [ ] 2.3 `npm run build` przechodzi (przy zatrzymanym `astro dev`)
+- [x] 2.1 `npm run lint`, `npm run lint:ui`, `npx astro check`
+- [x] 2.2 `npm test` przechodzi
+- [x] 2.3 `npm run build` przechodzi (przy zatrzymanym `astro dev`)
 
 #### Manual
 
-- [ ] 2.4 Na `/cards` (lokalny Supabase) lista pokazuje fiszki od najnowszej; bez fiszek widać stan pusty z linkiem do `/generate`
-- [ ] 2.5 „Edytuj” → zmiana → „Zapisz” pokazuje nową treść także po odświeżeniu; pusta treść blokuje zapis z polskim komunikatem
-- [ ] 2.6 „Usuń” otwiera okno; „Anuluj” nic nie zmienia; „Usuń” usuwa fiszkę także po odświeżeniu, a fokus trafia na nagłówek listy
-- [ ] 2.7 Fiszka usunięta w drugiej karcie: edycja pokazuje komunikat i znika po „Anuluj”, usunięcie po prostu ją zdejmuje
-- [ ] 2.8 Przy zatrzymanym Supabase `/cards` pokazuje komunikat błędu (status 500), a błąd zapisu/usunięcia zostawia fiszkę z komunikatem
-- [ ] 2.9 Widok spójny z resztą w motywie `.dark`, fokus z klawiatury widoczny, okno zamyka się Escape
+- [x] 2.4 Na `/cards` (lokalny Supabase) lista pokazuje fiszki od najnowszej; bez fiszek widać stan pusty z linkiem do `/generate`
+- [x] 2.5 „Edytuj” → zmiana → „Zapisz” pokazuje nową treść także po odświeżeniu; pusta treść blokuje zapis z polskim komunikatem
+- [x] 2.6 „Usuń” otwiera okno; „Anuluj” nic nie zmienia; „Usuń” usuwa fiszkę także po odświeżeniu, a fokus trafia na nagłówek listy
+- [x] 2.7 Fiszka usunięta w drugiej karcie: edycja pokazuje komunikat i znika po „Anuluj”, usunięcie po prostu ją zdejmuje
+- [x] 2.8 Przy zatrzymanym Supabase `/cards` pokazuje komunikat błędu (status 500), a błąd zapisu/usunięcia zostawia fiszkę z komunikatem
+- [x] 2.9 Widok spójny z resztą w motywie `.dark`, fokus z klawiatury widoczny, okno zamyka się Escape
 
 ### Phase 3: E2E — edycja i usunięcie w przeglądarce
 
