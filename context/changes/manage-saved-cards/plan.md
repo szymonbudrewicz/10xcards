@@ -341,18 +341,18 @@ Migracja zmienia tylko uprawnienia, bez danych. Wycofanie: nowa migracja z `gran
 
 #### Automated
 
-- [x] 2.1 `npm run lint`, `npm run lint:ui`, `npx astro check`
-- [x] 2.2 `npm test` przechodzi
-- [x] 2.3 `npm run build` przechodzi (przy zatrzymanym `astro dev`)
+- [x] 2.1 `npm run lint`, `npm run lint:ui`, `npx astro check` — dc9d568
+- [x] 2.2 `npm test` przechodzi — dc9d568
+- [x] 2.3 `npm run build` przechodzi (przy zatrzymanym `astro dev`) — dc9d568
 
 #### Manual
 
-- [x] 2.4 Na `/cards` (lokalny Supabase) lista pokazuje fiszki od najnowszej; bez fiszek widać stan pusty z linkiem do `/generate`
-- [x] 2.5 „Edytuj” → zmiana → „Zapisz” pokazuje nową treść także po odświeżeniu; pusta treść blokuje zapis z polskim komunikatem
-- [x] 2.6 „Usuń” otwiera okno; „Anuluj” nic nie zmienia; „Usuń” usuwa fiszkę także po odświeżeniu, a fokus trafia na nagłówek listy
-- [x] 2.7 Fiszka usunięta w drugiej karcie: edycja pokazuje komunikat i znika po „Anuluj”, usunięcie po prostu ją zdejmuje
-- [x] 2.8 Przy zatrzymanym Supabase `/cards` pokazuje komunikat błędu (status 500), a błąd zapisu/usunięcia zostawia fiszkę z komunikatem
-- [x] 2.9 Widok spójny z resztą w motywie `.dark`, fokus z klawiatury widoczny, okno zamyka się Escape
+- [x] 2.4 Na `/cards` (lokalny Supabase) lista pokazuje fiszki od najnowszej; bez fiszek widać stan pusty z linkiem do `/generate` — dc9d568
+- [x] 2.5 „Edytuj” → zmiana → „Zapisz” pokazuje nową treść także po odświeżeniu; pusta treść blokuje zapis z polskim komunikatem — dc9d568
+- [x] 2.6 „Usuń” otwiera okno; „Anuluj” nic nie zmienia; „Usuń” usuwa fiszkę także po odświeżeniu, a fokus trafia na nagłówek listy — dc9d568
+- [x] 2.7 Fiszka usunięta w drugiej karcie: edycja pokazuje komunikat i znika po „Anuluj”, usunięcie po prostu ją zdejmuje — dc9d568
+- [x] 2.8 Przy zatrzymanym Supabase `/cards` pokazuje komunikat błędu (status 500), a błąd zapisu/usunięcia zostawia fiszkę z komunikatem — dc9d568
+- [x] 2.9 Widok spójny z resztą w motywie `.dark`, fokus z klawiatury widoczny, okno zamyka się Escape — dc9d568
 
 ### Phase 3: E2E — edycja i usunięcie w przeglądarce
 
@@ -360,7 +360,7 @@ Migracja zmienia tylko uprawnienia, bez danych. Wycofanie: nowa migracja z `gran
 
 - [ ] 3.1 Lokalnie `npx playwright test --workers=1` przechodzi (wszystkie spece, w tym nowy)
 - [ ] 3.2 W CI job `smoke` przechodzi na PR z nowym specem
-- [ ] 3.3 `npm run lint`, `npx astro check`
+- [x] 3.3 `npm run lint`, `npx astro check`
 
 #### Manual
 

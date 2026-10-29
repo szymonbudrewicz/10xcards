@@ -15,6 +15,8 @@ const LOOPBACK_HOSTS = ["127.0.0.1", "localhost"];
 export interface SupabaseRest {
   /** GET /rest/v1/<pathAndQuery>; throws on a non-2xx answer. */
   select<T>(pathAndQuery: string): Promise<T[]>;
+  /** POST /rest/v1/<table> with `return=representation`; returns the inserted rows, throws on a non-2xx answer. */
+  insert<T>(table: string, row: Record<string, unknown>): Promise<T[]>;
   /** DELETE /rest/v1/<pathAndQuery>; throws on a non-2xx answer. */
   remove(pathAndQuery: string): Promise<void>;
 }
@@ -53,6 +55,15 @@ export async function signInWithPassword(email: string, password: string): Promi
     async select<T>(pathAndQuery: string) {
       const response = await fetch(`${base}/rest/v1/${pathAndQuery}`, { headers });
       if (!response.ok) throw await failure(`GET ${pathAndQuery}`, response);
+      return (await response.json()) as T[];
+    },
+    async insert<T>(table: string, row: Record<string, unknown>) {
+      const response = await fetch(`${base}/rest/v1/${table}`, {
+        method: "POST",
+        headers: { ...headers, "Content-Type": "application/json", Prefer: "return=representation" },
+        body: JSON.stringify(row),
+      });
+      if (!response.ok) throw await failure(`POST ${table}`, response);
       return (await response.json()) as T[];
     },
     async remove(pathAndQuery: string) {
