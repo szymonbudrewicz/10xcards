@@ -42,6 +42,16 @@ export interface AcceptProposalResponse {
   created: boolean;
 }
 
+/** PATCH /api/cards/[id]: new content of a saved card; nothing else is editable. */
+export interface UpdateCardRequest {
+  front: string;
+  back: string;
+}
+
+export interface UpdateCardResponse {
+  card: SavedCard;
+}
+
 export interface ApiError {
   error: {
     code: string;

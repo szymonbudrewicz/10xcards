@@ -1,12 +1,19 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { AcceptProposalResponse } from "@/types";
+import type { AcceptProposalResponse, SavedCard, UpdateCardRequest } from "@/types";
 
 // Database calls for cards and generations. Privacy: errors carry only our code and the
 // SQLSTATE/PostgREST code as `cause` — never the card content, the error message or its details
 // (PostgREST puts the failing row, i.e. the card content, into `details`).
 
 export type CardSaveErrorCode =
-  "generation_not_saved" | "generation_not_found" | "proposal_out_of_range" | "card_blank" | "card_not_saved";
+  | "generation_not_saved"
+  | "generation_not_found"
+  | "proposal_out_of_range"
+  | "card_blank"
+  | "card_not_saved"
+  | "card_not_found"
+  | "card_not_deleted"
+  | "cards_not_loaded";
 
 export class CardSaveError extends Error {
   readonly code: CardSaveErrorCode;
@@ -57,21 +64,26 @@ export interface AcceptProposalInput {
 // PostgREST message for a CHECK violation: `new row for relation "cards" violates check constraint "<name>"`.
 const BLANK_CONSTRAINT = /violates check constraint "cards_(front|back)_not_blank"/;
 
+/**
+ * Maps a failed card write (insert through accept_proposal, or update). Only the blank-content constraints
+ * mean "blank card"; any other CHECK (e.g. generations_accepted_count_range) is a save failure.
+ */
+function mapCardWriteError(error: DbError): CardSaveError {
+  if (error.code === "23514") {
+    const match = BLANK_CONSTRAINT.exec(error.message ?? "");
+    if (match) return new CardSaveError("card_blank", error.code, match[1] as "front" | "back");
+  }
+  return new CardSaveError("card_not_saved", error.code);
+}
+
 function mapAcceptError(error: DbError): CardSaveError {
   switch (error.code) {
     case "P0002":
       return new CardSaveError("generation_not_found", error.code);
     case "22023":
       return new CardSaveError("proposal_out_of_range", error.code);
-    case "23514": {
-      // Only the blank-content constraints mean "blank card"; any other CHECK (e.g.
-      // generations_accepted_count_range) is a save failure.
-      const match = BLANK_CONSTRAINT.exec(error.message ?? "");
-      if (match) return new CardSaveError("card_blank", error.code, match[1] as "front" | "back");
-      return new CardSaveError("card_not_saved", error.code);
-    }
     default:
-      return new CardSaveError("card_not_saved", error.code);
+      return mapCardWriteError(error);
   }
 }
 
@@ -123,4 +135,83 @@ export async function acceptProposal(
     card: { id: row.id, front: row.front, back: row.back, createdAt: row.created_at },
     created: row.created,
   };
+}
+
+const CARD_COLUMNS = "id, front, back, created_at";
+
+interface CardRow {
+  id: string;
+  front: string;
+  back: string;
+  created_at: string;
+}
+
+function isCardRow(row: unknown): row is CardRow {
+  const r = row as Partial<CardRow> | null;
+  return (
+    typeof r?.id === "string" &&
+    typeof r.front === "string" &&
+    typeof r.back === "string" &&
+    typeof r.created_at === "string"
+  );
+}
+
+function toSavedCard(row: CardRow): SavedCard {
+  return { id: row.id, front: row.front, back: row.back, createdAt: row.created_at };
+}
+
+/** The session user's cards (RLS), newest first. */
+export async function listCards(supabase: SupabaseClient): Promise<SavedCard[]> {
+  let result: { data: unknown; error: DbError | null };
+  try {
+    result = await supabase
+      .from("cards")
+      .select(CARD_COLUMNS)
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: false });
+  } catch (error) {
+    throw new CardSaveError("cards_not_loaded", thrownCause(error));
+  }
+  if (result.error) throw new CardSaveError("cards_not_loaded", result.error.code);
+  if (!Array.isArray(result.data)) throw new CardSaveError("cards_not_loaded", "unexpected_result");
+  const rows = result.data as unknown[];
+  if (!rows.every(isCardRow)) throw new CardSaveError("cards_not_loaded", "unexpected_result");
+  return rows.map(toSavedCard);
+}
+
+/**
+ * Replaces a card's content. Only front and back are sent (the database grants update on just these two columns).
+ * A missing card and someone else's card (hidden by RLS) are the same `card_not_found`.
+ */
+export async function updateCard(supabase: SupabaseClient, id: string, content: UpdateCardRequest): Promise<SavedCard> {
+  let result: { data: unknown; error: DbError | null };
+  try {
+    result = await supabase
+      .from("cards")
+      .update({ front: content.front, back: content.back })
+      .eq("id", id)
+      .select(CARD_COLUMNS);
+  } catch (error) {
+    throw new CardSaveError("card_not_saved", thrownCause(error));
+  }
+  if (result.error) throw mapCardWriteError(result.error);
+
+  const rows = Array.isArray(result.data) ? (result.data as unknown[]) : [];
+  if (rows.length === 0) throw new CardSaveError("card_not_found", "no_rows");
+  const row = rows.length === 1 ? rows[0] : undefined;
+  if (!isCardRow(row)) throw new CardSaveError("card_not_saved", "unexpected_result");
+  return toSavedCard(row);
+}
+
+/** Deletes a card of the session user; a missing or someone else's card is `card_not_found`. Counters stay as they are. */
+export async function deleteCard(supabase: SupabaseClient, id: string): Promise<void> {
+  let result: { data: unknown; error: DbError | null };
+  try {
+    result = await supabase.from("cards").delete().eq("id", id).select("id");
+  } catch (error) {
+    throw new CardSaveError("card_not_deleted", thrownCause(error));
+  }
+  if (result.error) throw new CardSaveError("card_not_deleted", result.error.code);
+  const rows = Array.isArray(result.data) ? (result.data as unknown[]) : [];
+  if (rows.length === 0) throw new CardSaveError("card_not_found", "no_rows");
 }

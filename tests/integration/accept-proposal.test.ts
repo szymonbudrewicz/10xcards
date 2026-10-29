@@ -5,29 +5,12 @@
 // Needs SUPABASE_URL/SUPABASE_KEY from `npx supabase status -o env` (API_URL, ANON_KEY) and email confirmation
 // disabled. Creates throwaway accounts, so it refuses any non-loopback host and never reads .dev.vars.
 
-import { createClient, type PostgrestError, type SupabaseClient } from "@supabase/supabase-js";
+import type { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
 import { beforeAll, describe, expect, it } from "vitest";
+import { localSupabase, newGeneration, signUp } from "./helpers";
 
-const LOOPBACK_HOSTS = ["127.0.0.1", "localhost"];
-
-function localSupabase(): { url: string; key: string } {
-  const rawUrl = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_KEY;
-  if (!rawUrl || !key)
-    throw new Error("SUPABASE_URL and SUPABASE_KEY must be set in the environment (local Supabase only).");
-  if (/\s/.test(key)) throw new Error("SUPABASE_KEY must be a single key without whitespace.");
-  const parsed = new URL(rawUrl);
-  if (!["http:", "https:"].includes(parsed.protocol))
-    throw new Error("SUPABASE_URL must start with http:// or https://.");
-  if (!LOOPBACK_HOSTS.includes(parsed.hostname)) {
-    throw new Error(
-      `refusing to run against host "${parsed.hostname}": these tests create accounts (local Supabase only).`,
-    );
-  }
-  return { url: parsed.origin, key };
-}
-
-const { url, key } = localSupabase();
+// Fails fast (before any sign up) when the environment is missing or not local.
+localSupabase();
 
 interface AcceptedCard {
   id: string;
@@ -41,32 +24,6 @@ interface GenerationState {
   proposedCount: number;
   acceptedCount: number;
   cards: { front: string; back: string; proposal_index: number }[];
-}
-
-async function signUp(label: string): Promise<SupabaseClient> {
-  const client = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
-  const { data, error } = await client.auth.signUp({
-    email: `accept-${label}-${Date.now()}-${crypto.randomUUID().slice(0, 8)}@example.com`,
-    password: `Acc-${crypto.randomUUID()}`,
-  });
-  if (error || !data.session) {
-    throw new Error(
-      `sign up as ${label} returned no session (${error?.message ?? "no error"}); is email confirmation disabled?`,
-    );
-  }
-  return client;
-}
-
-async function newGeneration(client: SupabaseClient, proposedCount: number): Promise<string> {
-  const { data, error } = await client
-    .from("generations")
-    .insert({ proposed_count: proposedCount })
-    .select("id")
-    .single();
-  if (error) throw new Error(`insert generation failed: ${error.message}`);
-  const id: unknown = data.id;
-  if (typeof id !== "string") throw new Error("insert generation returned no id");
-  return id;
 }
 
 // No generated Database types in this project, so the RPC result is typed here.
