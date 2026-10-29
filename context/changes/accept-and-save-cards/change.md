@@ -1,9 +1,9 @@
 ---
 change_id: accept-and-save-cards
 title: Accept and save cards
-status: implementing
+status: implemented
 created: 2026-10-26
-updated: 2026-10-27
+updated: 2026-10-30
 archived_at: null
 ---
 

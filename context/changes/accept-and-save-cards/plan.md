@@ -446,7 +446,7 @@ Migracja tylko dodaje: nową tabelę i dwie nullowalne kolumny w `cards`, więc 
 #### Manual
 
 - [x] 1.6 W lokalnym Studio/psql `generations` ma RLS, granty tylko `select, insert` dla `authenticated` i żadnych dla `anon`; funkcja ma `security definer` i `search_path=''` — a7e8e69
-- [ ] 1.7 Job `smoke` w CI wykonuje `test:integration` i przechodzi
+- [x] 1.7 Job `smoke` w CI wykonuje `test:integration` i przechodzi — PR #17
 - [x] 1.8 Testy integracyjne zweryfikowane przez psucie (test-plan §6.2): przed psuciem działająca migracja jest dodana do indeksu (`git add <plik>`, bo to nowy plik i `git checkout` bez tego jej nie przywróci); usunięcie `on conflict do nothing` albo warunku inkrementu (licznik rośnie bezwarunkowo) w funkcji → po `npx supabase db reset` pada test idempotencji; usunięcie sprawdzenia zakresu indeksu → pada test zakresu; potem przywrócenie wersji z indeksu (`git checkout -- <plik>`) albo ręczne cofnięcie, potwierdzone pustym `git diff -- <plik>`, i ponowny `db reset` — a7e8e69
 
 ### Phase 2: API — zapis generowania i endpoint akceptacji
@@ -482,11 +482,13 @@ Migracja tylko dodaje: nową tabelę i dwie nullowalne kolumny w `cards`, więc 
 
 #### Automated
 
-- [x] 4.1 Lokalnie `npx playwright test` przechodzi (wszystkie spece, w tym nowy)
-- [ ] 4.2 W CI job `smoke` uruchamia Playwright i przechodzi na PR
-- [x] 4.3 `npm run lint`, `npx astro check`
+- [x] 4.1 Lokalnie `npx playwright test` przechodzi (wszystkie spece, w tym nowy) — c1649d4
+- [x] 4.2 W CI job `smoke` uruchamia Playwright i przechodzi na PR — PR #17
+- [x] 4.3 `npm run lint`, `npx astro check` — c1649d4
 
 #### Manual
 
-- [ ] 4.4 Przy celowo zepsutym zapisie (np. tymczasowo zła nazwa funkcji SQL) nowy spec pada z czytelną przyczyną, a w artefakcie CI jest trace
-- [ ] 4.5 Przegląd specu: asercje na stan w bazie, nie tylko na status odpowiedzi
+- [x] 4.4 Przy celowo zepsutym zapisie (np. tymczasowo zła nazwa funkcji SQL) nowy spec pada z czytelną przyczyną, a w artefakcie CI jest trace
+  - Dowód (2026-10-30, lokalnie): `accept_proposal_broken` w `acceptProposal` → spec pada na `accept-save-cards.spec.ts:78` (201 oczekiwane, 500 otrzymane) w próbie i w retry #1; log serwera `cards: save failed { code: 'card_not_saved', cause: 'PGRST202' }`; `trace.zip` w `test-results/…-chromium-retry1/`. Artefakt CI z konfiguracji: `playwright.config.ts:23` (`retries: 2` w CI), `:28` (`trace: "on-first-retry"`), `ci.yml:77-84` (`if: failure()` → `upload-artifact` z `playwright-report/` i `test-results/`). Zepsuty kod nie był commitowany ani pushowany.
+- [x] 4.5 Przegląd specu: asercje na stan w bazie, nie tylko na status odpowiedzi
+  - Asercje na bazie: `accept-save-cards.spec.ts:101-104` (`generations` = `{ proposed_count: 3, accepted_count: 2 }`), `:107-113` (dokładnie dwie fiszki: #1 bez zmian, #2 po edycji; brak #3). Przejrzane i potwierdzone przez użytkownika.
