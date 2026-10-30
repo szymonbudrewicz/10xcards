@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-10-22
+> Last updated: 2026-10-30
 
 ## 1. Strategy
 
@@ -77,9 +77,9 @@ aktualizuje go, gdy artefakty pojawiają się na dysku.
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|---|---|---|---|---|---|
 | 1 | Ochrona generowania | Udowodnić, że generowanie odrzuca złe wejście i brak sesji bez wywołania AI i zwraca czytelny błąd; postawić runner testów | #4, #5 | unit + integration (Vitest) | complete | testing-generation-guard |
-| 2 | E2E kluczowego przepływu | Udowodnić w przeglądarce, że użytkownik loguje się, wkleja tekst i widzi propozycje (mock AI), a przy błędzie zachowuje tekst; uruchamiane w CI (wymóg certyfikacji) | #6, #4 | e2e (Playwright) | not started | — |
-| 3 | Zapis i izolacja fiszek | Po S-03: udowodnić, że zaakceptowana fiszka trwale ląduje na koncie właściciela z licznikiem i jest niedostępna dla innego konta; rozszerzyć e2e o akceptację i zapis | #1, #3 | integration + e2e | not started | — |
-| 4 | Bramki jakości i smoke produkcji | Zablokować w CI testy z faz 1–3 jako wymagane; dodać smoke po wdrożeniu i lokalny hook po edycji | #2 | gates, post-edit-hook, smoke | not started | — |
+| 2 | E2E kluczowego przepływu | Udowodnić w przeglądarce, że użytkownik loguje się, wkleja tekst i widzi propozycje (mock AI), a przy błędzie zachowuje tekst; uruchamiane w CI (wymóg certyfikacji) | #6, #4 | e2e (Playwright) | complete | — (M3L4 `/10x-e2e-setup`, PR #15; w CI od `accept-and-save-cards` p4) |
+| 3 | Zapis i izolacja fiszek | Po S-03: udowodnić, że zaakceptowana fiszka trwale ląduje na koncie właściciela z licznikiem i jest niedostępna dla innego konta; rozszerzyć e2e o akceptację i zapis | #1, #3 | integration + e2e | complete | accept-and-save-cards, manage-saved-cards (archiwum) |
+| 4 | Bramki jakości i smoke produkcji | Zablokować w CI testy z faz 1–3 jako wymagane; dodać smoke po wdrożeniu i lokalny hook po edycji | #2 | gates, post-edit-hook, smoke | in progress | — (bramki CI i hook końca tury gotowe; smoke po wdrożeniu ręczny, zob. 6.6) |
 | 5 | Harmonogram powtórek | Po S-05: udowodnić, że ocena fiszki zmienia zapisany termin zgodnie z gotowym algorytmem | #7 | unit + integration | not started | — |
 
 ## 4. Stack
@@ -88,10 +88,10 @@ Klasyczna baza testów projektu. Narzędzia AI-native mają datę `checked:`.
 
 | Layer | Tool | Version | Notes |
 |---|---|---|---|
-| unit + integration | Vitest | 5.0.5 (npm, checked: 2026-10-22) | installed in Phase 1; `npm test`, testy w `tests/`, krok w jobie CI `ci` |
+| unit + integration | Vitest | 5.0.5 (npm, checked: 2026-10-22) | installed in Phase 1; `npm test`, testy w `tests/`, krok w jobie CI `ci`; `npm run test:integration` (`tests/integration/`, lokalny Supabase) w jobie `smoke` |
 | mutation (ad hoc) | Stryker + `@stryker-mutator/vitest-runner` | 10.0.0 (npm, checked: 2026-10-23) | `npm run test:mutation`, lokalnie, nie w CI; na Windows + Vitest 5 wynik niewiarygodny (zob. 6.6) |
 | API mocking | lokalny mock OpenRouter (`scripts/mock-openrouter.mjs`) | n/a | istnieje dla smoke; dostawca AI mockowany tylko na granicy sieci |
-| e2e | Playwright | 1.64.1 (npm, checked: 2026-10-22) | none yet — see Phase 2 |
+| e2e | Playwright | 1.64.1 (npm, checked: 2026-10-22) | installed in Phase 2 (M3L4); `npx playwright test`, specy w `tests/e2e/`, krok w jobie CI `smoke`; kontrakt w `context/foundation/test-stack.md` |
 | smoke (istniejące) | `scripts/smoke.mjs`, `scripts/isolation-check.mjs` | n/a | bez zależności, uruchamiane w jobie CI `smoke` na lokalnym Supabase |
 | (optional) AI-native | post-edit hook agenta — checked: 2026-10-22 | n/a | When NOT to use: jako zamiennik CI ani do uruchamiania e2e po każdej edycji (za wolne) |
 | (optional) AI-native | Playwright CLI / MCP do eksploracji przeglądarki przez agenta — checked: 2026-10-22 | n/a | When NOT to use: jako bramka; deterministyczny test e2e jest sygnałem, eksploracja agenta tylko pomaga go napisać |
@@ -116,9 +116,10 @@ Bramki, które zmiana musi przejść przed produkcją. „Required after §3 Pha
 | lint + lint:ui + typecheck (`astro check`) + build | CI (job `ci`) | required (wired) | dryf składni, typów, literałów UI |
 | isolation A/B + smoke na buildzie | CI (job `smoke`) | required (wired) | wyciek danych między kontami, zepsuty auth i generowanie |
 | unit + integration (`npm test`) | local + CI (job `ci`) | required (wired, §3 Phase 1) | regresje walidacji, 401, kształtu błędu, prywatności, zapisu |
-| e2e on critical flows | CI on PR | required after §3 Phase 2 | zepsuty kluczowy przepływ użytkownika |
-| post-edit hook | local (agent loop) | recommended after §3 Phase 4 | regresje w chwili edycji |
-| pre-prod / post-deploy smoke | po wdrożeniu | optional, wired in §3 Phase 4 | awarie specyficzne dla produkcji |
+| integration na bazie (`npm run test:integration`) | CI (job `smoke`) | required (wired, §3 Phase 3) | zgubiona fiszka, złe liczniki, edycja/usunięcie cudzej fiszki |
+| e2e on critical flows | CI (job `smoke`, push i PR) | required (wired, §3 Phase 2–3) | zepsuty kluczowy przepływ użytkownika |
+| hook końca tury (`.claude/hooks/end-of-turn.mjs`: ESLint → tsc → `vitest related`) | local (agent loop) | recommended (wired, M3L3) | regresje przed oddaniem tury; per-edit odrzucony (ESLint 60–97 s na Windows) |
+| post-deploy smoke (`SMOKE_EMAIL=… BASE_URL=<prod> npm run smoke`) | po wdrożeniu, ręcznie | optional (procedura w `deploy-plan.md`) | awarie specyficzne dla produkcji |
 
 Pre-commit (husky) nie jest podłączony — nie traktuj go jako bramki
 (lessons.md). Wynik bramki oceniaj po kodzie wyjścia.
@@ -143,15 +144,22 @@ wdrożeniu odpowiedniej fazy; do tego czasu brzmi „TBD — see §3 Phase <N>�
 - Dowód „AI nie zostało wywołane” = `expect(fetchSpy).not.toHaveBeenCalled()`, nie sam status; adres wywołania odczytuj przez `requestedUrl(fetchSpy)`. Sprawdzaj status + `error.code` (kontrakt) i że `message` jest niepusty; dokładnej treści komunikatu nie przypinaj.
 - Prywatność: wklej unikalny znacznik, szpieguj `console.*` i sprawdź, że znacznik nie pada w żadnym logu ani w odpowiedzi — w gałęziach, które logują, sprawdź też, że log powstał (inaczej test jest pusty).
 - Każdy nowy test zweryfikuj ręcznie: zepsuj chronione zachowanie w `src/`, pada dokładnie ten test, `git checkout -- <plik>`.
-- Zapis z odczytem stanu z bazy i dwa konta — TBD — see §3 Phase 3.
+- Zapis z odczytem stanu z bazy i dwa konta: to już test na lokalnym Supabase w `tests/integration/` (zob. 6.4), nie handler z atrapą.
 
 ### 6.3 Adding an e2e test
 
-- TBD — see §3 Phase 2 (kluczowy przepływ z mockiem AI, zachowanie tekstu przy błędzie).
+- Najpierw sprawdź, czy ryzyka nie da się taniej udowodnić integracją; e2e tylko dla tego, co pokazuje dopiero przeglądarka (zachowanie pola, kliknięcia, cały przepływ).
+- Plik `tests/e2e/<przepływ>.spec.ts`; nagłówek jak w `seed.spec.ts`: `risk: test-plan.md #N`, co pokrywają tańsze testy, co jest atrapą, sprzątanie.
+- Sesja z projektu `setup` (`auth.setup.ts`, konto z `.dev.vars.e2e`, nigdy produkcja). Przed interakcją `waitForHydration(page)` z `tests/e2e/helpers.ts`.
+- AI tylko przez `scripts/mock-openrouter.mjs` (start w `playwright.config.ts`); reszta prawdziwa.
+- Zapis potwierdzaj odczytem z bazy (`signInWithPassword()` z `helpers.ts` → REST jako użytkownik E2E), nie samym widokiem. Sprzątaj po unikalnym tokenie w treści.
+- Przykłady: `generate-ai-error-keeps-text.spec.ts` (#4), `accept-save-cards.spec.ts` (#1), `manage-saved-cards.spec.ts` (#3/FR-010).
 
 ### 6.4 Adding a cross-account isolation check
 
-- TBD — see §3 Phase 3 (wzorzec z dwoma kontami; punkt wyjścia: istniejący `npm run isolation`).
+- Konta zakładaj na lokalnym Supabase przez `signUp(label)` z `tests/integration/helpers.ts` (guard: tylko loopback, dane z `SUPABASE_URL`/`SUPABASE_KEY`, nigdy z `.dev.vars`).
+- Dla każdej operacji B na fiszce A sprawdź dwie rzeczy: odpowiedź (brak wierszy/odmowa) i stan A odczytany jako A (treść bez zmian, wiersz istnieje). Sam status nie jest dowodem.
+- Nowy endpoint zapisu: dopisz przypadek do `scripts/isolation-check.mjs` (`npm run isolation`, REST) oraz do `tests/integration/manage-cards.test.ts` (warstwa serwisu).
 
 ### 6.5 Adding a scheduling (SRS) test
 
@@ -160,6 +168,12 @@ wdrożeniu odpowiedniej fazy; do tego czasu brzmi „TBD — see §3 Phase <N>�
 ### 6.6 Per-rollout-phase notes
 
 (Uzupełniane po każdej fazie.)
+
+**Phase 2 — E2E kluczowego przepływu** (M3L4, PR #15, 2026-10-26; CI od 2026-10-27): `seed.spec.ts` (#6), `generate-ai-error-keeps-text.spec.ts` (#4). Playwright w jobie `smoke` na lokalnym Supabase z atrapą AI; `.dev.vars.e2e` i konto E2E generowane w jobie.
+
+**Phase 3 — Zapis i izolacja fiszek** (`accept-and-save-cards` 2026-10-27, `manage-saved-cards` 2026-10-29): `tests/integration/accept-proposal.test.ts` (#1: zapis, odrzucone wywołania, accepted ≤ proposed), `tests/integration/manage-cards.test.ts` (#3: B nie edytuje ani nie usuwa fiszki A), e2e `accept-save-cards.spec.ts` (#1) i `manage-saved-cards.spec.ts` (#3); `npm run isolation` sprawdza też PATCH/DELETE.
+
+**Phase 4 — Bramki i smoke produkcji** (częściowo): wszystkie testy z faz 1–3 uruchamiane w CI przy każdym push i PR; hook końca tury (M3L3, PR #14). Smoke po wdrożeniu wykonywany ręcznie z `SMOKE_EMAIL` (2026-10-22 S-01: 9/9; 2026-10-30 S-02 faza 4: 14 PASS, 2 SKIP), bez joba deploy w CI. Otwarte: ochrona gałęzi `main` z wymaganymi checkami nie jest potwierdzona.
 
 **Phase 1 — Ochrona generowania** (`testing-generation-guard`, 2026-10-23): 31 testów (endpoint + serwis), `npm test` w jobie `ci`.
 - Znana rozbieżność, nietestowana: limit liczony w jednostkach UTF-16, więc emoji liczy się jako 2 znaki, a PRD mówi „10 000 znaków”. Decyzja produktowa, otwarta.
