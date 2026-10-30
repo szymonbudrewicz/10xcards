@@ -4,7 +4,7 @@ import { defineConfig, devices } from "@playwright/test";
 // E2E env lives in the gitignored .dev.vars.e2e: local Supabase (npx supabase start),
 // the OpenRouter mock URL and E2E_USERNAME / E2E_PASSWORD. Never production values.
 // .dev.vars (local dev) points at the hosted project, so E2E never reads it.
-// In CI the file is absent and the variables come from the job.
+// In CI the smoke job writes the same file from its local Supabase (.github/workflows/ci.yml).
 const E2E_ENV_FILE = ".dev.vars.e2e";
 if (existsSync(E2E_ENV_FILE)) process.loadEnvFile(E2E_ENV_FILE);
 

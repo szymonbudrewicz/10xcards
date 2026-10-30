@@ -1,12 +1,13 @@
 // POST /api/generate, called directly with a fake APIContext.
 // Oracle: PRD US-01 + NFR (pasted text), lessons.md (AI endpoints need a session → 401 JSON),
-// error-code contract in context/changes/generate-card-proposals/plan.md. Not the implementation.
+// error-code contract in context/changes/generate-card-proposals/plan.md, generation saving in
+// context/changes/accept-and-save-cards/plan.md (Faza 2) + PRD FR-012. Not the implementation.
 // Risks: test-plan.md §2 #4 and #5.
 
 import { inspect } from "node:util";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { POST } from "@/pages/api/generate";
-import type { ApiError } from "@/types";
+import type { ApiError, GenerateProposalsResponse } from "@/types";
 import { apiContext, openRouterCompletion, requestedUrl, SIGNED_IN_USER, stubFetch } from "../helpers/api-context";
 
 // The API key is read per request, so a test can switch it off (503 case) through this getter.
@@ -18,7 +19,44 @@ vi.mock("astro:env/server", () => ({
   OPENROUTER_BASE_URL: "http://ai.test/api/v1",
 }));
 
+// Supabase client stub: records every query-builder call, answers the generations insert with `insertResult`.
+// `configured: false` makes createClient return null (Supabase env missing).
+const GENERATION_ID = "11111111-1111-4111-8111-111111111111";
+interface InsertResult {
+  data: { id: string } | null;
+  error: { code: string; message: string } | null;
+}
+const db = vi.hoisted((): { configured: boolean; insertResult: InsertResult; calls: [string, unknown][] } => ({
+  configured: true,
+  insertResult: { data: { id: "11111111-1111-4111-8111-111111111111" }, error: null },
+  calls: [],
+}));
+vi.mock("@/lib/supabase", () => ({
+  createClient: () =>
+    db.configured
+      ? {
+          from: (table: string) => {
+            db.calls.push(["from", table]);
+            return {
+              insert: (row: unknown) => {
+                db.calls.push(["insert", row]);
+                return {
+                  select: (columns: string) => {
+                    db.calls.push(["select", columns]);
+                    return { single: () => Promise.resolve(db.insertResult) };
+                  },
+                };
+              },
+            };
+          },
+        }
+      : null,
+}));
+
 afterEach(() => {
+  db.configured = true;
+  db.insertResult = { data: { id: GENERATION_ID }, error: null };
+  db.calls = [];
   env.openRouterApiKey = "test-openrouter-key";
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
@@ -166,9 +204,11 @@ describe("POST /api/generate — pasted text stays private (risk #5)", () => {
       logs: true,
     },
     { name: "504 AI timeout", user: SIGNED_IN_USER, body: { text: MARKER }, respond: timeout, logs: true },
+    { name: "503 generation not saved", user: SIGNED_IN_USER, body: { text: MARKER }, insertFails: true, logs: true },
     { name: "200 success", user: SIGNED_IN_USER, body: { text: MARKER } },
   ])("$name: the pasted text is in no log line and not echoed in the response", async (testCase) => {
     if (testCase.noKey) env.openRouterApiKey = "";
+    if (testCase.insertFails) db.insertResult = { data: null, error: { code: "42501", message: "permission denied" } };
     stubFetch(
       testCase.respond ?? (() => openRouterCompletion({ proposals: [{ front: "Pytanie", back: "Odpowiedź" }] })),
     );
@@ -192,5 +232,70 @@ describe("POST /api/generate — pasted text stays private (risk #5)", () => {
     expect(response.status).toBe(200);
     expect(fetchSpy).toHaveBeenCalledTimes(1);
     expect(requestedUrl(fetchSpy)).toBe("http://ai.test/api/v1/chat/completions");
+  });
+});
+
+describe("POST /api/generate — saving the generation (FR-012)", () => {
+  const TWO_PROPOSALS = {
+    proposals: [
+      { front: "Pytanie 1", back: "Odpowiedź 1" },
+      { front: "Pytanie 2", back: "Odpowiedź 2" },
+    ],
+  };
+
+  it("saves one generations row with proposed_count = number of proposals and returns its id", async () => {
+    stubFetch(() => openRouterCompletion(TWO_PROPOSALS));
+
+    const response = await POST(apiContext({ user: SIGNED_IN_USER, body: { text: "Fotosynteza." } }));
+    const body = (await response.json()) as GenerateProposalsResponse;
+
+    expect(response.status).toBe(200);
+    expect(body.generationId).toBe(GENERATION_ID);
+    expect(body.proposals).toHaveLength(2);
+    expect(db.calls).toContainEqual(["from", "generations"]);
+    expect(db.calls.filter(([method]) => method === "insert")).toEqual([["insert", { proposed_count: 2 }]]);
+  });
+
+  it("with 0 proposals answers generationId null and inserts nothing", async () => {
+    stubFetch(() => openRouterCompletion({ proposals: [] }));
+
+    const response = await POST(apiContext({ user: SIGNED_IN_USER, body: { text: "Fotosynteza." } }));
+    const body = (await response.json()) as GenerateProposalsResponse;
+
+    expect(response.status).toBe(200);
+    expect(body).toEqual({ proposals: [], generationId: null });
+    expect(db.calls).toEqual([]);
+  });
+
+  it.each([
+    {
+      name: "the insert fails",
+      setup: () => (db.insertResult = { data: null, error: { code: "42501", message: "x" } }),
+    },
+    { name: "Supabase is not configured", setup: () => (db.configured = false) },
+  ])("answers 503 generation_not_saved and logs it when $name", async ({ setup }) => {
+    setup();
+    stubFetch(() => openRouterCompletion(TWO_PROPOSALS));
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+    const response = await POST(apiContext({ user: SIGNED_IN_USER, body: { text: MARKER } }));
+    const body = (await response.json()) as ApiError;
+
+    expect(response.status).toBe(503);
+    expect(body.error.code).toBe("generation_not_saved");
+    expect(body.error.message.trim()).not.toBe("");
+    expect(errorSpy).toHaveBeenCalled();
+    for (const call of errorSpy.mock.calls) expect(inspect(call, { depth: 10 })).not.toContain(MARKER);
+  });
+
+  it("the pasted text never reaches the generations insert (risk #5)", async () => {
+    stubFetch(() => openRouterCompletion(TWO_PROPOSALS));
+
+    const response = await POST(apiContext({ user: SIGNED_IN_USER, body: { text: MARKER } }));
+
+    expect(response.status).toBe(200);
+    // The insert did happen, so "no marker" is not vacuous.
+    expect(db.calls.some(([method]) => method === "insert")).toBe(true);
+    for (const call of db.calls) expect(inspect(call, { depth: 10 })).not.toContain(MARKER);
   });
 });

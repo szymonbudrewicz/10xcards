@@ -53,6 +53,35 @@ jobs:
         run: |
           source supabase.env
           SUPABASE_URL="$API_URL" SUPABASE_KEY="$ANON_KEY" npm run isolation
+      - name: Run integration tests against local Supabase
+        run: |
+          source supabase.env
+          SUPABASE_URL="$API_URL" SUPABASE_KEY="$ANON_KEY" npm run test:integration
+      - name: Configure E2E env and account
+        run: |
+          source supabase.env
+          # Throwaway local account; no production values. playwright.config.ts loads this file,
+          # and the CLOUDFLARE_ENV=e2e build hands it to the app.
+          E2E_USERNAME="e2e-ci@example.com"
+          E2E_PASSWORD="E2e-$(openssl rand -hex 16)"
+          printf 'SUPABASE_URL=%s\nSUPABASE_KEY=%s\n' "$API_URL" "$ANON_KEY" > .dev.vars.e2e
+          printf 'OPENROUTER_API_KEY=ci-mock-key\nOPENROUTER_BASE_URL=http://127.0.0.1:4399/api/v1\n' >> .dev.vars.e2e
+          printf 'E2E_USERNAME=%s\nE2E_PASSWORD=%s\n' "$E2E_USERNAME" "$E2E_PASSWORD" >> .dev.vars.e2e
+          curl -sf -o /dev/null -X POST "$API_URL/auth/v1/signup" \
+            -H "apikey: $ANON_KEY" -H "Content-Type: application/json" \
+            -d "{\"email\":\"$E2E_USERNAME\",\"password\":\"$E2E_PASSWORD\"}"
+      - run: npx playwright install --with-deps chromium
+      # Before the smoke step: Playwright starts its own mock (4399) and preview (4321) and stops them.
+      - name: Run E2E tests (Playwright)
+        run: npx playwright test
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
       - run: npm run build
       - name: Run smoke test against production preview
         run: |

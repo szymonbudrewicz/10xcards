@@ -5,18 +5,51 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ServerError } from "@/components/auth/ServerError";
 import { useGenerateProposals } from "@/components/hooks/useGenerateProposals";
+import { ProposalItem } from "@/components/generate/ProposalItem";
 import { cn } from "@/lib/utils";
-import { MAX_TEXT_LENGTH } from "@/types";
+import { MAX_TEXT_LENGTH, type CardProposal } from "@/types";
 
 const EMPTY_MESSAGE = "Wklej tekst, z którego mają powstać fiszki.";
 const TOO_LONG_MESSAGE = `Tekst może mieć najwyżej ${MAX_TEXT_LENGTH.toLocaleString("pl-PL")} znaków.`;
 const NO_PROPOSALS_MESSAGE = "AI nie znalazło w tym tekście materiału na fiszki.";
+const ALL_REMOVED_MESSAGE = "Usunięto wszystkie propozycje. Wygeneruj nowe z tego samego tekstu albo wklej inny.";
+
+interface ProposalListProps {
+  proposals: CardProposal[];
+  generationId: string;
+}
+
+function ProposalList({ proposals, generationId }: ProposalListProps) {
+  // Removing is UI only: nothing is sent and the proposal simply counts as not accepted.
+  const [removed, setRemoved] = useState<ReadonlySet<number>>(new Set());
+  const visible = proposals.map((proposal, index) => ({ proposal, index })).filter(({ index }) => !removed.has(index));
+
+  if (visible.length === 0) {
+    return <p className="text-muted-foreground text-sm">{ALL_REMOVED_MESSAGE}</p>;
+  }
+
+  return (
+    <ul className="space-y-3">
+      {visible.map(({ proposal, index }) => (
+        <ProposalItem
+          key={index}
+          proposal={proposal}
+          generationId={generationId}
+          proposalIndex={index}
+          onRemove={() => {
+            setRemoved((prev) => new Set(prev).add(index));
+          }}
+        />
+      ))}
+    </ul>
+  );
+}
 
 export default function GenerateForm() {
   // The text stays in the field after both errors and success.
   const [text, setText] = useState("");
   const [emptyError, setEmptyError] = useState(false);
-  const { proposals, error, isLoading, generate } = useGenerateProposals();
+  const { proposals, generationId, error, isLoading, generate } = useGenerateProposals();
 
   const tooLong = text.length > MAX_TEXT_LENGTH;
   const fieldError = tooLong ? TOO_LONG_MESSAGE : emptyError ? EMPTY_MESSAGE : null;
@@ -74,23 +107,11 @@ export default function GenerateForm() {
         {proposals && (
           <section className="space-y-3">
             <h2 className="text-lg font-semibold">Propozycje fiszek</h2>
-            {proposals.length === 0 ? (
+            {proposals.length === 0 || !generationId ? (
               <p className="text-muted-foreground text-sm">{NO_PROPOSALS_MESSAGE}</p>
             ) : (
-              <ul className="space-y-3">
-                {proposals.map((p, i) => (
-                  <li key={i} className="border-border bg-muted/30 grid gap-2 rounded-lg border p-4 sm:grid-cols-2">
-                    <div>
-                      <p className="text-muted-foreground text-xs uppercase">Przód</p>
-                      <p className="text-sm">{p.front}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground text-xs uppercase">Tył</p>
-                      <p className="text-sm">{p.back}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+              // Keyed by generation: a new result starts with no removed proposals.
+              <ProposalList key={generationId} proposals={proposals} generationId={generationId} />
             )}
           </section>
         )}

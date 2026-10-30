@@ -7,19 +7,24 @@ const NETWORK_ERROR = "Nie udało się połączyć z serwerem. Spróbuj ponownie
 interface LooseBody {
   error?: { message?: unknown };
   proposals?: unknown;
+  generationId?: unknown;
 }
 
 function isApiError(body: unknown): body is ApiError {
   return typeof (body as LooseBody | null)?.error?.message === "string";
 }
 
+// Proposals can only be accepted with the id of their saved generation; none is saved for 0 proposals.
 function isProposalsResponse(body: unknown): body is GenerateProposalsResponse {
-  return Array.isArray((body as LooseBody | null)?.proposals);
+  const b = body as LooseBody | null;
+  if (!Array.isArray(b?.proposals)) return false;
+  return b.proposals.length === 0 ? b.generationId === null : typeof b.generationId === "string";
 }
 
 /** Calls POST /api/generate. Never touches the text in the form. */
 export function useGenerateProposals() {
   const [proposals, setProposals] = useState<CardProposal[] | null>(null);
+  const [generationId, setGenerationId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   // A ref, not state: two clicks in the same render must not both pass the guard.
@@ -32,6 +37,7 @@ export function useGenerateProposals() {
     setError(null);
     // Old cards belong to the previous text: never show them next to a new result or error.
     setProposals(null);
+    setGenerationId(null);
 
     try {
       const response = await fetch("/api/generate", {
@@ -43,6 +49,7 @@ export function useGenerateProposals() {
 
       if (response.ok && isProposalsResponse(body)) {
         setProposals(body.proposals);
+        setGenerationId(body.generationId);
       } else if (!response.ok && isApiError(body)) {
         setError(body.error.message);
       } else {
@@ -56,5 +63,5 @@ export function useGenerateProposals() {
     }
   }, []);
 
-  return { proposals, error, isLoading, generate };
+  return { proposals, generationId, error, isLoading, generate };
 }

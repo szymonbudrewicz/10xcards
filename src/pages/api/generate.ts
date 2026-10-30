@@ -4,10 +4,12 @@ import { OPENROUTER_API_KEY, OPENROUTER_BASE_URL } from "astro:env/server";
 import { jsonError, jsonOk } from "@/lib/api-response";
 import { AUTH_UNAVAILABLE_MESSAGE } from "@/lib/auth-session";
 import { CardGenerationError, generateCardProposals } from "@/lib/services/card-generation";
-import { MAX_TEXT_LENGTH, type GenerateProposalsResponse } from "@/types";
+import { CardSaveError, recordGeneration } from "@/lib/services/cards";
+import { createClient } from "@/lib/supabase";
+import { MAX_TEXT_LENGTH, type CardProposal, type GenerateProposalsResponse } from "@/types";
 
 // Privacy: the pasted text is never stored or logged; logs carry only the error code
-// and the provider HTTP status.
+// and the provider HTTP status (or the database error code). Only the proposal count is saved.
 
 const requestSchema = z.object({ text: z.string() });
 
@@ -50,14 +52,13 @@ export const POST: APIRoute = async (context) => {
     return jsonError(503, "ai_not_configured", "Generowanie fiszek jest chwilowo niedostępne.");
   }
 
+  let proposals: CardProposal[];
   try {
-    const proposals = await generateCardProposals(text, {
+    proposals = await generateCardProposals(text, {
       apiKey,
       // Empty means the default OpenRouter URL (resolved in the service).
       baseUrl: OPENROUTER_BASE_URL ?? "",
     });
-    const response: GenerateProposalsResponse = { proposals };
-    return jsonOk(response);
   } catch (error) {
     const code = error instanceof CardGenerationError ? error.code : "ai_failed";
     const providerStatus = error instanceof CardGenerationError ? error.providerStatus : undefined;
@@ -68,5 +69,26 @@ export const POST: APIRoute = async (context) => {
       return jsonError(504, "ai_timeout", "Generowanie trwało zbyt długo. Spróbuj ponownie.");
     }
     return jsonError(502, "ai_failed", "Nie udało się wygenerować fiszek. Spróbuj ponownie.");
+  }
+
+  // No proposals, no generation row (proposed_count must be at least 1).
+  if (proposals.length === 0) {
+    const response: GenerateProposalsResponse = { proposals, generationId: null };
+    return jsonOk(response);
+  }
+
+  // FR-012: `proposed` is recorded now. A failed save is visible (503 + log), never an unsaved 200.
+  try {
+    const supabase = createClient(context.request.headers, context.cookies);
+    if (!supabase) throw new CardSaveError("generation_not_saved", "supabase_not_configured");
+    const generationId = await recordGeneration(supabase, proposals.length);
+    const response: GenerateProposalsResponse = { proposals, generationId };
+    return jsonOk(response);
+  } catch (error) {
+    const code = error instanceof CardSaveError ? error.code : "generation_not_saved";
+    const cause = error instanceof CardSaveError ? error.cause : error instanceof Error ? error.name : typeof error;
+    // eslint-disable-next-line no-console
+    console.error("generate: generation not saved", { code, cause });
+    return jsonError(503, "generation_not_saved", "Nie udało się zapisać wyniku generowania. Spróbuj ponownie.");
   }
 };

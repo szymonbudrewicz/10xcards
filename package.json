@@ -14,7 +14,8 @@
     "test": "vitest run",
     "test:mutation": "stryker run",
     "smoke": "node scripts/smoke.mjs",
-    "isolation": "node scripts/isolation-check.mjs"
+    "isolation": "node scripts/isolation-check.mjs",
+    "test:integration": "vitest run --config vitest.integration.config.ts"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",

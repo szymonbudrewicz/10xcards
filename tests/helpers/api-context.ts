@@ -12,16 +12,28 @@ interface ContextOptions {
   body?: unknown;
   /** Sent as-is (for malformed bodies). Wins over `body`. */
   rawBody?: string;
+  /** Request URL (default the generate endpoint). */
+  url?: string;
 }
 
-/** Minimal APIContext for calling an endpoint handler directly: the handler reads only `locals` and `request`. */
-export function apiContext({ user, authUnavailable = false, body, rawBody }: ContextOptions): APIContext {
-  const request = new Request("http://localhost/api/generate", {
+/**
+ * Minimal APIContext for calling an endpoint handler directly: the handler reads only `locals`, `request`
+ * and `cookies` (passed on to the — mocked — Supabase client).
+ */
+export function apiContext({
+  user,
+  authUnavailable = false,
+  body,
+  rawBody,
+  url = "http://localhost/api/generate",
+}: ContextOptions): APIContext {
+  const request = new Request(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: rawBody ?? JSON.stringify(body),
   });
-  return { locals: { user, authUnavailable }, request } as unknown as APIContext;
+  const cookies = { get: () => undefined, set: () => undefined, delete: () => undefined, has: () => false };
+  return { locals: { user, authUnavailable }, request, cookies } as unknown as APIContext;
 }
 
 /** Response body OpenRouter sends for a chat completion whose content is `content`. */
