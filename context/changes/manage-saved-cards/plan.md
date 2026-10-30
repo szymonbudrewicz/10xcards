@@ -358,11 +358,13 @@ Migracja zmienia tylko uprawnienia, bez danych. Wycofanie: nowa migracja z `gran
 
 #### Automated
 
-- [ ] 3.1 Lokalnie `npx playwright test --workers=1` przechodzi (wszystkie spece, w tym nowy)
-- [ ] 3.2 W CI job `smoke` przechodzi na PR z nowym specem
-- [x] 3.3 `npm run lint`, `npx astro check`
+- [x] 3.1 Lokalnie `npx playwright test --workers=1` przechodzi (wszystkie spece, w tym nowy) — PR #18
+- [x] 3.2 W CI job `smoke` przechodzi na PR z nowym specem — PR #18
+- [x] 3.3 `npm run lint`, `npx astro check` — b481670
 
 #### Manual
 
-- [ ] 3.4 Przy celowo zepsutym usuwaniu (np. `deleteCard` filtrujący po losowym uuid zamiast po `id` fiszki) nowy spec pada z czytelną przyczyną
-- [ ] 3.5 Przegląd specu: asercje na stan w bazie, nie tylko na UI i statusy
+- [x] 3.4 Przy celowo zepsutym usuwaniu (np. `deleteCard` filtrujący po losowym uuid zamiast po `id` fiszki) nowy spec pada z czytelną przyczyną
+  - Dowód (2026-10-30, lokalnie): `deleteCard` z `.eq("id", crypto.randomUUID())` → spec pada na `manage-saved-cards.spec.ts:103` (204 oczekiwane, 404 otrzymane) w próbie i w retry #1; log serwera `DELETE /api/cards/<id> 404`; `trace.zip` w `test-results/…-chromium-retry1/`. Zepsuty kod tylko w worktree (przywrócony `git checkout --`, pusty diff), nie commitowany ani pushowany.
+- [x] 3.5 Przegląd specu: asercje na stan w bazie, nie tylko na UI i statusy
+  - Asercje na bazie: `manage-saved-cards.spec.ts:109-110` (edytowana fiszka = `{ id, front: editedFront, back: editedBack }`), `:111-112` (usunięta fiszka → `[]`); dane z `:45-55` z jawnym `created_at`. Przejrzane i potwierdzone przez użytkownika.

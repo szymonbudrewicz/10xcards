@@ -1,9 +1,9 @@
 ---
 change_id: manage-saved-cards
 title: Manage saved cards
-status: implementing
+status: implemented
 created: 2026-10-27
-updated: 2026-10-29
+updated: 2026-10-30
 archived_at: null
 ---
 
