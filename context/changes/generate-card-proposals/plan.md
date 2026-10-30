@@ -380,12 +380,12 @@ Brak zmian w bazie. Wycofanie: `wrangler rollback`. Sekret można zostawić, bez
 
 #### Automated
 
-- [x] 4.1 `npx wrangler secret list` pokazuje `OPENROUTER_API_KEY`
-- [x] 4.2 Smoke na produkcji bez flagi AI przechodzi: `BASE_URL=<prod-url> npm run smoke`
+- [x] 4.1 `npx wrangler secret list` pokazuje `OPENROUTER_API_KEY` — 2c135fc
+- [x] 4.2 Smoke na produkcji bez flagi AI przechodzi: `BASE_URL=<prod-url> npm run smoke` — 2c135fc
 
 #### Manual
 
-- [x] 4.3 Na produkcji tekst ~10 000 znaków daje propozycje w ≤ 30 s
-- [x] 4.4 `npx wrangler tail --status error` podczas 3 generowań nie pokazuje błędu 1102
-- [x] 4.5 `wrangler tail` nie pokazuje wklejonego tekstu
-- [x] 4.6 Wynik pomiaru R2/R10 dopisany do `context/deployment/deploy-plan.md`
+- [x] 4.3 Na produkcji tekst ~10 000 znaków daje propozycje w ≤ 30 s — 2c135fc
+- [x] 4.4 `npx wrangler tail --status error` podczas 3 generowań nie pokazuje błędu 1102 — 2c135fc
+- [x] 4.5 `wrangler tail` nie pokazuje wklejonego tekstu — 2c135fc
+- [x] 4.6 Wynik pomiaru R2/R10 dopisany do `context/deployment/deploy-plan.md` — 2c135fc
