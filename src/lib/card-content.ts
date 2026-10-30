@@ -7,3 +7,6 @@ export function isBlankCardText(value: string): boolean {
 
 export const CARD_FRONT_BLANK_MESSAGE = "Przód fiszki nie może być pusty.";
 export const CARD_BACK_BLANK_MESSAGE = "Tył fiszki nie może być pusty.";
+
+/** Longest front or back accepted when editing a saved card, counted as `String.prototype.length`. */
+export const MAX_CARD_TEXT_LENGTH = 2000;

@@ -2,7 +2,7 @@ import { defineMiddleware } from "astro:middleware";
 import { AUTH_UNAVAILABLE_MESSAGE, authErrorLogFields, classifyGetUserError } from "@/lib/auth-session";
 import { createClient } from "@/lib/supabase";
 
-const PROTECTED_ROUTES = ["/dashboard", "/generate"];
+const PROTECTED_ROUTES = ["/dashboard", "/generate", "/cards"];
 
 export const onRequest = defineMiddleware(async (context, next) => {
   // Dev-only pages (e.g. /dev/kitchen-sink) do not exist outside `astro dev`.

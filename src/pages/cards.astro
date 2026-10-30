@@ -1,0 +1,59 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import SavedCardList from "@/components/cards/SavedCardList";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardSaveError, listCards } from "@/lib/services/cards";
+import { createClient } from "@/lib/supabase";
+import type { SavedCard } from "@/types";
+
+// Anonymous users are redirected to /auth/signin in src/middleware.ts.
+// A failed read is a 500 with a message in place of the list (no `return` here: the page still renders).
+let cards: SavedCard[] | null = null;
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+if (supabase) {
+  try {
+    cards = await listCards(supabase);
+  } catch (error) {
+    const fields =
+      error instanceof CardSaveError
+        ? { code: error.code, cause: error.cause }
+        : { code: "cards_not_loaded", cause: error instanceof Error ? error.name : typeof error };
+    // eslint-disable-next-line no-console
+    console.error("cards: list failed", fields);
+  }
+} else {
+  // eslint-disable-next-line no-console
+  console.error("cards: list failed", { code: "cards_not_loaded", cause: "supabase_not_configured" });
+}
+if (!cards) Astro.response.status = 500;
+---
+
+<Layout title="Moje fiszki">
+  <div class="bg-cosmic flex min-h-screen items-start justify-center p-4 sm:items-center">
+    <Card className="w-full max-w-2xl rounded-2xl px-2 py-8 backdrop-blur-xl">
+      <CardHeader>
+        <CardTitle className="text-2xl font-bold">
+          <h1>Moje fiszki</h1>
+        </CardTitle>
+        <p class="text-muted-foreground text-sm">
+          <a href="/dashboard" class="text-link hover:underline">
+            Wróć do panelu
+          </a>
+          {" · "}
+          <a href="/generate" class="text-link hover:underline">
+            Generuj fiszki
+          </a>
+        </p>
+      </CardHeader>
+      <CardContent>
+        {cards ? (
+          <SavedCardList client:load initialCards={cards} />
+        ) : (
+          <p role="alert" class="text-destructive text-sm">
+            Nie udało się wczytać fiszek. Odśwież stronę.
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  </div>
+</Layout>

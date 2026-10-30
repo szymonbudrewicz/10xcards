@@ -14,11 +14,15 @@ interface ContextOptions {
   rawBody?: string;
   /** Request URL (default the generate endpoint). */
   url?: string;
+  /** HTTP method (default POST). */
+  method?: string;
+  /** Route params as Astro passes them in `context.params` (default none). */
+  params?: Record<string, string | undefined>;
 }
 
 /**
- * Minimal APIContext for calling an endpoint handler directly: the handler reads only `locals`, `request`
- * and `cookies` (passed on to the — mocked — Supabase client).
+ * Minimal APIContext for calling an endpoint handler directly: the handler reads only `locals`, `request`,
+ * `params` and `cookies` (passed on to the — mocked — Supabase client).
  */
 export function apiContext({
   user,
@@ -26,14 +30,16 @@ export function apiContext({
   body,
   rawBody,
   url = "http://localhost/api/generate",
+  method = "POST",
+  params = {},
 }: ContextOptions): APIContext {
   const request = new Request(url, {
-    method: "POST",
+    method,
     headers: { "Content-Type": "application/json" },
     body: rawBody ?? JSON.stringify(body),
   });
   const cookies = { get: () => undefined, set: () => undefined, delete: () => undefined, has: () => false };
-  return { locals: { user, authUnavailable }, request, cookies } as unknown as APIContext;
+  return { locals: { user, authUnavailable }, request, params, cookies } as unknown as APIContext;
 }
 
 /** Response body OpenRouter sends for a chat completion whose content is `content`. */
