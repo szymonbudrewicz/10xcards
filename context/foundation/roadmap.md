@@ -3,7 +3,7 @@ project: "10xCards"
 version: 1
 status: draft
 created: 2026-10-19
-updated: 2026-10-27
+updated: 2026-10-30
 prd_version: 1
 main_goal: speed
 top_blocker: decisions
@@ -44,8 +44,8 @@ Ręczne robienie dobrych fiszek zajmuje więcej czasu niż samo przeczytanie mat
 | F-01 | cards-table-with-isolation | (foundation) tabela fiszek z izolacją danych per użytkownik jest na produkcji     | —             | NFR: użytkownik widzi wyłącznie swoje fiszki; Access Control | done |
 | S-01 | account-lifecycle-on-prod  | zarejestrować się, zalogować i wylogować na produkcji                             | —             | US-01, FR-001, FR-008, FR-009    | done     |
 | S-02 | generate-card-proposals    | wkleić tekst i zobaczyć listę propozycji fiszek (przód/tył) od AI                 | —             | US-01, FR-002, FR-003, FR-011    | in-progress |
-| S-03 | accept-and-save-cards      | zaakceptować, poprawić lub usunąć każdą propozycję; zaakceptowane zapisują się od razu | S-02, F-01 | US-01, FR-004, FR-005, FR-012    | in-progress |
-| S-04 | manage-saved-cards         | zobaczyć listę zapisanych fiszek oraz je edytować i usuwać                        | S-03          | FR-010                           | in-progress |
+| S-03 | accept-and-save-cards      | zaakceptować, poprawić lub usunąć każdą propozycję; zaakceptowane zapisują się od razu | S-02, F-01 | US-01, FR-004, FR-005, FR-012    | done |
+| S-04 | manage-saved-cards         | zobaczyć listę zapisanych fiszek oraz je edytować i usuwać                        | S-03          | FR-010                           | done |
 | S-05 | srs-review-session         | przejść sesję powtórek, ocenić fiszkę i mieć wyznaczony termin powrotu            | S-03          | US-01, FR-006, FR-013            | proposed |
 
 ## Streams
@@ -126,7 +126,7 @@ Co już jest w kodzie na dzień `2026-10-19` (zbadane automatycznie, potwierdzon
 - **Unknowns:**
   - Kryterium „75% fiszek tworzonych z AI" jest w v1 spełnione z definicji (PRD Open Question 1) — Owner: user. Block: no (liczniki akceptacji z FR-012 działają niezależnie od odpowiedzi).
 - **Risk:** To gwiazda przewodnia, więc jest tuż za `S-02` i `F-01`; komponent edycji ma być wspólny z `S-04` (notatka z shapingu), żeby nie dublować pracy.
-- **Status:** in-progress
+- **Status:** done
 
 ### S-04: Lista zapisanych fiszek z edycją i usuwaniem
 
@@ -138,7 +138,7 @@ Co już jest w kodzie na dzień `2026-10-19` (zbadane automatycznie, potwierdzon
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Najniższa wartość w stosunku do gwiazdy przewodniej i pętli powtórek, więc po `S-03`; wspólny komponent edycji z `S-03` utrzymuje wycinek mały (bez filtrów, wyszukiwania i paginacji).
-- **Status:** in-progress
+- **Status:** done
 
 ### S-05: Sesja powtórek z wyznaczanym terminem powrotu
 
@@ -189,3 +189,5 @@ Co już jest w kodzie na dzień `2026-10-19` (zbadane automatycznie, potwierdzon
 
 - **F-01: (foundation) tabela fiszek z RLS (przód, tył, właściciel; każdy użytkownik widzi i zmienia wyłącznie własne wiersze) jest na produkcji, a izolacja kont A/B jest dowiedziona skryptem w CI.** — Archived 2026-10-20 → `context/archive/2026-10-19-cards-table-with-isolation/`. Lesson: —.
 - **S-01: user can zarejestrować konto emailem i hasłem, zalogować się i wylogować na wdrożonej aplikacji.** — Archived 2026-10-22 → `context/archive/2026-10-21-account-lifecycle-on-prod/`. Lesson: —.
+- **S-03: user can zaakceptować, poprawić lub usunąć każdą propozycję, a zaakceptowane fiszki zapisują się na jego koncie od razu; autor produktu może policzyć odsetek akceptacji z zapisanych liczników.** — Archived 2026-10-30 → `context/archive/2026-10-26-accept-and-save-cards/`. Lesson: —.
+- **S-04: user can zobaczyć listę swoich zapisanych fiszek oraz edytować i usuwać każdą (usunięcie usuwa też dane powtórek, edycja ich nie zeruje).** — Archived 2026-10-30 → `context/archive/2026-10-27-manage-saved-cards/`. Lesson: —.
