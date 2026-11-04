@@ -1,192 +1,68 @@
-# 10x Astro Starter
+# 10xCards
 
-![](./public/template.png)
+Fiszki z AI: wklejasz tekst (artykuł, dokumentację, notatki), dostajesz propozycje fiszek przód/tył, poprawiasz je i zapisujesz na swoim koncie.
 
-A modern, opinionated starter template for building fast, accessible web applications.
+**Aplikacja:** https://10xcards.szymon-10x.workers.dev
 
-## Tech Stack
+Projekt zaliczeniowy kursu 10xDevs 4.0, budowany z agentem AI (Claude Code) według przepływu PRD → roadmapa → plan → implementacja → testy → wdrożenie. Cała dokumentacja projektowa jest w [`context/`](./context).
 
-- [Astro](https://astro.build/) v7 - Modern web framework with server-first rendering
-- [React](https://react.dev/) v19 - UI library for interactive components
-- [TypeScript](https://www.typescriptlang.org/) v6 - Type-safe JavaScript
-- [Tailwind CSS](https://tailwindcss.com/) v4 - Utility-first CSS framework
-- [Supabase](https://supabase.com/) - Authentication and backend-as-a-service
-- [Cloudflare Workers](https://workers.cloudflare.com/) - Edge deployment runtime
+## Co działa
 
-## Prerequisites
+- **Konto:** rejestracja, logowanie i wylogowanie (Supabase Auth). Każdy użytkownik widzi wyłącznie własne fiszki.
+- **Generowanie (`/generate`):** do 10 000 znaków tekstu → maks. 10 propozycji z AI (OpenRouter). Przy błędzie wklejony tekst zostaje w polu.
+- **Akceptacja:** każdą propozycję można zaakceptować, poprawić przed zapisem albo odrzucić. Zaakceptowane zapisują się od razu, a liczniki propozycji i akceptacji pozwalają policzyć odsetek akceptacji (cel PRD ≥ 75%).
+- **Moje fiszki (`/cards`):** lista zapisanych fiszek z edycją i usuwaniem.
+- **Prywatność:** wklejony tekst nie jest zapisywany ani logowany. Trwałe są tylko fiszki i liczniki.
 
-- Node.js v22.14.0 (as specified in `.nvmrc`)
-- npm (comes with Node.js)
+Następny krok z roadmapy: sesja powtórek (spaced repetition, S-05).
 
-## Getting Started
+## Gdzie co jest
 
-1. Clone the repository:
+| Obszar                | Miejsce w repo                                                                                                                                                                                                                                                                                                                                                                                           |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Kontrola dostępu      | `src/middleware.ts`, `src/lib/supabase.ts`; RLS i uprawnienia w `supabase/migrations/`; dowód izolacji kont A/B: `scripts/isolation-check.mjs`                                                                                                                                                                                                                                                           |
+| CRUD fiszek           | `POST /api/cards` (zapis przez funkcję `accept_proposal()`), `PATCH`/`DELETE /api/cards/[id]`, widok `src/pages/cards.astro`; logika w `src/lib/services/cards.ts`                                                                                                                                                                                                                                       |
+| Logika biznesowa      | generowanie i walidacja propozycji: `src/lib/services/card-generation.ts`, `src/pages/api/generate.ts`; liczniki akceptacji w `accept_proposal()`                                                                                                                                                                                                                                                        |
+| Dokumenty kontekstowe | [`prd.md`](./context/foundation/prd.md), [`roadmap.md`](./context/foundation/roadmap.md), [`tech-stack.md`](./context/foundation/tech-stack.md), [`infrastructure.md`](./context/foundation/infrastructure.md), [`test-plan.md`](./context/foundation/test-plan.md), [`lessons.md`](./context/foundation/lessons.md); zamknięte zmiany z planami i przeglądami w [`context/archive/`](./context/archive) |
+| Testy                 | Vitest (`tests/`), testy integracyjne na lokalnym Supabase (`tests/integration/`), E2E Playwright (`tests/e2e/`): każdy plik wskazuje ryzyko z `test-plan.md`, które pokrywa                                                                                                                                                                                                                             |
+| CI                    | `.github/workflows/ci.yml`                                                                                                                                                                                                                                                                                                                                                                               |
+| Wdrożenie             | [`context/deployment/deploy-plan.md`](./context/deployment/deploy-plan.md) (stan produkcji, pomiary, rollback)                                                                                                                                                                                                                                                                                           |
 
-```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
-```
+## Stack
 
-2. Install dependencies:
+Astro 7 (SSR) + React 19 + TypeScript + Tailwind CSS 4 + shadcn/ui, Supabase (Auth + Postgres z RLS), OpenRouter (AI), Cloudflare Workers (hosting). Uzasadnienie wyboru: [`tech-stack.md`](./context/foundation/tech-stack.md).
+
+## Testy i CI
+
+| Polecenie                  | Co sprawdza                                                                                                                           |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm test`                 | Vitest: endpointy wywoływane bezpośrednio, AI zastąpione stubem `fetch` (walidacja, 401 bez wywołania AI, kształt błędów, prywatność) |
+| `npm run test:integration` | zapis fiszek i liczniki na lokalnym Supabase, z odczytem stanu z bazy                                                                 |
+| `npm run isolation`        | konto B nie czyta, nie zmienia i nie usuwa fiszek konta A; anonim nie ma dostępu                                                      |
+| `npx playwright test`      | E2E w przeglądarce: logowanie, błąd AI z zachowaniem tekstu, akceptacja i zapis, edycja i usunięcie na `/cards`                       |
+| `npm run smoke`            | przepływ konta i generowania przez HTTP na działającym serwerze                                                                       |
+
+GitHub Actions przy każdym pushu i PR do `main`:
+
+- **ci:** lint, `lint:ui`, `astro check`, `npm test`, build;
+- **smoke:** lokalny Supabase z migracjami, izolacja kont, testy integracyjne, E2E Playwright z atrapą AI, smoke na buildzie produkcyjnym (runtime Cloudflare).
+
+## Uruchomienie lokalnie
+
+Wymagania: Node.js 22.14.0 (`.nvmrc`), npm, Docker (lokalny Supabase).
 
 ```bash
 npm install
+npx supabase start          # lokalny Supabase, stosuje migracje z supabase/migrations/
+npx supabase status -o env  # API_URL i ANON_KEY do skopiowania poniżej
+cp .env.example .dev.vars   # uzupełnij SUPABASE_URL, SUPABASE_KEY, OPENROUTER_API_KEY
+npm run dev                 # http://localhost:4321
 ```
 
-3. Set up Supabase and configure environment variables — see [Supabase Configuration](#supabase-configuration) below.
+Sekrety: Cloudflare (lokalnie `npm run dev`) czyta `.dev.vars`, Node czyta `.env`. Na produkcji: `npx wrangler secret put <NAZWA>`. Wdrożenie: `npm run build && npx wrangler deploy`; migracje na produkcję stosuje człowiek (`npx supabase db push`), zob. `deploy-plan.md`.
 
-4. Create a `.dev.vars` file for local Cloudflare dev secrets:
+Pozostałe polecenia: `npm run lint`, `npm run lint:ui`, `npm run format`, `npx astro check`.
 
-```bash
-cp .env.example .dev.vars
-```
-
-5. Run the development server:
-
-```bash
-npm run dev
-```
-
-## Available Scripts
-
-- `npm run dev` - Start development server (Cloudflare workerd runtime)
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint with type-checked rules
-- `npm run lint:fix` - Auto-fix ESLint issues
-- `npm run format` - Run Prettier
-- `npm run smoke` - Smoke test the auth flow against a running server (`BASE_URL`, defaults to `http://localhost:4321`)
-
-## Project Structure
-
-```md
-.
-├── src/
-│ ├── layouts/ # Astro layouts
-│ ├── pages/ # Astro pages
-│ │ └── api/ # API endpoints
-│ ├── components/ # UI components (Astro & React)
-│ └── assets/ # Static assets
-├── public/ # Public assets
-├── wrangler.jsonc # Cloudflare Workers config
-```
-
-## Supabase Configuration
-
-This project uses [Supabase](https://supabase.com/) for authentication. Environment variables are declared via Astro's `astro:env` schema and are treated as **server-only secrets** — they are never exposed to the client.
-
-### First-time setup (local, no cloud project needed)
-
-Requires [Docker](https://www.docker.com/) and ~7 GB RAM.
-
-1. Create your `.env` file:
-
-```bash
-cp .env.example .env
-```
-
-2. Initialize the local Supabase project (creates a `supabase/` config folder):
-
-```bash
-npx supabase init
-```
-
-3. Start the local stack (downloads Docker images on first run):
-
-```bash
-npx supabase start
-```
-
-4. Copy the credentials printed by the CLI into your `.env` and `.dev.vars`:
-
-```
-SUPABASE_URL=http://127.0.0.1:54321
-SUPABASE_KEY=<anon key from CLI output>
-```
-
-5. To stop the stack when done:
-
-```bash
-npx supabase stop
-```
-
-The local Studio UI is available at `http://localhost:54323`.
-
-No database tables or migrations are required — this project uses Supabase Auth's built-in `auth.users` table only.
-
-### Using a cloud Supabase project instead
-
-If you prefer to use a hosted Supabase project, add these variables to your `.env` and `.dev.vars` files:
-
-| Variable       | Description                                                |
-| -------------- | ---------------------------------------------------------- |
-| `SUPABASE_URL` | Project URL from Supabase dashboard → Settings → API       |
-| `SUPABASE_KEY` | `anon` public key from Supabase dashboard → Settings → API |
-
-```
-SUPABASE_URL=https://<project-ref>.supabase.co
-SUPABASE_KEY=<anon-key>
-```
-
-### Email confirmation in local development
-
-By default Supabase requires email confirmation before a user can sign in. To skip this during local development:
-
-1. Open the Supabase dashboard for your project
-2. Go to **Authentication → Email → Confirm email**
-3. Toggle it **off**
-
-Users can then sign in immediately after sign-up without clicking a confirmation link.
-
-### Auth routes
-
-| Route                 | Description                                                             |
-| --------------------- | ----------------------------------------------------------------------- |
-| `/auth/signin`        | Email/password sign-in form                                             |
-| `/auth/signup`        | Email/password sign-up form                                             |
-| `/auth/confirm-email` | Post-signup "check your inbox" page                                     |
-| `/dashboard`          | Example protected page (redirects to `/auth/signin` if unauthenticated) |
-
-Route protection is handled in `src/middleware.ts`. Add paths to the `PROTECTED_ROUTES` array there to require authentication.
-
-## Deployment
-
-This project deploys to [Cloudflare Workers](https://workers.cloudflare.com/).
-
-1. Build the project:
-
-```bash
-npm run build
-```
-
-2. Deploy with Wrangler:
-
-```bash
-npx wrangler deploy
-```
-
-Set `SUPABASE_URL` and `SUPABASE_KEY` as secrets in your Cloudflare dashboard or via `npx wrangler secret put`.
-
-## Smoke test
-
-`scripts/smoke.mjs` is a dependency-free Node script that walks the whole auth flow (sign-up, sign-in, protected page, sign-out) over HTTP. Run it against the dev server or the production preview after dependency upgrades:
-
-```bash
-npm run dev            # or: npm run build && npm run preview
-BASE_URL=http://localhost:4321 npm run smoke
-```
-
-It needs a reachable Supabase instance (local or cloud) with email confirmation disabled.
-
-> **Note:** this script exists primarily to guard the development of the starter itself — it is a fast sanity check that dependency upgrades did not break the build, the Cloudflare adapter or the Supabase auth flow. It is **not** a substitute for a real test suite. Once you build your own product on top of this starter, add proper tests (unit, integration, end-to-end) suited to your application.
-
-## CI
-
-GitHub Actions runs two jobs on every push and PR to `master`:
-
-- **ci** — lint, `astro check` and build. Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets for the build step.
-- **smoke** — starts a local Supabase via the Supabase CLI, builds, serves the production preview on the Cloudflare runtime and runs `npm run smoke` against it. No secrets required.
-
-## License
+## Licencja
 
 MIT
