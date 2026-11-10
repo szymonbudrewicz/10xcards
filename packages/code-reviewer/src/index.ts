@@ -43,7 +43,8 @@ function totalCost(steps: readonly StepResult<ToolSet>[]): number | undefined {
 }
 
 async function review(diff: string, apiKey: string): Promise<Review> {
-  const openrouter = createOpenRouter({ apiKey });
+  // OPENROUTER_BASE_URL lets tests point the CLI at a local fake server.
+  const openrouter = createOpenRouter({ apiKey, baseURL: process.env.OPENROUTER_BASE_URL });
   const reviewer = new ToolLoopAgent({
     model: openrouter(MODEL, { usage: { include: true } }),
     instructions: SYSTEM_PROMPT,
