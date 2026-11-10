@@ -1,0 +1,25 @@
+{
+  "name": "code-reviewer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Code-review agent for 10xCards (M5L2): git diff in, structured JSON verdict out.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "review": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@openrouter/ai-sdk-provider": "^3.1.0",
+    "ai": "^7.0.166",
+    "dotenv": "^18.0.10",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}

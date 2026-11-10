@@ -15,7 +15,13 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            packages/code-reviewer/package-lock.json
       - run: npm ci
+      # Reviewer is a separate package; root eslint needs its node_modules to resolve types.
+      - run: npm ci --prefix packages/code-reviewer
+      - run: npm run typecheck --prefix packages/code-reviewer
       - run: npx astro sync
       - run: npm run lint
       - run: npm run lint:ui

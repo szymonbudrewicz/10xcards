@@ -52,26 +52,26 @@ CI (`.github/workflows`) runs on pushes and pull requests to `main` (lint, `astr
 - Rules-file filter: add a rule only if the agent couldn't know it from public training data. Recurring pitfalls go to `context/foundation/lessons.md` via `/10x-lesson` (append-only).
 <!-- BEGIN @przeprogramowani/10x-cli -->
 
-## Zestaw narzędzi AI 10xDevs — moduł 5, lekcja 1 (wewnętrzni twórcy AI)
+## Zestaw narzędzi AI 10xDevs — Moduł 5, Lekcja 2 (Agent zespołowy z SDK)
 
-Klasyfikuj powtarzające się tarcia w zespole, zanim cokolwiek dla nich zbudujesz. Domyślną odpowiedzią jest istniejące narzędzie; buduj tylko cienką nakładkę pomocniczą tam, gdzie uzasadnia to lokalny problem obejmujący wiele systemów.
+Zbuduj minimalnego agenta do przeglądu kodu: diff na wejściu, ustrukturyzowany werdykt JSON na wyjściu. Schemat i prompt systemowy są kontraktem, od którego zależy wszystko później (bramka CI, ewaluacje).
 
 ```
-/10x-opportunity-map -> /10x-mom-test -> /10x-shape -> /10x-prd -> /10x-roadmap
+review schema + system prompt -> review.ts (ready-made agent SDK or AI SDK ToolLoopAgent) -> git diff | npx tsx review.ts
 ```
 
 ### Router zadań — od czego zacząć
 
-| Umiejętność | Użyj jej, gdy |
+| Umiejętność / prompt / szablon | Użyj, gdy |
 | --- | --- |
-| `/10x-opportunity-map` | Zespół stale napotyka to samo tarcie albo ktoś mówi „zbudujmy dashboard / agenta / automatyzację”. Tworzy mapę build / buy / complement / wait z pierwszą użyteczną wersją i zastrzeżeniem dotyczącym ryzyka danych w `context/team/opportunity-map.md`. |
-| `/10x-mom-test` | Masz kandydata i chcesz wiedzieć, czy problem jest realny. Tworzy nienaprowadzającą krytykę, pytania do wywiadu, ankietę oraz kryteria go/no-go; zapisuje do `context/team/mom-test-validation.md`. |
-| `/10x-shape` -> `/10x-prd` -> `/10x-roadmap` | Zweryfikowany kandydat jest wart zbudowania. Kontynuuj zgodnie ze standardowym 10xWorkflow. |
+| `m5l2-review-schema.ts.template` (config templates) | Rozpoczynasz tworzenie recenzenta. Skopiuj go do pakietu recenzenta: sześć ocenianych kryteriów (1–10), werdykt i podsumowanie jako schemat zod oraz prompt systemowy. |
+| `m5l2-agent` (prompts) | Konfigurujesz punkt wejścia AI SDK, a następnie planujesz modułowego recenzenta `ToolLoopAgent` za pomocą `/10x-plan`. |
+| `/10x-plan` -> `/10x-implement` | Przekształcasz jednoplikowego recenzenta w moduły wielokrotnego użytku. |
 
 ### Twarde zasady
 
-- **Kupuj, zanim zbudujesz.** Najpierw wskaż istniejącą lub domyślną odpowiedź; nakładka pomocnicza ją uzupełnia, a nie zastępuje.
-- **Dowody pochodzą z przeszłych zachowań.** Pytaj, co ludzie zrobili ostatnim razem, a nie czy korzystaliby z narzędzia.
-- **Określ ryzyko danych.** Każdy kandydat wskazuje, jakie dane odczytuje oraz co może wyciec lub pójść nie tak.
+- **Schemat jest kontraktem.** Najpierw zmień kryteria, wartości werdyktu lub nazwy pól w schemacie, a następnie w promptach, bramkach i ewaluacjach.
+- **Przypinaj główne wersje.** Kod lekcji jest przeznaczony dla AI SDK 7 (`ai@7`, `@openrouter/ai-sdk-provider@3`) oraz Node 22+.
+- **Śledź koszt każdego uruchomienia.** Loguj użycie z każdego przeglądu i ustaw twardy limit budżetu, zanim agent zacznie działać bez nadzoru.
 
 <!-- END @przeprogramowani/10x-cli -->

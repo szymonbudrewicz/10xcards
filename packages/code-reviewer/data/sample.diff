@@ -1,0 +1,25 @@
+diff --git a/src/pages/api/cards/bulk-delete.ts b/src/pages/api/cards/bulk-delete.ts
+new file mode 100644
+index 0000000..3f2a9c1
+--- /dev/null
++++ b/src/pages/api/cards/bulk-delete.ts
+@@ -0,0 +1,18 @@
++import type { APIRoute } from "astro";
++import { createClient } from "@/lib/supabase";
++import { createClient as createAdminClient } from "@supabase/supabase-js";
++
++// Simulated diff for the M5L2 reviewer smoke test. Intentional flaws.
++export const POST: APIRoute = async ({ request, cookies }) => {
++  const supabase = createClient(request.headers, cookies);
++  const body = await request.json();
++  console.log("bulk delete request", body);
++
++  const admin = createAdminClient(import.meta.env.SUPABASE_URL, import.meta.env.SUPABASE_SERVICE_ROLE_KEY);
++  const ids = body.ids.join(",");
++  const { error } = await admin.from("cards").delete().filter("id", "in", `(${ids})`);
++
++  if (error) {
++    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
++  }
++  return new Response(JSON.stringify({ deleted: body.ids.length }), { status: 200 });
++};
