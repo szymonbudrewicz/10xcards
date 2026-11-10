@@ -52,26 +52,28 @@ CI (`.github/workflows`) runs on pushes and pull requests to `main` (lint, `astr
 - Rules-file filter: add a rule only if the agent couldn't know it from public training data. Recurring pitfalls go to `context/foundation/lessons.md` via `/10x-lesson` (append-only).
 <!-- BEGIN @przeprogramowani/10x-cli -->
 
-## 10xDevs AI Toolkit - Moduł 4, Lekcja 3 (Analiza funkcji)
+## Zestaw narzędzi AI 10xDevs — Moduł 4, Lekcja 4 (Refaktoryzacja)
 
-Przekształć Mapę Projektu w ugruntowaną analizę jednej funkcji: co działa, co jest słabe, co należy zmodernizować.
+Przejdź od zarejestrowanych problemów do decyzji o refaktoryzacji, której możesz bronić, a następnie wprowadzaj zmianę małymi krokami, które możesz cofnąć.
 
 ```
-context/map/repo-map.md -> /10x-research (trace + test gaps + blast radius) -> ast-grep verification -> research.md
+/10x-new (research-only intention) -> /10x-research (options, no decision) -> ast-grep verification -> /10x-plan (decide) -> /10x-implement
 ```
 
 ### Router zadań — od czego zacząć
 
 | Umiejętność / prompt | Użyj, gdy |
 | --- | --- |
-| `m4l3-1-research-with-map` | Uruchamiasz `/10x-research` dla jednej funkcji z `repo-map.md` jako danymi wejściowymi. Trzech równoległych podagentów śledzi przepływ od początku do końca, znajduje luki w pokryciu testami i mierzy promień rażenia. Raport kończy się sekcjami Przegląd funkcji i Dług techniczny. Dostosuj nazwę funkcji w prompcie do swojego repozytorium. |
-| `m4l3-2-ast-grep-verification` | Potwierdzasz lub obalasz każde twierdzenie strukturalne w tym raporcie (liczby miejsc wywołania, „tylko tutaj”, „zawsze przez X”) za pomocą ast-grep, a następnie poprawiasz raport. |
-| `/10x-repo-map` | Nie ma jeszcze `context/map/repo-map.md` lub jest nieaktualny. |
+| `m4l4-1-new-change-intention` | Rozpoczynasz zmianę za pomocą `/10x-new` i jawnej intencji: zbadać i uszeregować, bez refaktoryzacji, bez decyzji na tym etapie. |
+| `m4l4-2-refactor-opportunities-research` | Uruchamiasz `/10x-research` dla każdego zarejestrowanego problemu z trzech perspektyw tylko do odczytu: obecny kształt, historia decyzji (czy było to celowe?), wykonalność migracji. Kończy się uszeregowanymi opcjami i ich kompromisami. |
+| `m4l4-3-ranking-ast-grep-verification` | Sprawdzasz strukturalne twierdzenia stojące za rankingiem za pomocą ast-grep i poprawiasz raport tak, aby wcześniejsza liczba pozostała widoczna. |
+| `/10x-plan` -> `/10x-plan-review` -> `/10x-implement` | Bronisz wybranej opcji podczas wywiadu dotyczącego planu, a następnie realizujesz plan. |
 
 ### Twarde zasady
 
-- **To jest badanie, nie refaktoryzacja.** W tej lekcji nie zmieniaj kodu produkcyjnego.
-- **Sprawdź każde twierdzenie strukturalne narzędziem.** ast-grep precyzyjnie dopasowuje składnię; grep dopasowuje dosłowny tekst. Zweryfikuj każde zero z ast-grep za pomocą grep, aby błędny wzorzec nie został uznany za „brak wystąpień”.
-- **Cytuj `file:line`** dla każdego kroku śledzenia i każdej pozycji długu.
+- **Badanie szereguje; plan decyduje.** Bez refaktoryzacji i bez ostatecznego wyboru w ramach badania.
+- **Najpierw zabezpieczenie.** Testy charakteryzujące, które utrwalają obecne zachowanie, poprzedzają pierwszą zmianę strukturalną.
+- **Każdą fazę można cofnąć niezależnie.** Preferuj Strangler Fig, Branch by Abstraction oraz kolejność w stylu Mikado zamiast przepisywania typu big-bang.
+- **Zachowaj niezmienione zachowanie.** Faza refaktoryzacji, która zmienia obserwowalne zachowanie, jest odrębną zmianą.
 
 <!-- END @przeprogramowani/10x-cli -->
