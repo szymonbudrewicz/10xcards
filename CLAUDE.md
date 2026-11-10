@@ -52,28 +52,26 @@ CI (`.github/workflows`) runs on pushes and pull requests to `main` (lint, `astr
 - Rules-file filter: add a rule only if the agent couldn't know it from public training data. Recurring pitfalls go to `context/foundation/lessons.md` via `/10x-lesson` (append-only).
 <!-- BEGIN @przeprogramowani/10x-cli -->
 
-## Zestaw narzędzi AI 10xDevs - Moduł 4, Lekcja 5 (Modernizacja DDD)
+## Zestaw narzędzi AI 10xDevs — moduł 5, lekcja 1 (wewnętrzni twórcy AI)
 
-Ujawnij domenę, której kod legacy nigdy nie nazwał, a następnie użyj jej jako danych wejściowych do kolejnego cyklu.
+Klasyfikuj powtarzające się tarcia w zespole, zanim cokolwiek dla nich zbudujesz. Domyślną odpowiedzią jest istniejące narzędzie; buduj tylko cienką nakładkę pomocniczą tam, gdzie uzasadnia to lokalny problem obejmujący wiele systemów.
 
 ```
-domain distillation -> invariant aggregate / anti-corruption layer -> /10x-shape -> /10x-roadmap -> /10x-research -> /10x-plan
+/10x-opportunity-map -> /10x-mom-test -> /10x-shape -> /10x-prd -> /10x-roadmap
 ```
 
-### Router zadań - Od czego zacząć
+### Router zadań — od czego zacząć
 
-| Umiejętność / prompt | Użyj, gdy |
+| Umiejętność | Użyj jej, gdy |
 | --- | --- |
-| `/10x-domain-distillation` | Jednorazowa mapa domeny. Zapisuje wszechobecny język wraz z jego źródłami, poddomenami Core/Supporting/Generic, niezmiennikami oraz informacją, czy kod je egzekwuje, rozbieżnościami między modelem a kodem i rankingiem „napraw najpierw” do `context/domain/domain-distillation.md`, a także `context/domain/glossary.md`. Użyj `--replace`, aby odświeżyć; poprzednie uruchomienie trafia do `context/archive/`. |
-| `m4l5-1-domain-distillation` | Ta sama destylacja jako pojedynczy prompt, wykonywana krok po kroku. |
-| `m4l5-2-invariant-aggregate-refactor` | Kluczowa reguła biznesowa jest egzekwowana w wielu miejscach albo wcale. Planuje agregat strażniczy, który jest jej właścicielem. |
-| `m4l5-3-anti-corruption-layer` | Zewnętrzna zależność przenika do domeny. Planuje wokół niej warstwę Anti-Corruption Layer. |
-| `/10x-shape` -> `/10x-roadmap` -> `/10x-research` -> `/10x-plan` | Przekazywanie artefaktów `context/domain/` do kolejnego cyklu. |
+| `/10x-opportunity-map` | Zespół stale napotyka to samo tarcie albo ktoś mówi „zbudujmy dashboard / agenta / automatyzację”. Tworzy mapę build / buy / complement / wait z pierwszą użyteczną wersją i zastrzeżeniem dotyczącym ryzyka danych w `context/team/opportunity-map.md`. |
+| `/10x-mom-test` | Masz kandydata i chcesz wiedzieć, czy problem jest realny. Tworzy nienaprowadzającą krytykę, pytania do wywiadu, ankietę oraz kryteria go/no-go; zapisuje do `context/team/mom-test-validation.md`. |
+| `/10x-shape` -> `/10x-prd` -> `/10x-roadmap` | Zweryfikowany kandydat jest wart zbudowania. Kontynuuj zgodnie ze standardowym 10xWorkflow. |
 
 ### Twarde zasady
 
-- **Odkrywaj domenę; nie zakładaj jej.** Zacznij bez nazw encji, agregatów ani ścieżek i wskaż, skąd pochodzi każdy termin (z dokumentu lub kodu).
-- **Twórz mapę albo plan, nie kod.** Te artefakty nie modyfikują kodu produkcyjnego; zmiana następuje później przez `/10x-plan` -> `/10x-implement`.
-- **Używaj terminów ze słownika.** Gdy istnieje `context/domain/glossary.md`, używaj jego terminów w kodzie, planach i rozmowach oraz unikaj nazw oznaczonych przez niego jako „don't call it”.
+- **Kupuj, zanim zbudujesz.** Najpierw wskaż istniejącą lub domyślną odpowiedź; nakładka pomocnicza ją uzupełnia, a nie zastępuje.
+- **Dowody pochodzą z przeszłych zachowań.** Pytaj, co ludzie zrobili ostatnim razem, a nie czy korzystaliby z narzędzia.
+- **Określ ryzyko danych.** Każdy kandydat wskazuje, jakie dane odczytuje oraz co może wyciec lub pójść nie tak.
 
 <!-- END @przeprogramowani/10x-cli -->
