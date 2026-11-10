@@ -346,6 +346,8 @@ SESSION_REPO=$(git -C "${CWD:-$PWD}" rev-parse --path-format=absolute --git-comm
 [ -n "$REPO" ] && [ "$REPO" = "$SESSION_REPO" ] || exit 0
 cd "$ROOT" || exit 0
 
+# git reports the real path; resolve symlinks in FILE to match (macOS: /var -> /private/var).
+FILE="$(cd "$(dirname "$FILE")" && pwd -P)/$(basename "$FILE")"
 REL=${FILE#"$ROOT"/}
 TESTS=()
 case "$REL" in
@@ -399,6 +401,8 @@ REPO=$(git -C "$ROOT" rev-parse --path-format=absolute --git-common-dir 2>/dev/n
 SESSION_REPO=$(git -C "${CWD:-$PWD}" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)
 [ -n "$REPO" ] && [ "$REPO" = "$SESSION_REPO" ] || exit 0
 cd "$ROOT" || exit 0
+# git reports the real path; resolve symlinks in FILE to match (macOS: /var -> /private/var).
+FILE="$(cd "$(dirname "$FILE")" && pwd -P)/$(basename "$FILE")"
 REL=${FILE#"$ROOT"/}
 
 case "$REL" in

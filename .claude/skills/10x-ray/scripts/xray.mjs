@@ -341,7 +341,7 @@ const I18N = {
   },
 };
 let L = I18N.en;
-const useLang = (meta) => (L = I18N[meta.lang] ?? I18N.en);
+const pickLang = (meta) => (L = I18N[meta.lang] ?? I18N.en);
 const fmt = (s, vars = {}) => s.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? vars[k] : m));
 const say = (key, vars) => fmt(L.ui[key], vars);
 const noun = (key, n) => {
@@ -619,7 +619,7 @@ function frames(log, from, { verbose = false, quiet = false } = {}) {
   const events = readEvents(log);
   const meta = loadMeta(log);
   const map = loadMap(log);
-  useLang(meta);
+  pickLang(meta);
   const idx = indexMap(map);
   const state = { cur: null, seen: new Set(), maxIter: new Map(), lastIter: new Map() };
   const taught = new Set(); // patterns whose lesson has been shown
@@ -669,7 +669,7 @@ function frames(log, from, { verbose = false, quiet = false } = {}) {
 // ── html ──────────────────────────────────────────────────────────────────
 function page(log, { live }) {
   const meta = loadMeta(log);
-  useLang(meta);
+  pickLang(meta);
   const data = {
     live,
     meta,
@@ -753,7 +753,7 @@ if (cmd === "init") {
   const payloadFile = `${log}.ask-${readEvents(log).length + 1}.json`;
   fs.writeFileSync(payloadFile, JSON.stringify(payload, null, 2));
   const count = payload.mode === "text" ? 0 : payload.questions.length;
-  useLang(loadMeta(log));
+  pickLang(loadMeta(log));
   const n = append(log, {
     kind: "ask",
     node: nodeArg(node),
@@ -770,7 +770,7 @@ if (cmd === "init") {
   const text = rest.join(" ");
   if (!log || !text) die("usage: answer <log> <text>");
   const last = readEvents(log).findLast((e) => e.node);
-  useLang(loadMeta(log));
+  pickLang(loadMeta(log));
   const n = append(log, {
     kind: "answer",
     node: last?.node,
