@@ -257,14 +257,14 @@ Wejście CLI zmienia się z `src/index.ts` na `src/cli.ts`; `npm run review` dzi
 #### Automated
 
 - [x] 1.1 Testy charakteryzujące przechodzą na starym index.ts
-- [ ] 1.2 Po podziale te same testy przechodzą bez zmian w tests/
-- [ ] 1.3 Typy pakietu przechodzą
-- [ ] 1.4 Lint pakietu przechodzi
-- [ ] 1.5 Import src/index.ts nie uruchamia recenzji
+- [x] 1.2 Po podziale te same testy przechodzą bez zmian w tests/
+- [x] 1.3 Typy pakietu przechodzą
+- [x] 1.4 Lint pakietu przechodzi
+- [x] 1.5 Import src/index.ts nie uruchamia recenzji
 
 #### Manual
 
-- [ ] 1.6 agent.ts i index.ts bez process.env, stdin i console
+- [x] 1.6 agent.ts i index.ts bez process.env, stdin i console
 
 ### Phase 2: Limit kosztu
 
