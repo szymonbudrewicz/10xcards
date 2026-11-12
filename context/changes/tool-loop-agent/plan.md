@@ -256,28 +256,28 @@ Wejście CLI zmienia się z `src/index.ts` na `src/cli.ts`; `npm run review` dzi
 
 #### Automated
 
-- [x] 1.1 Testy charakteryzujące przechodzą na starym index.ts
-- [x] 1.2 Po podziale te same testy przechodzą bez zmian w tests/
-- [x] 1.3 Typy pakietu przechodzą
-- [x] 1.4 Lint pakietu przechodzi
-- [x] 1.5 Import src/index.ts nie uruchamia recenzji
+- [x] 1.1 Testy charakteryzujące przechodzą na starym index.ts — c968ca6
+- [x] 1.2 Po podziale te same testy przechodzą bez zmian w tests/ — d09e2bc
+- [x] 1.3 Typy pakietu przechodzą — d09e2bc
+- [x] 1.4 Lint pakietu przechodzi — d09e2bc
+- [x] 1.5 Import src/index.ts nie uruchamia recenzji — d09e2bc
 
 #### Manual
 
-- [x] 1.6 agent.ts i index.ts bez process.env, stdin i console
+- [x] 1.6 agent.ts i index.ts bez process.env, stdin i console — d09e2bc
 
 ### Phase 2: Limit kosztu
 
 #### Automated
 
-- [ ] 2.1 Testy pakietu przechodzą
-- [ ] 2.2 Testy charakteryzujące z fazy 1 nadal przechodzą
-- [ ] 2.3 Typy pakietu przechodzą
-- [ ] 2.4 Lint pakietu przechodzi
+- [x] 2.1 Testy pakietu przechodzą
+- [x] 2.2 Testy charakteryzujące z fazy 1 nadal przechodzą
+- [x] 2.3 Typy pakietu przechodzą
+- [x] 2.4 Lint pakietu przechodzi
 
 #### Manual
 
-- [ ] 2.5 .env.example opisuje trzy limity
+- [x] 2.5 .env.example opisuje trzy limity
 
 ### Phase 3: CI i weryfikacja
 

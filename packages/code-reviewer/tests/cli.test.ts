@@ -83,3 +83,44 @@ describe("reviewer CLI", () => {
     expect(result.stdout).toBe("");
   });
 });
+
+describe("reviewer CLI limits", () => {
+  it("exits 2 with empty stdout when the run exceeds REVIEW_MAX_COST_USD", async () => {
+    fake.respondWith(reviewCompletion(VALID_REVIEW, 0.5));
+
+    const result = await runCli({ stdin: DIFF, env: { ...env(), REVIEW_MAX_COST_USD: "0.10" } });
+
+    expect(result.code).toBe(2);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toContain("[limit]");
+  });
+
+  it("exits 2 without calling the model when the diff exceeds REVIEW_MAX_DIFF_CHARS", async () => {
+    const result = await runCli({ stdin: DIFF, env: { ...env(), REVIEW_MAX_DIFF_CHARS: "10" } });
+
+    expect(result.code).toBe(2);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toContain("[limit]");
+    expect(fake.requests).toHaveLength(0);
+  });
+
+  it("exits 1 without calling the model when a limit is not a number", async () => {
+    const result = await runCli({ stdin: DIFF, env: { ...env(), REVIEW_MAX_COST_USD: "abc" } });
+
+    expect(result.code).toBe(1);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toContain("REVIEW_MAX_COST_USD");
+    expect(fake.requests).toHaveLength(0);
+  });
+
+  it("warns on stderr but still prints the review when the provider reports no cost", async () => {
+    fake.respondWith(reviewCompletion(VALID_REVIEW));
+
+    const result = await runCli({ stdin: DIFF, env: env() });
+
+    expect(result.code).toBe(0);
+    expectReviewOnStdout(result.stdout);
+    expect(result.stderr).toContain("cost=?");
+    expect(result.stderr).toContain("nie zwrócił kosztu");
+  });
+});
