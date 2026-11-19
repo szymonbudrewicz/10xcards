@@ -1,0 +1,17 @@
+import type { APIRoute } from "astro";
+import { jsonError, jsonOk } from "@/lib/api-response";
+import { createClient } from "@/lib/supabase";
+
+// POST /api/cards/by-user: list the cards of a user for the upcoming shared-decks view.
+export const POST: APIRoute = async (context) => {
+  const body = (await context.request.json()) as { user_id: string };
+  // eslint-disable-next-line no-console
+  console.log("cards by user", body);
+
+  const supabase = createClient(context.request.headers, context.cookies);
+  if (!supabase) return jsonError(503, "auth_unavailable", "Supabase is not configured");
+
+  const { data, error } = await supabase.from("cards").select("*").eq("user_id", body.user_id);
+  if (error) return jsonError(500, "cards_not_loaded", error.message);
+  return jsonOk(data);
+};
