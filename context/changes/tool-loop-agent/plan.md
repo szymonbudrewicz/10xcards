@@ -270,14 +270,14 @@ Wejście CLI zmienia się z `src/index.ts` na `src/cli.ts`; `npm run review` dzi
 
 #### Automated
 
-- [x] 2.1 Testy pakietu przechodzą
-- [x] 2.2 Testy charakteryzujące z fazy 1 nadal przechodzą
-- [x] 2.3 Typy pakietu przechodzą
-- [x] 2.4 Lint pakietu przechodzi
+- [x] 2.1 Testy pakietu przechodzą — b55bd40
+- [x] 2.2 Testy charakteryzujące z fazy 1 nadal przechodzą — b55bd40
+- [x] 2.3 Typy pakietu przechodzą — b55bd40
+- [x] 2.4 Lint pakietu przechodzi — b55bd40
 
 #### Manual
 
-- [x] 2.5 .env.example opisuje trzy limity
+- [x] 2.5 .env.example opisuje trzy limity — b55bd40
 
 ### Phase 3: CI i weryfikacja
 
@@ -288,5 +288,5 @@ Wejście CLI zmienia się z `src/index.ts` na `src/cli.ts`; `npm run review` dzi
 
 #### Manual
 
-- [ ] 3.3 Płatny przebieg na sample.diff: exit 0, JSON, koszt poniżej $0.10
-- [ ] 3.4 Przebieg z REVIEW_MAX_COST_USD=0.001 kończy się exit 2
+- [x] 3.3 Płatny przebieg na sample.diff: exit 0, JSON, koszt poniżej $0.10
+- [x] 3.4 Przebieg z REVIEW_MAX_COST_USD=0.001 kończy się exit 2

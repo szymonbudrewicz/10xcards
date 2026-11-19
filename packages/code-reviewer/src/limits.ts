@@ -38,6 +38,6 @@ export class BudgetExceededError extends ReviewLimitError {
     readonly costUsd: number,
     readonly maxCostUsd: number,
   ) {
-    super(`Koszt przebiegu $${costUsd.toFixed(6)} przekroczył budżet $${maxCostUsd.toFixed(2)} — wynik odrzucony.`);
+    super(`Koszt przebiegu $${costUsd.toFixed(6)} przekroczył budżet $${String(maxCostUsd)} — wynik odrzucony.`);
   }
 }

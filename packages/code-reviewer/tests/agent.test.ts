@@ -90,6 +90,12 @@ describe("runReview", () => {
     await expect(run).rejects.toMatchObject({ costUsd: 0.11, maxCostUsd: 0.1 });
   });
 
+  it("states a sub-cent budget exactly in the error message", async () => {
+    const run = runReview("diff", { model: mockModel(0.0047), limits: { maxCostUsd: 0.0001 } });
+
+    await expect(run).rejects.toThrow("budżet $0.0001");
+  });
+
   it("returns the review when the run costs exactly maxCostUsd", async () => {
     const run = await runReview("diff", { model: mockModel(0.1), limits: { maxCostUsd: 0.1 } });
 
