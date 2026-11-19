@@ -33,8 +33,12 @@ export interface RunUsage {
   steps: number;
   inputTokens?: number;
   outputTokens?: number;
+  // Reasoning share of outputTokens, when the provider reports it.
+  reasoningTokens?: number;
   // undefined when the provider reported no cost.
   costUsd?: number;
+  // OpenRouter upstream provider of the last step (routing changes cost and behaviour).
+  provider?: string;
 }
 
 export interface ReviewRun {
@@ -58,13 +62,23 @@ export function createReviewer({ model, limits }: ReviewerOptions) {
     output: Output.object({ schema: REVIEW_SCHEMA }),
     maxOutputTokens,
     // Sent as OpenRouter reasoning.max_tokens; other providers ignore the openrouter key.
-    providerOptions: { openrouter: { reasoning: { max_tokens: maxReasoningTokens } } },
+    ...(maxReasoningTokens === null
+      ? {}
+      : { providerOptions: { openrouter: { reasoning: { max_tokens: maxReasoningTokens } } } }),
     stopWhen: [isStepCount(2), costBudget(maxCostUsd)],
   });
 }
 
 function modelIdOf(model: LanguageModel): string {
   return typeof model === "string" ? model : model.modelId;
+}
+
+// providerMetadata.openrouter.provider of the last step; empty string means unknown.
+function providerOf(
+  steps: readonly { providerMetadata?: Partial<Record<string, Record<string, unknown>>> }[],
+): string | undefined {
+  const value = steps.at(-1)?.providerMetadata?.openrouter?.provider;
+  return typeof value === "string" && value !== "" ? value : undefined;
 }
 
 export async function runReview(input: ReviewInput, { model, limits }: ReviewerOptions): Promise<ReviewRun> {
@@ -85,6 +99,7 @@ export async function runReview(input: ReviewInput, { model, limits }: ReviewerO
         steps: 1,
         inputTokens: error.usage?.inputTokens,
         outputTokens: error.usage?.outputTokens,
+        reasoningTokens: error.usage?.outputTokenDetails.reasoningTokens,
       };
       if (error.finishReason === "length") throw new OutputTokenLimitError(resolved.maxOutputTokens, usage);
       throw new NoReviewOutputError(error.finishReason ?? "unknown", usage);
@@ -101,7 +116,9 @@ export async function runReview(input: ReviewInput, { model, limits }: ReviewerO
     steps: result.steps.length,
     inputTokens: result.usage.inputTokens,
     outputTokens: result.usage.outputTokens,
+    reasoningTokens: result.usage.outputTokenDetails.reasoningTokens,
     costUsd,
+    provider: providerOf(result.steps),
   };
 
   let modelReview: Review;
