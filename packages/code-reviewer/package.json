@@ -9,6 +9,7 @@
   },
   "scripts": {
     "review": "tsx src/cli.ts",
+    "comment": "tsx src/comment-cli.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },

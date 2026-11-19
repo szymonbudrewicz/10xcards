@@ -6,7 +6,13 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { REVIEW_SCHEMA } from "../src/review-schema.ts";
-import { reviewCompletion, startFakeOpenRouter, VALID_REVIEW, type FakeOpenRouter } from "./helpers/fake-openrouter.ts";
+import {
+  emptyCompletion,
+  reviewCompletion,
+  startFakeOpenRouter,
+  VALID_REVIEW,
+  type FakeOpenRouter,
+} from "./helpers/fake-openrouter.ts";
 import { runCli } from "./helpers/run-cli.ts";
 
 const DIFF = "diff --git a/x.ts b/x.ts\n+const marker = 'CHARACTERIZATION_MARKER';\n";
@@ -56,6 +62,18 @@ describe("reviewer CLI", () => {
     expect(JSON.stringify(fake.requests)).toContain("CHARACTERIZATION_MARKER");
   });
 
+  it("sends PR_TITLE/PR_BODY to the model and reports an overridden model verdict on stderr", async () => {
+    fake.respondWith(reviewCompletion({ ...VALID_REVIEW, verdict: "pass" }, 0.001));
+
+    const result = await runCli({ stdin: DIFF, env: { ...env(), PR_TITLE: "TITLE_MARKER", PR_BODY: "BODY_MARKER" } });
+
+    expect(result.code).toBe(0);
+    expect(JSON.parse(result.stdout)).toMatchObject({ verdict: "fail" });
+    expect(result.stderr).toContain('[verdict] Model odpowiedział "pass"');
+    expect(JSON.stringify(fake.requests)).toContain("TITLE_MARKER");
+    expect(JSON.stringify(fake.requests)).toContain("BODY_MARKER");
+  });
+
   it("falls back to data/sample.diff when there is no input", async () => {
     const result = await runCli({ env: env() });
 
@@ -102,6 +120,61 @@ describe("reviewer CLI limits", () => {
     expect(result.stdout).toBe("");
     expect(result.stderr).toContain("[limit]");
     expect(fake.requests).toHaveLength(0);
+  });
+
+  it("exits 2 and still reports usage when the model runs out of output tokens", async () => {
+    fake.respondWith(emptyCompletion("length", 0.0321));
+
+    const result = await runCli({ stdin: DIFF, env: env() });
+
+    expect(result.code).toBe(2);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toMatch(/\[usage\] model=\S+ steps=1 in=100 out=50 cost=\$0\.032100/);
+    expect(result.stderr).toContain("[limit]");
+    expect(result.stderr).toContain("REVIEW_MAX_OUTPUT_TOKENS");
+  });
+
+  it("exits 2 when a JSON answer is cut off by the output limit (finish_reason length)", async () => {
+    fake.respondWith(emptyCompletion("length", 0.03, '{"implementationCorrectness": {"score": 8, "rea'));
+
+    const result = await runCli({ stdin: DIFF, env: env() });
+
+    expect(result.code).toBe(2);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toContain("[usage]");
+    expect(result.stderr).toContain("REVIEW_MAX_OUTPUT_TOKENS");
+  });
+
+  it("sends the reasoning cap to OpenRouter: 8000 by default, REVIEW_MAX_REASONING_TOKENS overrides", async () => {
+    await runCli({ stdin: DIFF, env: env() });
+    await runCli({ stdin: DIFF, env: { ...env(), REVIEW_MAX_REASONING_TOKENS: "1234" } });
+
+    const bodies = fake.requests as { reasoning?: { max_tokens?: number }; max_tokens?: number }[];
+    expect(bodies[0]?.reasoning).toEqual({ max_tokens: 8000 });
+    expect(bodies[0]?.max_tokens).toBe(16000);
+    expect(bodies[1]?.reasoning).toEqual({ max_tokens: 1234 });
+  });
+
+  it("exits 1 without calling the model when the reasoning cap is not below the output limit", async () => {
+    const result = await runCli({
+      stdin: DIFF,
+      env: { ...env(), REVIEW_MAX_REASONING_TOKENS: "16000", REVIEW_MAX_OUTPUT_TOKENS: "16000" },
+    });
+
+    expect(result.code).toBe(1);
+    expect(result.stderr).toContain("REVIEW_MAX_REASONING_TOKENS");
+    expect(fake.requests).toHaveLength(0);
+  });
+
+  it("exits 1 and reports usage and finish reason when the model returns no review", async () => {
+    fake.respondWith(emptyCompletion("stop", 0.002));
+
+    const result = await runCli({ stdin: DIFF, env: env() });
+
+    expect(result.code).toBe(1);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toMatch(/\[usage\] model=\S+ steps=1 in=100 out=50 cost=\?/);
+    expect(result.stderr).toContain("[finish] Model nie zwrócił recenzji (finishReason=stop)");
   });
 
   it("exits 1 without calling the model when a limit is not a number", async () => {

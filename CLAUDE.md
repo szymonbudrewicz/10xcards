@@ -14,7 +14,7 @@ Docs under `context/` are written in Polish; `context/archive/` is immutable —
 - `npm run smoke` — dependency-free auth-flow smoke test (`scripts/smoke.mjs`) against a running server; `BASE_URL` defaults to `http://localhost:4321`. Run after dependency upgrades.
 - `npm run isolation` — proves account B cannot read/change/delete/impersonate account A's cards and anon has no access (`scripts/isolation-check.mjs`). Needs `SUPABASE_URL`/`SUPABASE_KEY` from `npx supabase status -o env` (API_URL, ANON_KEY) in the environment (POSIX and PowerShell snippets in the script header); needs `npx supabase start` with migrations applied and email confirmation disabled. Refuses any non-loopback host and never reads `.dev.vars`. Never run it against production. CI runs it in the `smoke` job.
 - `npm run test:integration` — Vitest on `tests/integration/**` (excluded from `npm test`) against local Supabase: `accept_proposal()` and counters, checked by reading the DB. Same env, prerequisites and loopback-only guard as `npm run isolation`; never against production. CI runs it in the `smoke` job.
-- `git diff | npm run review --prefix packages/code-reviewer` — AI code reviewer (separate package, own `node_modules`; `npm ci --prefix packages/code-reviewer` first). JSON review on stdout, usage/cost on stderr; exit 0 review, 1 setup/provider error, 2 a per-run limit hit (`REVIEW_MAX_*` in `.env.example`). Key only in `packages/code-reviewer/.env`, never `.dev.vars`. Library API: `packages/code-reviewer/src/index.ts`. Tests: `npm test --prefix packages/code-reviewer` (no network: fake OpenRouter on loopback), run in CI.
+- `git diff | npm run review --prefix packages/code-reviewer` — AI code reviewer (separate package, own `node_modules`; `npm ci --prefix packages/code-reviewer` first). JSON review on stdout, usage/cost on stderr; exit 0 review, 1 setup/provider error, 2 a per-run limit hit (`REVIEW_MAX_*` in `.env.example`). Key only in `packages/code-reviewer/.env`, never `.dev.vars`. Library API: `packages/code-reviewer/src/index.ts`. `npm run comment --prefix packages/code-reviewer -- --review <file.json> | --no-verdict <reason>` renders the PR comment (used by CI). Tests: `npm test --prefix packages/code-reviewer` (no network: fake OpenRouter on loopback), run in CI.
 
 CI (`.github/workflows`) runs on pushes and pull requests to `main` (lint, `astro check`, `npm test`, build, plus the `smoke` job); there is no deploy job.
 
@@ -53,26 +53,28 @@ CI (`.github/workflows`) runs on pushes and pull requests to `main` (lint, `astr
 - Rules-file filter: add a rule only if the agent couldn't know it from public training data. Recurring pitfalls go to `context/foundation/lessons.md` via `/10x-lesson` (append-only).
 <!-- BEGIN @przeprogramowani/10x-cli -->
 
-## Zestaw narzędzi AI 10xDevs — Moduł 5, Lekcja 2 (Agent zespołowy z SDK)
+## Zestaw narzędzi AI 10xDevs — Moduł 5, Lekcja 3 (Przegląd kodu w CI)
 
-Zbuduj minimalnego agenta do przeglądu kodu: diff na wejściu, ustrukturyzowany werdykt JSON na wyjściu. Schemat i prompt systemowy są kontraktem, od którego zależy wszystko później (bramka CI, ewaluacje).
+Przenieś agenta przeglądu do GitHub Actions i zamień jego werdykt w bramkę merge. Oceń zmiany promptów i modeli na stałym zestawie przypadków przed ich wdrożeniem.
 
 ```
-review schema + system prompt -> review.ts (ready-made agent SDK or AI SDK ToolLoopAgent) -> git diff | npx tsx review.ts
+m5l3-requirements -> /10x-new -> /10x-research -> /10x-plan -> review.yml + composite action -> promptfoo evals
 ```
 
 ### Router zadań — od czego zacząć
 
 | Umiejętność / prompt / szablon | Użyj, gdy |
 | --- | --- |
-| `m5l2-review-schema.ts.template` (config templates) | Rozpoczynasz tworzenie recenzenta. Skopiuj go do pakietu recenzenta: sześć ocenianych kryteriów (1–10), werdykt i podsumowanie jako schemat zod oraz prompt systemowy. |
-| `m5l2-agent` (prompts) | Konfigurujesz punkt wejścia AI SDK, a następnie planujesz modułowego recenzenta `ToolLoopAgent` za pomocą `/10x-plan`. |
-| `/10x-plan` -> `/10x-implement` | Przekształcasz jednoplikowego recenzenta w moduły wielokrotnego użytku. |
+| `m5l3-requirements` + `m5l3-cicd` (prompty) | Prowadzisz badania i planujesz przepływ pracy przeglądu CI na podstawie pisemnych wymagań. |
+| `m5l3-review.yml.template`, `m5l3-action.yml.template` (szablony konfiguracji) | Podłączasz recenzenta do przepływu PR: akcja kompozytowa z wejściami tytułu, treści i diffu, etykietami `ai-cr:passed` / `ai-cr:failed` oraz nieudaną kontrolą przy werdykcie `fail`. |
+| `m5l3-promptfoo` (prompt) + `m5l3-promptfooconfig.yaml.template` | Porównujesz modele lub zmiany promptów na tych samych diffach za pomocą asercji is-json, llm-rubric i javascript. |
+| `/10x-impl-review-ci` | Przeglądasz PR względem jego `context/changes/<id>/plan.md` w CI za pomocą Claude Code Action; szablon jego workflow znajduje się w katalogu `references/` umiejętności. |
 
 ### Twarde zasady
 
-- **Schemat jest kontraktem.** Najpierw zmień kryteria, wartości werdyktu lub nazwy pól w schemacie, a następnie w promptach, bramkach i ewaluacjach.
-- **Przypinaj główne wersje.** Kod lekcji jest przeznaczony dla AI SDK 7 (`ai@7`, `@openrouter/ai-sdk-provider@3`) oraz Node 22+.
-- **Śledź koszt każdego uruchomienia.** Loguj użycie z każdego przeglądu i ustaw twardy limit budżetu, zanim agent zacznie działać bez nadzoru.
+- **Przypinaj akcje zewnętrzne do pełnego SHA commita** z tagiem w komentarzu.
+- **Bramkuj na polu werdyktu**, nigdy na swobodnym tekście wyjściowym.
+- **Przekazuj wielowierszowe wartości (diffy) przez pliki lub ograniczniki heredoc**, a nie przez jednowierszowe zapisy `$GITHUB_OUTPUT`.
+- **Uruchom zestaw ewaluacyjny przed zmianą promptu lub modelu przeglądu.**
 
 <!-- END @przeprogramowani/10x-cli -->
