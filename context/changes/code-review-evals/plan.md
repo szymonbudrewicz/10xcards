@@ -363,25 +363,25 @@ Nie dotyczy (nowe pliki; domyślne zachowanie CLI i CI bez zmian do fazy 4). Wyc
 
 #### Automated
 
-- [x] 3.1 Smoke kończy się kodem 0 albo 100 (nie 1) i raportuje wynik gradera dla `llm-rubric`
-- [x] 3.2 Pełny przebieg ×1 kończy się kodem 0 albo 100; wynik JSON zawiera 16 komórek
-- [x] 3.3 `results.md` zawiera macierz 4×4 i sumę kosztu
+- [x] 3.1 Smoke kończy się kodem 0 albo 100 (nie 1) i raportuje wynik gradera dla `llm-rubric` — 2106024
+- [x] 3.2 Pełny przebieg ×1 kończy się kodem 0 albo 100; wynik JSON zawiera 16 komórek — 2106024
+- [x] 3.3 `results.md` zawiera macierz 4×4 i sumę kosztu — 2106024
 
 #### Manual
 
-- [x] 3.4 Użytkownik ogląda macierz i potwierdza, że wyniki są wiarygodne
+- [x] 3.4 Użytkownik ogląda macierz i potwierdza, że wyniki są wiarygodne — 2106024
 
 ### Phase 4: Decyzja o modelu i limicie rozumowania (×3)
 
 #### Automated
 
-- [ ] 4.1 Przebieg `npm run eval -- --repeat 3` kończy się kodem 0 albo 100; wynik zawiera 48 komórek
-- [ ] 4.2 Po wdrożeniu: testy, typecheck i lint przechodzą
-- [ ] 4.3 Przebieg potwierdzający ×1 dla wybranej konfiguracji kończy się kodem 0
+- [x] 4.1 Przebieg `npm run eval -- --repeat 3` kończy się kodem 0 albo 100; wynik zawiera 48 komórek
+- [x] 4.2 Po wdrożeniu: testy, typecheck i lint przechodzą
+- [x] 4.3 Przebieg potwierdzający ×1 dla wybranej konfiguracji kończy się kodem 0
 
 #### Manual
 
-- [ ] 4.4 Użytkownik zatwierdza decyzję o modelu i limicie rozumowania na podstawie macierzy ×3
+- [x] 4.4 Użytkownik zatwierdza decyzję o modelu i limicie rozumowania na podstawie macierzy ×3
 
 ### Phase 5: Krótsze uzasadnienia
 

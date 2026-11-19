@@ -49,10 +49,14 @@ defaultTest:
         const m = context.providerResponse && context.providerResponse.metadata;
         return Boolean(m) && m.modelVerdict === r.verdict;
     - type: llm-rubric
+      # simplicityAndScope also judges the PR description, so for that one criterion the
+      # description counts as a concrete source (decision 2026-11-19, results.md obs. 5).
       value: >-
         Every criterion whose score is below 7 has a reason that points to a concrete file
         (and ideally a line) from the reviewed diff and names the specific problem there,
-        not a generic remark. Criteria scored 7 or higher may be brief.
+        not a generic remark. Single exception: for simplicityAndScope, a reason that points
+        to the PR title or description (what it says or fails to say about the change) is
+        also concrete. Criteria scored 7 or higher may be brief.
 
 # Every case carries a PR title and description: the CI reviewer always gets both, and
 # criterion 5 (scope) judges the description. Fail cases demand a score <= 3 on the broken

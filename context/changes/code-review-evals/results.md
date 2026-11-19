@@ -32,6 +32,57 @@ Koszt: recenzenci $0.0766 (suma `cost` z OpenRoutera; komórka z błędem bez ra
 4. **Routing OpenRoutera**: glm-5.3 trafił do 6 różnych dostawców w 10 wywołaniach (Wafer, DigitalOcean, Decart, ModelRun, Fireworks); deepseek do 3; gpt-6-luna zawsze do OpenAI. Koszt glm@8000 dla podobnych diffów: $0.0006–0.0051 (8×).
 5. **Rubryka a kryterium 5**: wymóg „plik/linia z diffa” dla prostoty i zakresu kłóci się z tym, że to kryterium ocenia też opis PR-a. Do decyzji: dopuścić w rubryce opis PR jako konkretne źródło dla tego kryterium (zmiana testu, nie promptu).
 
-### Przebieg ×3
+## Przebieg ×3 — 2026-11-19
 
-Patrz faza 4 (`plan.md`).
+Zmiany przed przebiegiem: rubryka ogólna dopuszcza opis PR jako konkretne źródło **tylko** dla `simplicityAndScope`, jednakowo dla wszystkich kolumn (decyzja użytkownika, obs. 5). Kolumna `glm-5.3@no-cap` pominięta (decyzja użytkownika: ×1 pokazał 5–15× wyższy koszt i czas bez poprawy ocen oraz brak werdyktu) — 3 kolumny × 5 przypadków × 3 = **45 komórek** (zamiast 60 z kryterium 4.1).
+Wynik promptfoo: 30 PASS / 15 FAIL, exit 100. Koszt: recenzenci $0.072 + grader ~$0.37 (79 042 tokenów wejścia × $2/M + 20 753 wyjścia × $10/M) ≈ **$0.44**.
+
+### (a) Werdykt i progi twardych reguł — podstawa decyzji
+
+Asercja przypadku: `verdict` zgodny z oczekiwanym oraz oś twarda ≤ 3 (user_id, service-role: `accountIsolation`; pasted-text: `privacySecretsAiCost`).
+
+| Przypadek | glm-5.3@8000 | deepseek-v4.1-flash | gpt-6-luna |
+| --- | --- | --- | --- |
+| user_id z body | **2/3** (izolacja 3, **4**, 3) | 3/3 (2, 1, 0*) | 3/3 (2, 2, 3) |
+| wklejony tekst w logach | 3/3 (prywatność 1, 2, 2) | 3/3 (1, 2, 1) | 3/3 (1, 1, 1) |
+| service-role | 3/3 (izolacja 1, 1, 2) | 3/3 (1, 1, 1) | 3/3 (1, 1, 1) |
+| czysty test-only (pass) | 3/3 | 3/3 | 3/3 |
+| czysty UI (pass) | 3/3 | 3/3 | 3/3 |
+| **Suma (a)** | **14/15** | **15/15** | **15/15** |
+
+* deepseek raz zwrócił **same zera** (0/0/0/0/0/0) — werdykt `fail` jest „poprawny” tylko dlatego, że 0 ≤ każdy próg; odrzuciła go asercja kontraktu (skala 1–10). To zdegenerowana odpowiedź, nie trafna ocena.
+
+### (b) llm-rubric — uzasadnienia wskazują plik/linię i właściwy problem
+
+| | glm-5.3@8000 | deepseek-v4.1-flash | gpt-6-luna |
+| --- | --- | --- | --- |
+| Suma (b) | 8/15 | 10/15 | **12/15** |
+| Gdzie oblewa | user_id 0/3, pasted 1/3, service 1/3 | user_id 1/3, pasted 1/3, service 2/3 | service-role 0/3 (jedno kryterium < 7 bez pliku) |
+
+### (c) Kontrakt i koszt
+
+| | glm-5.3@8000 | deepseek-v4.1-flash | gpt-6-luna |
+| --- | --- | --- | --- |
+| Kontrakt (schemat, skala 1–10, `modelVerdict` = reguła) | 15/15 | **14/15** (zera) | 15/15 |
+| Koszt recenzji (15 przebiegów) | $0.0459 | $0.0188 | **$0.0074** |
+| Mediana kosztu / przebieg | $0.0016–0.0045 | $0.0008–0.0013 | **$0.0003–0.0007** |
+| Mediana czasu / przebieg | 5.5–17.7 s | 6.3–13.0 s | 6.6–15.0 s |
+| Dostawcy OpenRoutera | 12 różnych | 7 | 1 (OpenAI) |
+
+### Wnioski
+
+1. Na (a) **deepseek-v4.1-flash i gpt-6-luna mają 15/15**, glm-5.3@8000 14/15 — w jednym z trzech przebiegów zły PR (`user_id` z body) dostał izolację 4, czyli dokładnie próg reguły; przy prywatności > 4 przeszedłby bramkę CI. Łącznie z ×1 glm-5.3@8000 miał to samo zachowanie 2 razy na 4 próby tego przypadku.
+2. Spośród 15/15 na (a) **gpt-6-luna jest stabilniejszy**: identyczne oceny twardej osi we wszystkich powtórzeniach, 0 zdegenerowanych odpowiedzi, jeden dostawca, najlepsza rubryka (12/15) i najniższy koszt (~2,5× taniej niż deepseek, ~6× taniej niż glm).
+3. Limit rozumowania: `glm-5.3@no-cap` (×1) był 5–15× droższy i wolniejszy bez lepszych ocen i raz nie oddał werdyktu → **limit 8000 zostaje** jako bezpiecznik dla każdego modelu (gpt-6-luna zużywa 170–900 tokenów rozumowania, więc limit go nie ogranicza).
+
+## Decyzja — 2026-11-19
+
+- **Domyślny model recenzenta: `openai/gpt-6-luna`** (było `z-ai/glm-5.3`) w `packages/code-reviewer/src/cli.ts` i `.github/actions/ai-reviewer/action.yml` (input `model`). Podstawa: warstwa (a) 15/15 w ×3, stabilne oceny twardej osi, 0 zdegenerowanych odpowiedzi, najniższy koszt; (b) 12/15 jako drugorzędny sygnał. Decyzja użytkownika: wybór modelu przede wszystkim na podstawie (a).
+- **Limit rozumowania: bez zmian, `REVIEW_MAX_REASONING_TOKENS=8000`** — bezpiecznik; `glm-5.3@no-cap` był 5–15× droższy i wolniejszy bez lepszych ocen i raz nie oddał werdyktu.
+- Ryzyka przyjęte: kilka sekund dłuższa recenzja (6–17 s na przebieg); jeden dostawca upstream (OpenAI) przez OpenRouter.
+
+### Przebieg potwierdzający — `gpt-6-luna` ×1
+
+(a) 5/5, kontrakt 5/5, (b) 4/5 — service-role: jedno kryterium < 7 bez pliku/linii (jak w ×3). promptfoo exit 100 wyłącznie z powodu (b); krok 4.3 oceniany po (a) (decyzja użytkownika). Koszt: recenzje $0.0030 + grader ~$0.034 ≈ $0.04.
+
+Łączny koszt evali w fazach 3–4: ~$0.02 (smoke) + ~$0.25 (×1) + ~$0.44 (×3) + ~$0.04 (potwierdzenie) ≈ **$0.75**.

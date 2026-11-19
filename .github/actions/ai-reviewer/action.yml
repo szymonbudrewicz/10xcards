@@ -23,7 +23,8 @@ inputs:
   model:
     description: OpenRouter model id passed to the reviewer
     required: false
-    default: z-ai/glm-5.3
+    # Same default as the CLI; chosen by the promptfoo evals (context/changes/code-review-evals/results.md).
+    default: openai/gpt-6-luna
 
 outputs:
   verdict:
