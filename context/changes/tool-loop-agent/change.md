@@ -1,7 +1,7 @@
 ---
 change_id: tool-loop-agent
 title: Modułowy recenzent ToolLoopAgent z limitem kosztu
-status: implementing
+status: implemented
 created: 2026-11-10
 updated: 2026-11-19
 archived_at: null

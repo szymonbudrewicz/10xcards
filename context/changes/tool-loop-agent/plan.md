@@ -283,10 +283,10 @@ Wejście CLI zmienia się z `src/index.ts` na `src/cli.ts`; `npm run review` dzi
 
 #### Automated
 
-- [ ] 3.1 CI na PR-ze zielone
-- [ ] 3.2 Log joba ci zawiera testy recenzenta
+- [x] 3.1 CI na PR-ze zielone — 6a8e3fe
+- [x] 3.2 Log joba ci zawiera testy recenzenta — 6a8e3fe
 
 #### Manual
 
-- [x] 3.3 Płatny przebieg na sample.diff: exit 0, JSON, koszt poniżej $0.10
-- [x] 3.4 Przebieg z REVIEW_MAX_COST_USD=0.001 kończy się exit 2
+- [x] 3.3 Płatny przebieg na sample.diff: exit 0, JSON, koszt poniżej $0.10 — 6a8e3fe
+- [x] 3.4 Przebieg z REVIEW_MAX_COST_USD=0.001 kończy się exit 2 — 6a8e3fe
