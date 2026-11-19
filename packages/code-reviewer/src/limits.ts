@@ -8,14 +8,20 @@ export interface ReviewLimits {
   maxDiffChars: number;
   // Ceiling on tokens the model may generate per call (reasoning included).
   maxOutputTokens: number;
+  // Cap on reasoning tokens (OpenRouter reasoning.max_tokens); must stay below
+  // maxOutputTokens so the model always has room left to write the JSON review.
+  maxReasoningTokens: number;
   // Total billed cost of one run (sum over steps) in USD.
   maxCostUsd: number;
 }
 
-// First paid run: ~7k output tokens (mostly reasoning), $0.014 — these leave headroom.
+// First paid run: ~7k output tokens (mostly reasoning), $0.014. On a 100k-char diff in CI
+// glm-5.3 once reasoned through all 16k output tokens and wrote no JSON (PR #29), while the
+// same diff locally took 628 — hence the separate reasoning cap.
 export const DEFAULT_LIMITS: ReviewLimits = {
   maxDiffChars: 200_000,
   maxOutputTokens: 16_000,
+  maxReasoningTokens: 8_000,
   maxCostUsd: 0.1,
 };
 

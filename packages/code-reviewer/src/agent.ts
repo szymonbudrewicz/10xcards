@@ -50,13 +50,15 @@ function resolveLimits(limits: Partial<ReviewLimits> | undefined): ReviewLimits 
 }
 
 export function createReviewer({ model, limits }: ReviewerOptions) {
-  const { maxOutputTokens, maxCostUsd } = resolveLimits(limits);
+  const { maxOutputTokens, maxReasoningTokens, maxCostUsd } = resolveLimits(limits);
   return new ToolLoopAgent({
     model,
     instructions: SYSTEM_PROMPT,
     tools: {},
     output: Output.object({ schema: REVIEW_SCHEMA }),
     maxOutputTokens,
+    // Sent as OpenRouter reasoning.max_tokens; other providers ignore the openrouter key.
+    providerOptions: { openrouter: { reasoning: { max_tokens: maxReasoningTokens } } },
     stopWhen: [isStepCount(2), costBudget(maxCostUsd)],
   });
 }
@@ -76,13 +78,16 @@ export async function runReview(input: ReviewInput, { model, limits }: ReviewerO
     result = await createReviewer({ model, limits: resolved }).generate({ prompt: buildReviewPrompt(input) });
   } catch (error) {
     // The call finished ("stop") but its text did not parse as the schema; cost is not exposed here.
+    // With finishReason "length" the JSON was cut off by maxOutputTokens: a limit, not a provider fault.
     if (NoObjectGeneratedError.isInstance(error)) {
-      throw new NoReviewOutputError(error.finishReason ?? "unknown", {
+      const usage: RunUsage = {
         modelId: modelIdOf(model),
         steps: 1,
         inputTokens: error.usage?.inputTokens,
         outputTokens: error.usage?.outputTokens,
-      });
+      };
+      if (error.finishReason === "length") throw new OutputTokenLimitError(resolved.maxOutputTokens, usage);
+      throw new NoReviewOutputError(error.finishReason ?? "unknown", usage);
     }
     throw error;
   }

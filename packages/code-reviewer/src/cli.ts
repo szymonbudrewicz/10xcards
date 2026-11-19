@@ -56,7 +56,16 @@ const limits: ReviewLimits = {
   maxCostUsd: readLimit("REVIEW_MAX_COST_USD", DEFAULT_LIMITS.maxCostUsd, false),
   maxDiffChars: readLimit("REVIEW_MAX_DIFF_CHARS", DEFAULT_LIMITS.maxDiffChars, true),
   maxOutputTokens: readLimit("REVIEW_MAX_OUTPUT_TOKENS", DEFAULT_LIMITS.maxOutputTokens, true),
+  maxReasoningTokens: readLimit("REVIEW_MAX_REASONING_TOKENS", DEFAULT_LIMITS.maxReasoningTokens, true),
 };
+// Reasoning counts toward maxOutputTokens; without room left there is never a JSON answer.
+if (limits.maxReasoningTokens >= limits.maxOutputTokens) {
+  console.error(
+    `REVIEW_MAX_REASONING_TOKENS (${limits.maxReasoningTokens}) musi być mniejszy niż ` +
+      `REVIEW_MAX_OUTPUT_TOKENS (${limits.maxOutputTokens}).`,
+  );
+  process.exit(1);
+}
 
 const apiKey = process.env.OPENROUTER_API_KEY;
 if (!apiKey) {

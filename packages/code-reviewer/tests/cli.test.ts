@@ -134,6 +134,38 @@ describe("reviewer CLI limits", () => {
     expect(result.stderr).toContain("REVIEW_MAX_OUTPUT_TOKENS");
   });
 
+  it("exits 2 when a JSON answer is cut off by the output limit (finish_reason length)", async () => {
+    fake.respondWith(emptyCompletion("length", 0.03, '{"implementationCorrectness": {"score": 8, "rea'));
+
+    const result = await runCli({ stdin: DIFF, env: env() });
+
+    expect(result.code).toBe(2);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toContain("[usage]");
+    expect(result.stderr).toContain("REVIEW_MAX_OUTPUT_TOKENS");
+  });
+
+  it("sends the reasoning cap to OpenRouter: 8000 by default, REVIEW_MAX_REASONING_TOKENS overrides", async () => {
+    await runCli({ stdin: DIFF, env: env() });
+    await runCli({ stdin: DIFF, env: { ...env(), REVIEW_MAX_REASONING_TOKENS: "1234" } });
+
+    const bodies = fake.requests as { reasoning?: { max_tokens?: number }; max_tokens?: number }[];
+    expect(bodies[0]?.reasoning).toEqual({ max_tokens: 8000 });
+    expect(bodies[0]?.max_tokens).toBe(16000);
+    expect(bodies[1]?.reasoning).toEqual({ max_tokens: 1234 });
+  });
+
+  it("exits 1 without calling the model when the reasoning cap is not below the output limit", async () => {
+    const result = await runCli({
+      stdin: DIFF,
+      env: { ...env(), REVIEW_MAX_REASONING_TOKENS: "16000", REVIEW_MAX_OUTPUT_TOKENS: "16000" },
+    });
+
+    expect(result.code).toBe(1);
+    expect(result.stderr).toContain("REVIEW_MAX_REASONING_TOKENS");
+    expect(fake.requests).toHaveLength(0);
+  });
+
   it("exits 1 and reports usage and finish reason when the model returns no review", async () => {
     fake.respondWith(emptyCompletion("stop", 0.002));
 
