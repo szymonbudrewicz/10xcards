@@ -10,7 +10,13 @@ export {
   type ReviewLimits,
 } from "./limits.ts";
 export { createOpenRouterModel, type OpenRouterModelOptions } from "./model.ts";
-export { renderComment } from "./comment.ts";
+export {
+  COMMENT_MARKER,
+  NO_VERDICT_REASONS,
+  renderComment,
+  renderNoVerdictComment,
+  type NoVerdictReason,
+} from "./comment.ts";
 export { buildReviewPrompt, type ReviewInput } from "./prompts/review.ts";
 export { SYSTEM_PROMPT } from "./prompts/system.ts";
 export {

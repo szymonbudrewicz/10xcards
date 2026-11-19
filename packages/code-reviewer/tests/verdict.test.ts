@@ -49,16 +49,41 @@ describe("renderComment", () => {
     const comment = renderComment(VALID_REVIEW);
 
     expect(comment).toContain("AI Code Review: ❌ fail");
+    expect(comment).toContain("| Izolacja kont i dostęp do danych (twarda reguła) | 2/10 | ❌ |");
     expect(comment).toContain(
-      "| Izolacja kont i dostęp do danych (twarda reguła) | 2/10 | src/pages/api/x.ts:8 bierze user_id z body. |",
+      "- **Izolacja kont i dostęp do danych (twarda reguła) (2/10):** src/pages/api/x.ts:8 bierze user_id z body.",
     );
-    for (const key of CRITERION_KEYS) expect(comment).toContain(`${VALID_REVIEW[key].score}/10`);
+    for (const key of CRITERION_KEYS) expect(comment).toContain(VALID_REVIEW[key].reason);
     expect(comment).toContain(VALID_REVIEW.summary);
   });
 
-  it("keeps a reason with a pipe or newline inside one table row", () => {
-    const review = { ...VALID_REVIEW, projectConventions: { score: 7, reason: "a | b\nc" } };
+  it("keeps reasons out of the table rows", () => {
+    const tableRows = renderComment(VALID_REVIEW)
+      .split("\n")
+      .filter((line) => line.startsWith("| ") && line.includes("/10"));
 
-    expect(renderComment(review)).toContain("| 7/10 | a \\| b c |");
+    expect(tableRows).toHaveLength(CRITERION_KEYS.length);
+    expect(renderComment(VALID_REVIEW)).toContain("| Kryterium | Ocena | Status |");
+    for (const row of tableRows) expect(row).not.toContain("src/pages");
+  });
+
+  // Same thresholds as the verdict rule: hard criteria fail at <= 4, the rest at <= 3.
+  it.each([
+    ["accountIsolation", 4, "❌"],
+    ["accountIsolation", 5, "⚠️"],
+    ["testRiskCoverage", 3, "❌"],
+    ["testRiskCoverage", 4, "⚠️"],
+    ["testRiskCoverage", 6, "⚠️"],
+    ["testRiskCoverage", 7, "✅"],
+  ] as const)("marks %s scored %i as %s", (key, score, mark) => {
+    const review = { ...VALID_REVIEW, [key]: { score, reason: "r" } };
+
+    expect(renderComment(review)).toContain(`| ${score}/10 | ${mark} |`);
+  });
+
+  it("keeps a multi-line reason in one list item", () => {
+    const review = { ...VALID_REVIEW, projectConventions: { score: 7, reason: "a\n  b\r\nc" } };
+
+    expect(renderComment(review)).toContain("- **Zgodność z konwencjami 10xCards (7/10):** a b c");
   });
 });
