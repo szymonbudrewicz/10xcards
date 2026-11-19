@@ -289,12 +289,12 @@ Nie dotyczy (nowe pliki; `ci.yml` bez zmian). Wycofanie: usunięcie wymaganego c
 
 #### Automated
 
-- [x] 3.1 actionlint bez błędów dla `review-rerun.yml`
-- [x] 3.2 Job w `review-rerun.yml` nie nazywa się `review`
+- [x] 3.1 actionlint bez błędów dla `review-rerun.yml` — f5d52f1
+- [x] 3.2 Job w `review-rerun.yml` nie nazywa się `review` — f5d52f1
 
 #### Manual
 
-- [x] 3.3 Przegląd z użytkownikiem: inne etykiety tworzą tylko pominięty `rerun`, nie `review`
+- [x] 3.3 Przegląd z użytkownikiem: inne etykiety tworzą tylko pominięty `rerun`, nie `review` — f5d52f1
 
 ### Phase 4: Uruchomienie na GitHubie i dowód
 

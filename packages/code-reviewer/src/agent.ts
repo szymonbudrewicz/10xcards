@@ -1,8 +1,22 @@
 // The reviewer as a library: no env, no stdin/stdout. The caller supplies the model,
 // so the CLI, tests and future promptfoo evals can each bring their own.
-import { ToolLoopAgent, Output, NoOutputGeneratedError, isStepCount, type LanguageModel } from "ai";
+import {
+  ToolLoopAgent,
+  Output,
+  NoObjectGeneratedError,
+  NoOutputGeneratedError,
+  isStepCount,
+  type LanguageModel,
+} from "ai";
 import { costBudget, totalCost } from "./cost.ts";
-import { BudgetExceededError, DEFAULT_LIMITS, DiffTooLargeError, type ReviewLimits } from "./limits.ts";
+import {
+  BudgetExceededError,
+  DEFAULT_LIMITS,
+  DiffTooLargeError,
+  NoReviewOutputError,
+  OutputTokenLimitError,
+  type ReviewLimits,
+} from "./limits.ts";
 import { buildReviewPrompt, type ReviewInput } from "./prompts/review.ts";
 import { SYSTEM_PROMPT } from "./prompts/system.ts";
 import { REVIEW_SCHEMA, type Review, type Verdict } from "./review-schema.ts";
@@ -57,33 +71,48 @@ export async function runReview(input: ReviewInput, { model, limits }: ReviewerO
   // Layer 1: refuse oversized input before spending anything.
   if (diff.length > resolved.maxDiffChars) throw new DiffTooLargeError(diff.length, resolved.maxDiffChars);
 
-  const result = await createReviewer({ model, limits: resolved }).generate({ prompt: buildReviewPrompt(input) });
+  let result;
+  try {
+    result = await createReviewer({ model, limits: resolved }).generate({ prompt: buildReviewPrompt(input) });
+  } catch (error) {
+    // The call finished ("stop") but its text did not parse as the schema; cost is not exposed here.
+    if (NoObjectGeneratedError.isInstance(error)) {
+      throw new NoReviewOutputError(error.finishReason ?? "unknown", {
+        modelId: modelIdOf(model),
+        steps: 1,
+        inputTokens: error.usage?.inputTokens,
+        outputTokens: error.usage?.outputTokens,
+      });
+    }
+    throw error;
+  }
   const costUsd = totalCost(result.steps);
   // Layer 3 (after the fact): an over-budget run is not trusted, even if it produced output.
   if (costUsd !== undefined && costUsd > resolved.maxCostUsd)
     throw new BudgetExceededError(costUsd, resolved.maxCostUsd);
 
+  const usage: RunUsage = {
+    modelId: modelIdOf(model),
+    steps: result.steps.length,
+    inputTokens: result.usage.inputTokens,
+    outputTokens: result.usage.outputTokens,
+    costUsd,
+  };
+
   let modelReview: Review;
   try {
     modelReview = result.output;
   } catch (error) {
+    if (!NoOutputGeneratedError.isInstance(error)) throw error;
     // costBudget stopped the loop mid tool-calls, so there is no final answer.
-    if (NoOutputGeneratedError.isInstance(error) && costUsd !== undefined && costUsd >= resolved.maxCostUsd) {
+    if (costUsd !== undefined && costUsd >= resolved.maxCostUsd) {
       throw new BudgetExceededError(costUsd, resolved.maxCostUsd);
     }
-    throw error;
+    // Layer 2: maxOutputTokens ran out (reasoning counts) before the JSON was written.
+    if (result.finishReason === "length") throw new OutputTokenLimitError(resolved.maxOutputTokens, usage);
+    throw new NoReviewOutputError(result.finishReason, usage);
   }
 
   const { review, modelVerdict } = applyVerdictRule(modelReview);
-  return {
-    review,
-    modelVerdict,
-    usage: {
-      modelId: modelIdOf(model),
-      steps: result.steps.length,
-      inputTokens: result.usage.inputTokens,
-      outputTokens: result.usage.outputTokens,
-      costUsd,
-    },
-  };
+  return { review, modelVerdict, usage };
 }

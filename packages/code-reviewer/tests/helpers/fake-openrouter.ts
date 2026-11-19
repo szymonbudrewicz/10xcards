@@ -45,6 +45,18 @@ export function reviewCompletion(review: unknown = VALID_REVIEW, cost?: number):
   };
 }
 
+// A paid call that produced no answer, e.g. reasoning used up max_tokens (finish_reason "length").
+export function emptyCompletion(finishReason: string, cost?: number): FakeResponse {
+  const response = reviewCompletion(VALID_REVIEW, cost);
+  const body = response.body as { choices: { finish_reason: string; message: { content: string } }[] };
+  body.choices[0] = {
+    ...body.choices[0],
+    finish_reason: finishReason,
+    message: { role: "assistant", content: "" },
+  } as never;
+  return response;
+}
+
 export async function startFakeOpenRouter(): Promise<FakeOpenRouter> {
   const requests: unknown[] = [];
   let response: FakeResponse = reviewCompletion(VALID_REVIEW, 0.00123);

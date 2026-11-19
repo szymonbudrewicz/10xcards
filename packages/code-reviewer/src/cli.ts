@@ -7,8 +7,14 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { config } from "dotenv";
-import { runReview } from "./agent.ts";
-import { DEFAULT_LIMITS, ReviewLimitError, type ReviewLimits } from "./limits.ts";
+import { runReview, type RunUsage } from "./agent.ts";
+import {
+  DEFAULT_LIMITS,
+  NoReviewOutputError,
+  OutputTokenLimitError,
+  ReviewLimitError,
+  type ReviewLimits,
+} from "./limits.ts";
 import { createOpenRouterModel } from "./model.ts";
 
 // Exit codes: 0 review printed, 1 setup/provider error, 2 a per-run limit stopped the review.
@@ -58,6 +64,18 @@ if (!apiKey) {
   process.exit(1);
 }
 
+function printUsage(usage: RunUsage): void {
+  console.error(
+    `[usage] model=${usage.modelId} steps=${usage.steps} in=${usage.inputTokens ?? "?"} out=${usage.outputTokens ?? "?"} ` +
+      `cost=${usage.costUsd === undefined ? "?" : `$${usage.costUsd.toFixed(6)}`}`,
+  );
+  if (usage.costUsd === undefined) {
+    console.error(
+      "[usage] Provider nie zwrócił kosztu — budżet nie został sprawdzony (działają limity diffa i tokenów).",
+    );
+  }
+}
+
 const diff = await readDiff();
 // OPENROUTER_BASE_URL lets tests point the CLI at a local fake server.
 const model = createOpenRouterModel({ apiKey, modelId: MODEL, baseURL: process.env.OPENROUTER_BASE_URL });
@@ -73,17 +91,15 @@ try {
       `[verdict] Model odpowiedział "${modelVerdict}", reguła werdyktu daje "${review.verdict}" — obowiązuje reguła.`,
     );
   }
-  console.error(
-    `[usage] model=${usage.modelId} steps=${usage.steps} in=${usage.inputTokens ?? "?"} out=${usage.outputTokens ?? "?"} ` +
-      `cost=${usage.costUsd === undefined ? "?" : `$${usage.costUsd.toFixed(6)}`}`,
-  );
-  if (usage.costUsd === undefined) {
-    console.error(
-      "[usage] Provider nie zwrócił kosztu — budżet nie został sprawdzony (działają limity diffa i tokenów).",
-    );
-  }
+  printUsage(usage);
   console.log(JSON.stringify(review, null, 2));
 } catch (error) {
+  // A paid run that produced no review still reports what it spent and why it stopped.
+  if (error instanceof OutputTokenLimitError || error instanceof NoReviewOutputError) printUsage(error.usage);
+  if (error instanceof NoReviewOutputError) {
+    console.error(`[finish] ${error.message}`);
+    process.exit(1);
+  }
   if (error instanceof ReviewLimitError) {
     console.error(`[limit] ${error.message}`);
     process.exit(EXIT_LIMIT);

@@ -6,6 +6,8 @@ export {
   BudgetExceededError,
   DEFAULT_LIMITS,
   DiffTooLargeError,
+  NoReviewOutputError,
+  OutputTokenLimitError,
   ReviewLimitError,
   type ReviewLimits,
 } from "./limits.ts";

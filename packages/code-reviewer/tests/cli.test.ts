@@ -6,7 +6,13 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { REVIEW_SCHEMA } from "../src/review-schema.ts";
-import { reviewCompletion, startFakeOpenRouter, VALID_REVIEW, type FakeOpenRouter } from "./helpers/fake-openrouter.ts";
+import {
+  emptyCompletion,
+  reviewCompletion,
+  startFakeOpenRouter,
+  VALID_REVIEW,
+  type FakeOpenRouter,
+} from "./helpers/fake-openrouter.ts";
 import { runCli } from "./helpers/run-cli.ts";
 
 const DIFF = "diff --git a/x.ts b/x.ts\n+const marker = 'CHARACTERIZATION_MARKER';\n";
@@ -114,6 +120,29 @@ describe("reviewer CLI limits", () => {
     expect(result.stdout).toBe("");
     expect(result.stderr).toContain("[limit]");
     expect(fake.requests).toHaveLength(0);
+  });
+
+  it("exits 2 and still reports usage when the model runs out of output tokens", async () => {
+    fake.respondWith(emptyCompletion("length", 0.0321));
+
+    const result = await runCli({ stdin: DIFF, env: env() });
+
+    expect(result.code).toBe(2);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toMatch(/\[usage\] model=\S+ steps=1 in=100 out=50 cost=\$0\.032100/);
+    expect(result.stderr).toContain("[limit]");
+    expect(result.stderr).toContain("REVIEW_MAX_OUTPUT_TOKENS");
+  });
+
+  it("exits 1 and reports usage and finish reason when the model returns no review", async () => {
+    fake.respondWith(emptyCompletion("stop", 0.002));
+
+    const result = await runCli({ stdin: DIFF, env: env() });
+
+    expect(result.code).toBe(1);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toMatch(/\[usage\] model=\S+ steps=1 in=100 out=50 cost=\?/);
+    expect(result.stderr).toContain("[finish] Model nie zwrócił recenzji (finishReason=stop)");
   });
 
   it("exits 1 without calling the model when a limit is not a number", async () => {
