@@ -264,26 +264,26 @@ Nie dotyczy (nowe pliki; `ci.yml` bez zmian). Wycofanie: usunięcie wymaganego c
 
 #### Automated
 
-- [x] 1.1 Testy paczki przechodzą: `npm test --prefix packages/code-reviewer`
-- [x] 1.2 Typecheck paczki przechodzi: `npm run typecheck --prefix packages/code-reviewer`
-- [x] 1.3 Lint repo przechodzi: `npm run lint`
+- [x] 1.1 Testy paczki przechodzą: `npm test --prefix packages/code-reviewer` — 99d7344
+- [x] 1.2 Typecheck paczki przechodzi: `npm run typecheck --prefix packages/code-reviewer` — 99d7344
+- [x] 1.3 Lint repo przechodzi: `npm run lint` — 99d7344
 
 #### Manual
 
-- [x] 1.4 `npm run comment` na `scratchpad/sample-review.json` daje czytelną tabelę 6 kryteriów w podglądzie Markdown
+- [x] 1.4 `npm run comment` na `scratchpad/sample-review.json` daje czytelną tabelę 6 kryteriów w podglądzie Markdown — 99d7344
 
 ### Phase 2: Composite action + workflow `review.yml`
 
 #### Automated
 
-- [ ] 2.1 actionlint bez błędów dla nowych plików
-- [ ] 2.2 Żadne `${{ github.event.* }}` nie występuje wewnątrz bloku `run:` w `review.yml` i `action.yml`
-- [ ] 2.3 Każde `uses:` zewnętrznej akcji ma pełne SHA i komentarz z tagiem
-- [ ] 2.4 Lokalna symulacja kroku diffa na tej gałęzi daje diff bez `package-lock.json`
+- [x] 2.1 actionlint bez błędów dla nowych plików
+- [x] 2.2 Żadne `${{ github.event.* }}` nie występuje wewnątrz bloku `run:` w `review.yml` i `action.yml`
+- [x] 2.3 Każde `uses:` zewnętrznej akcji ma pełne SHA i komentarz z tagiem
+- [x] 2.4 Lokalna symulacja kroku diffa na tej gałęzi daje diff bez `package-lock.json`
 
 #### Manual
 
-- [ ] 2.5 Przegląd `review.yml`/`action.yml` z użytkownikiem względem szablonów i decyzji
+- [x] 2.5 Przegląd `review.yml`/`action.yml` z użytkownikiem względem szablonów i decyzji
 
 ### Phase 3: Workflow `review-rerun.yml`
 

@@ -1,0 +1,106 @@
+# AI code review on every pull request to main (M5L3). Requirements and decisions:
+# context/changes/ci-cd-code-review/ (requirements.md, plan.md). Based on the course template:
+# - one bot comment per PR (edited in place), label ai-cr:passed / ai-cr:failed,
+#   failing `review` check on "fail" or when there is no verdict
+# - lockfiles are excluded from the diff; a diff that is empty afterwards passes without the model
+# - re-run on demand with the ai-cr:review label lives in review-rerun.yml: a `labeled` trigger
+#   here would create skipped `review` runs, which GitHub counts as passing required checks
+# The job name `review` is the required status check on main.
+name: AI Code Review
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write # labels live on the issues API
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    # Job-level, so runs of other workflows or skipped jobs never cancel a review in progress.
+    concurrency:
+      group: ai-review-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PR: ${{ github.event.pull_request.number }}
+      REVIEWER: packages/code-reviewer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # full history, otherwise there is no base to diff against
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: packages/code-reviewer/package-lock.json
+
+      - name: Compute diff
+        id: diff
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          git diff "origin/$BASE_REF...HEAD" -- . ':(exclude)package-lock.json' ':(exclude)**/package-lock.json' > "$RUNNER_TEMP/pr.diff"
+          echo "Diff bez lockfile'i: $(wc -c < "$RUNNER_TEMP/pr.diff") znaków"
+          if grep -q '[^[:space:]]' "$RUNNER_TEMP/pr.diff"; then empty=false; else empty=true; fi
+          echo "empty=$empty" >> "$GITHUB_OUTPUT"
+
+      - id: review
+        if: steps.diff.outputs.empty == 'false'
+        # Local action (.github/actions/ai-reviewer). From another repository use
+        # <org>/ai-reviewer@<full commit sha> # <tag>
+        uses: ./.github/actions/ai-reviewer
+        with:
+          api-key: ${{ secrets.OPENROUTER_API_KEY }}
+          pr-title: ${{ github.event.pull_request.title }}
+          pr-body: ${{ github.event.pull_request.body }}
+          diff-file: ${{ runner.temp }}/pr.diff
+
+      - name: Comment and label
+        if: always() && steps.diff.outcome == 'success'
+        env:
+          EMPTY: ${{ steps.diff.outputs.empty }}
+          VERDICT: ${{ steps.review.outputs.verdict }}
+          REASON: ${{ steps.review.outputs.reason }}
+          REVIEW_FILE: ${{ steps.review.outputs.review-file }}
+        run: |
+          # The comment CLI needs the package even when the agent did not run (empty diff).
+          [ -d "$REVIEWER/node_modules" ] || npm ci --prefix "$REVIEWER" --no-audit --no-fund
+          if [ "$EMPTY" = true ]; then
+            verdict=pass; args=(--no-verdict empty_diff)
+          elif [ -n "$VERDICT" ]; then
+            verdict="$VERDICT"; args=(--review "$REVIEW_FILE")
+          else
+            verdict=""; args=(--no-verdict "${REASON:-provider_error}")
+          fi
+          npm run comment --silent --prefix "$REVIEWER" -- "${args[@]}" > "$RUNNER_TEMP/comment.md"
+          cat "$RUNNER_TEMP/comment.md" >> "$GITHUB_STEP_SUMMARY"
+          gh pr comment "$PR" --edit-last --create-if-none --body-file "$RUNNER_TEMP/comment.md"
+
+          gh label create ai-cr:passed --color 0E8A16 --description "AI code review: pass" --force
+          gh label create ai-cr:failed --color B60205 --description "AI code review: fail" --force
+          case "$verdict" in
+            pass) gh pr edit "$PR" --add-label ai-cr:passed --remove-label ai-cr:failed ;;
+            fail) gh pr edit "$PR" --add-label ai-cr:failed --remove-label ai-cr:passed ;;
+            *) gh pr edit "$PR" --remove-label ai-cr:passed --remove-label ai-cr:failed ;;
+          esac
+
+      # The only step that decides the check: binding `verdict` field, never free text.
+      - name: Gate on verdict
+        if: always()
+        env:
+          EMPTY: ${{ steps.diff.outputs.empty }}
+          VERDICT: ${{ steps.review.outputs.verdict }}
+          REASON: ${{ steps.review.outputs.reason }}
+        run: |
+          if [ "$EMPTY" = true ] || [ "$VERDICT" = pass ]; then
+            echo "AI review: pass"
+            exit 0
+          fi
+          echo "::error::AI review verdict: ${VERDICT:-brak (${REASON:-missing})}"
+          exit 1
