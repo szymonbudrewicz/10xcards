@@ -1,7 +1,7 @@
 ---
 change_id: ci-cd-code-review
 title: Recenzent AI w GitHub Actions jako bramka merge
-status: implementing
+status: implemented
 created: 2026-11-19
 updated: 2026-11-19
 archived_at: null
