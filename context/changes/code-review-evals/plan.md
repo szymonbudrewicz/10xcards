@@ -350,26 +350,26 @@ Nie dotyczy (nowe pliki; domyślne zachowanie CLI i CI bez zmian do fazy 4). Wyc
 
 #### Automated
 
-- [x] 2.1 Testy paczki (w tym test adaptera) przechodzą bez sieci: `npm test --prefix packages/code-reviewer`
-- [x] 2.2 Typecheck obejmuje `evals/` i przechodzi: `npm run typecheck --prefix packages/code-reviewer`
-- [x] 2.3 Lint repo przechodzi: `npm run lint`
-- [x] 2.4 promptfoo akceptuje config: `npx promptfoo validate -c evals/promptfooconfig.yaml`
+- [x] 2.1 Testy paczki (w tym test adaptera) przechodzą bez sieci: `npm test --prefix packages/code-reviewer` — 633fa77
+- [x] 2.2 Typecheck obejmuje `evals/` i przechodzi: `npm run typecheck --prefix packages/code-reviewer` — 633fa77
+- [x] 2.3 Lint repo przechodzi: `npm run lint` — 633fa77
+- [x] 2.4 promptfoo akceptuje config: `npx promptfoo validate -c evals/promptfooconfig.yaml` — 633fa77
 
 #### Manual
 
-- [x] 2.5 Przegląd fixtures i asercji z użytkownikiem
+- [x] 2.5 Przegląd fixtures i asercji z użytkownikiem — 633fa77
 
 ### Phase 3: Pierwszy płatny przebieg (×1)
 
 #### Automated
 
-- [ ] 3.1 Smoke kończy się kodem 0 albo 100 (nie 1) i raportuje wynik gradera dla `llm-rubric`
-- [ ] 3.2 Pełny przebieg ×1 kończy się kodem 0 albo 100; wynik JSON zawiera 16 komórek
-- [ ] 3.3 `results.md` zawiera macierz 4×4 i sumę kosztu
+- [x] 3.1 Smoke kończy się kodem 0 albo 100 (nie 1) i raportuje wynik gradera dla `llm-rubric`
+- [x] 3.2 Pełny przebieg ×1 kończy się kodem 0 albo 100; wynik JSON zawiera 16 komórek
+- [x] 3.3 `results.md` zawiera macierz 4×4 i sumę kosztu
 
 #### Manual
 
-- [ ] 3.4 Użytkownik ogląda macierz i potwierdza, że wyniki są wiarygodne
+- [x] 3.4 Użytkownik ogląda macierz i potwierdza, że wyniki są wiarygodne
 
 ### Phase 4: Decyzja o modelu i limicie rozumowania (×3)
 

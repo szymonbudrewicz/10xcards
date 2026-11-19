@@ -58,7 +58,7 @@ defaultTest:
 # criterion 5 (scope) judges the description. Fail cases demand a score <= 3 on the broken
 # axis, one point stricter than the verdict rule, to keep a margin (PR #30 scored exactly 4).
 tests:
-  - description: user_id from the request body (PR #30) — account isolation broken
+  - description: "user_id from the request body (PR #30) — account isolation broken"
     vars:
       title: "feat(cards): endpoint listy fiszek użytkownika"
       body: |
@@ -76,7 +76,7 @@ tests:
           the session (no check of locals.user / missing 401), so one account can read another
           account's cards.
 
-  - description: pasted text logged in /api/generate — privacy broken
+  - description: "pasted text logged in /api/generate — privacy broken"
     vars:
       title: "chore(generate): logi diagnostyczne generowania fiszek"
       body: |
@@ -93,7 +93,7 @@ tests:
           The review flags that the user's pasted text is written to the logs (console.log and
           console.error in src/pages/api/generate.ts) and treats it as a privacy violation.
 
-  - description: service-role key bypasses RLS in bulk delete — fails on several axes
+  - description: "service-role key bypasses RLS in bulk delete — fails on several axes"
     vars:
       title: "feat(cards): masowe usuwanie fiszek"
       body: |
@@ -107,7 +107,7 @@ tests:
           return r.verdict === "fail" && r.accountIsolation.score <= 3;
 
   # Pass cases catch over-eagerness, not only leniency.
-  - description: clean, small test-only change — passes
+  - description: "clean, small test-only change — passes"
     vars:
       title: "test(cards): pokrycie isBlankCardText"
       body: |
@@ -120,7 +120,7 @@ tests:
           const r = typeof output === "string" ? JSON.parse(output) : output;
           return r.verdict === "pass";
 
-  - description: clean UI change (tokens, cn(), components/ui) — passes
+  - description: "clean UI change (tokens, cn(), components/ui) — passes"
     vars:
       title: "feat(cards): czytelniejszy pusty stan listy fiszek"
       body: |

@@ -4,8 +4,7 @@
 // Exit code is promptfoo's: 0 all passed, 100 a test failed, 1 any other error.
 /* eslint-disable no-console -- CLI wrapper */
 import { spawnSync } from "node:child_process";
-import { createRequire } from "node:module";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { config as loadEnv } from "dotenv";
 
@@ -17,8 +16,8 @@ if (!process.env.OPENROUTER_API_KEY) {
   process.exit(1);
 }
 
-const require = createRequire(import.meta.url);
-const promptfooBin = join(dirname(require.resolve("promptfoo/package.json")), "dist/src/entrypoint.js");
+// promptfoo exports no ./package.json, so resolve its bin from this package (devDependency).
+const promptfooBin = join(PACKAGE_DIR, "node_modules/promptfoo/dist/src/entrypoint.js");
 
 const result = spawnSync(
   process.execPath,
