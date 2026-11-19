@@ -100,6 +100,8 @@ Najpierw biblioteka dostaje dwie brakujące informacje o przebiegu (dostawca, to
 
 promptfoo, provider-adapter, fixtures, config z asercjami i skrypt `npm run eval` — zweryfikowane bez płatnych wywołań.
 
+> Zmiany przy przeglądzie 2.5 (2026-11-19, decyzja użytkownika): wszystkie przypadki mają `title` i `body` w `vars`; próg ≤ 3 dla wszystkich trzech przypadków fail (`accountIsolation` dla user-id i service-role, `privacySecretsAiCost` dla pasted-text); piąty przypadek pass `clean-ui-empty-state.diff` (role tokenów, `cn()`, `Card`/`Button` z `src/components/ui/`). Macierz ma więc 5 przypadków × 4 kolumny: kryteria 3.2 i 4.1 oznaczają odpowiednio 20 i 60 komórek (zamiast 16 i 48). Adaptacje: asercja zgodności `modelVerdict` z regułą dodana już w tej fazie (dostęp do `metadata` potwierdzony offline); `tsx` przeniesiony do `dependencies`, a akcja i `review.yml` instalują paczkę z `--omit=dev` (promptfoo nie trafia do joba recenzji).
+
 ### Changes Required:
 
 #### 1. Zależność i skrypty
@@ -336,26 +338,26 @@ Nie dotyczy (nowe pliki; domyślne zachowanie CLI i CI bez zmian do fazy 4). Wyc
 
 #### Automated
 
-- [x] 1.1 Testy paczki przechodzą: `npm test --prefix packages/code-reviewer`
-- [x] 1.2 Typecheck paczki przechodzi: `npm run typecheck --prefix packages/code-reviewer`
-- [x] 1.3 Lint repo przechodzi: `npm run lint`
+- [x] 1.1 Testy paczki przechodzą: `npm test --prefix packages/code-reviewer` — df05e6a
+- [x] 1.2 Typecheck paczki przechodzi: `npm run typecheck --prefix packages/code-reviewer` — df05e6a
+- [x] 1.3 Lint repo przechodzi: `npm run lint` — df05e6a
 
 #### Manual
 
-- [x] 1.4 Przegląd z użytkownikiem: domyślne zachowanie CLI/CI bez zmian (8000), nowy format `[usage]`
+- [x] 1.4 Przegląd z użytkownikiem: domyślne zachowanie CLI/CI bez zmian (8000), nowy format `[usage]` — df05e6a
 
 ### Phase 2: Zestaw evali offline
 
 #### Automated
 
-- [ ] 2.1 Testy paczki (w tym test adaptera) przechodzą bez sieci: `npm test --prefix packages/code-reviewer`
-- [ ] 2.2 Typecheck obejmuje `evals/` i przechodzi: `npm run typecheck --prefix packages/code-reviewer`
-- [ ] 2.3 Lint repo przechodzi: `npm run lint`
-- [ ] 2.4 promptfoo akceptuje config: `npx promptfoo validate -c evals/promptfooconfig.yaml`
+- [x] 2.1 Testy paczki (w tym test adaptera) przechodzą bez sieci: `npm test --prefix packages/code-reviewer`
+- [x] 2.2 Typecheck obejmuje `evals/` i przechodzi: `npm run typecheck --prefix packages/code-reviewer`
+- [x] 2.3 Lint repo przechodzi: `npm run lint`
+- [x] 2.4 promptfoo akceptuje config: `npx promptfoo validate -c evals/promptfooconfig.yaml`
 
 #### Manual
 
-- [ ] 2.5 Przegląd fixtures i asercji z użytkownikiem
+- [x] 2.5 Przegląd fixtures i asercji z użytkownikiem
 
 ### Phase 3: Pierwszy płatny przebieg (×1)
 

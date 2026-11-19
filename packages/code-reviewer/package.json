@@ -5,23 +5,26 @@
   "description": "Code-review agent for 10xCards (M5L2): git diff in, structured JSON verdict out.",
   "type": "module",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.22"
   },
   "scripts": {
     "review": "tsx src/cli.ts",
     "comment": "tsx src/comment-cli.ts",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "eval": "tsx evals/run.ts",
+    "eval:schema": "tsx evals/write-schema.ts"
   },
   "dependencies": {
     "@openrouter/ai-sdk-provider": "^3.1.0",
     "ai": "^7.0.166",
     "dotenv": "^18.0.10",
+    "tsx": "^4.23.15",
     "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/node": "^22.20.5",
-    "tsx": "^4.23.15",
+    "promptfoo": "0.126.0",
     "typescript": "^7.0.2",
     "vitest": "^5.1.0"
   },

@@ -1,0 +1,134 @@
+# Evals of the 10xCards code reviewer (M5L3, change context/changes/code-review-evals).
+# Run: npm run eval --prefix packages/code-reviewer  (paid: OpenRouter, key from the package .env)
+# Regression gate before changing the review prompt, schema or model. Exit 100 = a failed test.
+# The provider runs the real agent (runReview): schema, verdict rule and limits included.
+description: 10xCards code reviewer — same diffs, several models
+
+providers:
+  - id: file://reviewProvider.ts
+    label: glm-5.3@8000
+    config:
+      model: z-ai/glm-5.3
+  - id: file://reviewProvider.ts
+    label: glm-5.3@no-cap
+    config:
+      model: z-ai/glm-5.3
+      maxReasoningTokens: null
+  - id: file://reviewProvider.ts
+    label: deepseek-v4.1-flash
+    config:
+      model: deepseek/deepseek-v4.1-flash
+  - id: file://reviewProvider.ts
+    label: gpt-6-luna
+    config:
+      model: openai/gpt-6-luna
+
+# The provider reads the diff from vars; this prompt is only promptfoo's required placeholder.
+prompts:
+  - "{{diff}}"
+
+defaultTest:
+  options:
+    # llm-rubric grader; promptfoo does not pick OpenRouter on its own.
+    provider: openrouter:anthropic/claude-sonnet-5.5
+  assert:
+    # The CI gate parses this JSON: it must match the review schema.
+    - type: is-json
+      value: file://review.schema.json
+    # Scores stay on the 1-10 scale the verdict rule assumes.
+    - type: javascript
+      value: |
+        const r = typeof output === "string" ? JSON.parse(output) : output;
+        const keys = ["implementationCorrectness", "accountIsolation", "privacySecretsAiCost", "projectConventions", "simplicityAndScope", "testRiskCoverage"];
+        return keys.every((k) => Number.isInteger(r[k].score) && r[k].score >= 1 && r[k].score <= 10);
+    # The model's own verdict agrees with the verdict rule applied to its scores (src/verdict.ts).
+    # The gate uses the rule either way; disagreement means the prompt is not understood.
+    - type: javascript
+      value: |
+        const r = typeof output === "string" ? JSON.parse(output) : output;
+        const m = context.providerResponse && context.providerResponse.metadata;
+        return Boolean(m) && m.modelVerdict === r.verdict;
+    - type: llm-rubric
+      value: >-
+        Every criterion whose score is below 7 has a reason that points to a concrete file
+        (and ideally a line) from the reviewed diff and names the specific problem there,
+        not a generic remark. Criteria scored 7 or higher may be brief.
+
+# Every case carries a PR title and description: the CI reviewer always gets both, and
+# criterion 5 (scope) judges the description. Fail cases demand a score <= 3 on the broken
+# axis, one point stricter than the verdict rule, to keep a margin (PR #30 scored exactly 4).
+tests:
+  - description: user_id from the request body (PR #30) — account isolation broken
+    vars:
+      title: "feat(cards): endpoint listy fiszek użytkownika"
+      body: |
+        Endpoint POST /api/cards/by-user zwracający fiszki wskazanego użytkownika — pod przyszły
+        widok współdzielonych talii.
+      diff: file://fixtures/user-id-from-body.diff
+    assert:
+      - type: javascript
+        value: |
+          const r = typeof output === "string" ? JSON.parse(output) : output;
+          return r.verdict === "fail" && r.accountIsolation.score <= 3;
+      - type: llm-rubric
+        value: >-
+          The review says the endpoint trusts a user_id taken from the request body instead of
+          the session (no check of locals.user / missing 401), so one account can read another
+          account's cards.
+
+  - description: pasted text logged in /api/generate — privacy broken
+    vars:
+      title: "chore(generate): logi diagnostyczne generowania fiszek"
+      body: |
+        Dodaje log żądania i rozszerza log błędu w /api/generate, żeby łatwiej debugować
+        nieudane generowania zgłaszane przez użytkowników.
+      diff: file://fixtures/pasted-text-logging.diff
+    assert:
+      - type: javascript
+        value: |
+          const r = typeof output === "string" ? JSON.parse(output) : output;
+          return r.verdict === "fail" && r.privacySecretsAiCost.score <= 3;
+      - type: llm-rubric
+        value: >-
+          The review flags that the user's pasted text is written to the logs (console.log and
+          console.error in src/pages/api/generate.ts) and treats it as a privacy violation.
+
+  - description: service-role key bypasses RLS in bulk delete — fails on several axes
+    vars:
+      title: "feat(cards): masowe usuwanie fiszek"
+      body: |
+        Nowy endpoint POST /api/cards/bulk-delete przyjmujący listę identyfikatorów fiszek
+        do usunięcia jednym żądaniem.
+      diff: file://fixtures/service-role-bulk-delete.diff
+    assert:
+      - type: javascript
+        value: |
+          const r = typeof output === "string" ? JSON.parse(output) : output;
+          return r.verdict === "fail" && r.accountIsolation.score <= 3;
+
+  # Pass cases catch over-eagerness, not only leniency.
+  - description: clean, small test-only change — passes
+    vars:
+      title: "test(cards): pokrycie isBlankCardText"
+      body: |
+        Testy jednostkowe reguły pustej treści fiszki (src/lib/card-content.ts), wspólnej dla API
+        i edytora: białe znaki są pustą treścią, inne znaki nie.
+      diff: file://fixtures/clean-small.diff
+    assert:
+      - type: javascript
+        value: |
+          const r = typeof output === "string" ? JSON.parse(output) : output;
+          return r.verdict === "pass";
+
+  - description: clean UI change (tokens, cn(), components/ui) — passes
+    vars:
+      title: "feat(cards): czytelniejszy pusty stan listy fiszek"
+      body: |
+        Pusty stan /cards jako karta z przyciskiem do /generate (Card i Button z
+        src/components/ui/); nagłówek przygaszony, gdy lista jest pusta.
+      diff: file://fixtures/clean-ui-empty-state.diff
+    assert:
+      - type: javascript
+        value: |
+          const r = typeof output === "string" ? JSON.parse(output) : output;
+          return r.verdict === "pass";

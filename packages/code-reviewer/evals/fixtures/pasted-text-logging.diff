@@ -1,0 +1,22 @@
+diff --git a/src/pages/api/generate.ts b/src/pages/api/generate.ts
+index 89d7bef..ed8e9af 100644
+--- a/src/pages/api/generate.ts
++++ b/src/pages/api/generate.ts
+@@ -36,6 +36,8 @@ export const POST: APIRoute = async (context) => {
+   }
+ 
+   const { text } = parsed.data;
++  // eslint-disable-next-line no-console
++  console.log("generate request", { userId: context.locals.user.id, length: text.length, text });
+   if (text.trim().length === 0) {
+     return jsonError(400, "text_empty", "Wklej tekst, z którego mają powstać fiszki.");
+   }
+@@ -63,7 +65,7 @@ export const POST: APIRoute = async (context) => {
+     const code = error instanceof CardGenerationError ? error.code : "ai_failed";
+     const providerStatus = error instanceof CardGenerationError ? error.providerStatus : undefined;
+     // eslint-disable-next-line no-console
+-    console.error("generate failed", { code, providerStatus });
++    console.error("generate failed", { code, providerStatus, text });
+ 
+     if (code === "ai_timeout") {
+       return jsonError(504, "ai_timeout", "Generowanie trwało zbyt długo. Spróbuj ponownie.");
