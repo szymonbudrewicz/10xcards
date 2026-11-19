@@ -1,0 +1,54 @@
+# Re-run the AI code review on demand: add the ai-cr:review label to a PR (M5L3).
+# Kept out of review.yml on purpose: a `labeled` trigger there would create skipped `review`
+# runs for every other label, and GitHub counts a skipped job as a passing required check.
+# This job is named `rerun`, so other labels only produce a skipped `rerun`, never a `review`.
+# It re-runs the latest review.yml run for the PR head, so the `review` check updates in place.
+name: AI Code Review (rerun)
+
+on:
+  pull_request:
+    branches: [main]
+    types: [labeled]
+
+permissions:
+  actions: write # gh run rerun
+  pull-requests: write
+  issues: write # labels and comments live on the issues API
+
+jobs:
+  rerun:
+    if: github.event.label.name == 'ai-cr:review'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }} # no checkout: tell gh which repository to use
+      PR: ${{ github.event.pull_request.number }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      RUNS_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs
+    steps:
+      - name: Re-run the AI review for the PR head
+        run: |
+          run_id=$(gh run list --workflow review.yml --commit "$HEAD_SHA" --event pull_request --limit 1 --json databaseId --jq '.[0].databaseId // empty')
+          if [ -z "$run_id" ]; then
+            echo "::error::Brak przebiegu AI Code Review dla $HEAD_SHA"
+            gh pr comment "$PR" --body "Etykieta \`ai-cr:review\`: brak przebiegu AI Code Review dla commita $HEAD_SHA do ponowienia. Wypchnij commit albo zamknij i otwórz PR ponownie."
+            exit 1
+          fi
+
+          status=$(gh run view "$run_id" --json status --jq .status)
+          if [ "$status" != completed ]; then
+            echo "Recenzja $RUNS_URL/$run_id jeszcze trwa ($status) — nic do ponowienia."
+            exit 0
+          fi
+
+          if gh run rerun "$run_id"; then
+            echo "Ponowiono recenzję: $RUNS_URL/$run_id"
+          else
+            echo "::error::gh run rerun nie powiódł się dla przebiegu $run_id"
+            gh pr comment "$PR" --body "Etykieta \`ai-cr:review\`: nie udało się automatycznie ponowić recenzji. Użyj „Re-run jobs” w $RUNS_URL/$run_id."
+            exit 1
+          fi
+
+      - name: Remove trigger label
+        if: always()
+        run: gh pr edit "$PR" --remove-label ai-cr:review

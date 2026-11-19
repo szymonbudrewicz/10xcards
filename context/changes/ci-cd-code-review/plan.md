@@ -276,25 +276,25 @@ Nie dotyczy (nowe pliki; `ci.yml` bez zmian). Wycofanie: usunięcie wymaganego c
 
 #### Automated
 
-- [x] 2.1 actionlint bez błędów dla nowych plików
-- [x] 2.2 Żadne `${{ github.event.* }}` nie występuje wewnątrz bloku `run:` w `review.yml` i `action.yml`
-- [x] 2.3 Każde `uses:` zewnętrznej akcji ma pełne SHA i komentarz z tagiem
-- [x] 2.4 Lokalna symulacja kroku diffa na tej gałęzi daje diff bez `package-lock.json`
+- [x] 2.1 actionlint bez błędów dla nowych plików — 2a29830
+- [x] 2.2 Żadne `${{ github.event.* }}` nie występuje wewnątrz bloku `run:` w `review.yml` i `action.yml` — 2a29830
+- [x] 2.3 Każde `uses:` zewnętrznej akcji ma pełne SHA i komentarz z tagiem — 2a29830
+- [x] 2.4 Lokalna symulacja kroku diffa na tej gałęzi daje diff bez `package-lock.json` — 2a29830
 
 #### Manual
 
-- [x] 2.5 Przegląd `review.yml`/`action.yml` z użytkownikiem względem szablonów i decyzji
+- [x] 2.5 Przegląd `review.yml`/`action.yml` z użytkownikiem względem szablonów i decyzji — 2a29830
 
 ### Phase 3: Workflow `review-rerun.yml`
 
 #### Automated
 
-- [ ] 3.1 actionlint bez błędów dla `review-rerun.yml`
-- [ ] 3.2 Job w `review-rerun.yml` nie nazywa się `review`
+- [x] 3.1 actionlint bez błędów dla `review-rerun.yml`
+- [x] 3.2 Job w `review-rerun.yml` nie nazywa się `review`
 
 #### Manual
 
-- [ ] 3.3 Przegląd z użytkownikiem: inne etykiety tworzą tylko pominięty `rerun`, nie `review`
+- [x] 3.3 Przegląd z użytkownikiem: inne etykiety tworzą tylko pominięty `rerun`, nie `review`
 
 ### Phase 4: Uruchomienie na GitHubie i dowód
 
