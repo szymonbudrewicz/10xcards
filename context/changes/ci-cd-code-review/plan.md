@@ -182,6 +182,8 @@ Ponowna recenzja na żądanie etykietą `ai-cr:review`, bez tworzenia pominięty
 
 Pierwsze żywe przebiegi, zrzuty do 10xChampion i włączenie bramki merge. Każdy krok wychodzący na zewnątrz (sekret, push, PR, ustawienia repo, płatne przebiegi) — po potwierdzeniu z użytkownikiem.
 
+> Adaptacja w trakcie fazy (2026-11-19): dwa pierwsze przebiegi na PR #29 nie dały werdyktu. Diagnostyka (`3f18f8b`: `[usage]`/`[finish]` także przy braku recenzji) pokazała `out=16000, finishReason=length` — `glm-5.3` zużył cały limit wyjścia na rozumowanie przy diffie ~110k znaków (lokalnie ten sam diff: 628 tokenów). Naprawa `ad895ab`: `REVIEW_MAX_REASONING_TOKENS` (domyślnie 8000, OpenRouter `reasoning.max_tokens`) i `length` → exit 2 (limit). Trzeci przebieg: pass, `out=1136`, $0.007. Rerun etykietą potwierdził, że `GITHUB_TOKEN` z `actions: write` może wykonać `gh run rerun`. Zły PR to #30 (gałąź `demo/ai-cr-fail`, zamknięty bez merge).
+
 ### Changes Required:
 
 #### 1. Sekret i PR tej zmiany
@@ -300,12 +302,12 @@ Nie dotyczy (nowe pliki; `ci.yml` bez zmian). Wycofanie: usunięcie wymaganego c
 
 #### Automated
 
-- [ ] 4.1 Przebieg `review` na PR tej zmiany kończy się werdyktem i na PR jest dokładnie jeden komentarz z markerem po co najmniej dwóch pushach
-- [ ] 4.2 Przebieg `review` na PR `demo/ai-cr-fail` ma `conclusion: failure`, a PR ma etykietę `ai-cr:failed`
-- [ ] 4.3 Ochrona `main` wymienia check `review`
+- [x] 4.1 Przebieg `review` na PR tej zmiany kończy się werdyktem i na PR jest dokładnie jeden komentarz z markerem po co najmniej dwóch pushach — ad895ab
+- [x] 4.2 Przebieg `review` na PR `demo/ai-cr-fail` ma `conclusion: failure`, a PR ma etykietę `ai-cr:failed` — ad895ab
+- [x] 4.3 Ochrona `main` wymienia check `review`
 
 #### Manual
 
-- [ ] 4.4 Komentarz LLM na obu PR-ach pokazuje 6 kryteriów z oceną i uzasadnieniem; w złym PR wskazany plik/linia z `user_id`
-- [ ] 4.5 Dodanie `ai-cr:review` ponawia `review` dla tego samego SHA i zdejmuje etykietę; inna etykieta nie zmienia checka `review`
-- [ ] 4.6 Zrzuty: widok pipeline'u z jobem, logi joba, komentarz LLM — z PR-a `pass` i z PR-a `fail`
+- [x] 4.4 Komentarz LLM na obu PR-ach pokazuje 6 kryteriów z oceną i uzasadnieniem; w złym PR wskazany plik/linia z `user_id` — ad895ab
+- [x] 4.5 Dodanie `ai-cr:review` ponawia `review` dla tego samego SHA i zdejmuje etykietę; inna etykieta nie zmienia checka `review` — ad895ab
+- [x] 4.6 Zrzuty: widok pipeline'u z jobem, logi joba, komentarz LLM — z PR-a `pass` i z PR-a `fail` — ad895ab
