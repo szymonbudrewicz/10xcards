@@ -16,14 +16,15 @@ export interface FakeOpenRouter {
   close(): Promise<void>;
 }
 
+// Consistent with the verdict rule: accountIsolation 2 <= 4 on a hard criterion -> fail.
 export const VALID_REVIEW = {
-  implementationCorrectness: 3,
-  idiomaticity: 4,
-  complexity: 7,
-  testRiskCoverage: 1,
-  documentation: 2,
-  securitySafety: 1,
-  verdict: "fail",
+  implementationCorrectness: { score: 6, reason: "src/pages/api/x.ts:12 nie obsługuje pustego wejścia." },
+  accountIsolation: { score: 2, reason: "src/pages/api/x.ts:8 bierze user_id z body." },
+  privacySecretsAiCost: { score: 8, reason: "Brak logowania wklejonego tekstu." },
+  projectConventions: { score: 7, reason: "Zgodne z konwencjami." },
+  simplicityAndScope: { score: 8, reason: "Jedna spójna zmiana." },
+  testRiskCoverage: { score: 3, reason: "Brak testu dla src/pages/api/x.ts." },
+  verdict: "fail" as const,
   summary: "**FAIL** — fake review from the test server.",
 };
 

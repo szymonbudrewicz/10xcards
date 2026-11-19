@@ -10,6 +10,17 @@ export {
   type ReviewLimits,
 } from "./limits.ts";
 export { createOpenRouterModel, type OpenRouterModelOptions } from "./model.ts";
-export { buildReviewPrompt } from "./prompts/review.ts";
+export { renderComment } from "./comment.ts";
+export { buildReviewPrompt, type ReviewInput } from "./prompts/review.ts";
 export { SYSTEM_PROMPT } from "./prompts/system.ts";
-export { REVIEW_JSON_SCHEMA, REVIEW_SCHEMA, type Review } from "./review-schema.ts";
+export {
+  CRITERIA,
+  CRITERION_KEYS,
+  HARD_CRITERIA,
+  REVIEW_JSON_SCHEMA,
+  REVIEW_SCHEMA,
+  type CriterionKey,
+  type Review,
+  type Verdict,
+} from "./review-schema.ts";
+export { ANY_FAIL_AT_OR_BELOW, applyVerdictRule, HARD_FAIL_AT_OR_BELOW, verdictFromScores } from "./verdict.ts";

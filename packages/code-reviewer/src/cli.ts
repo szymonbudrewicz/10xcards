@@ -63,7 +63,16 @@ const diff = await readDiff();
 const model = createOpenRouterModel({ apiKey, modelId: MODEL, baseURL: process.env.OPENROUTER_BASE_URL });
 
 try {
-  const { review, usage } = await runReview(diff, { model, limits });
+  // PR_TITLE / PR_BODY come from the CI workflow; locally they are usually unset.
+  const { review, modelVerdict, usage } = await runReview(
+    { diff, title: process.env.PR_TITLE, body: process.env.PR_BODY },
+    { model, limits },
+  );
+  if (modelVerdict !== review.verdict) {
+    console.error(
+      `[verdict] Model odpowiedział "${modelVerdict}", reguła werdyktu daje "${review.verdict}" — obowiązuje reguła.`,
+    );
+  }
   console.error(
     `[usage] model=${usage.modelId} steps=${usage.steps} in=${usage.inputTokens ?? "?"} out=${usage.outputTokens ?? "?"} ` +
       `cost=${usage.costUsd === undefined ? "?" : `$${usage.costUsd.toFixed(6)}`}`,

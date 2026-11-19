@@ -56,6 +56,18 @@ describe("reviewer CLI", () => {
     expect(JSON.stringify(fake.requests)).toContain("CHARACTERIZATION_MARKER");
   });
 
+  it("sends PR_TITLE/PR_BODY to the model and reports an overridden model verdict on stderr", async () => {
+    fake.respondWith(reviewCompletion({ ...VALID_REVIEW, verdict: "pass" }, 0.001));
+
+    const result = await runCli({ stdin: DIFF, env: { ...env(), PR_TITLE: "TITLE_MARKER", PR_BODY: "BODY_MARKER" } });
+
+    expect(result.code).toBe(0);
+    expect(JSON.parse(result.stdout)).toMatchObject({ verdict: "fail" });
+    expect(result.stderr).toContain('[verdict] Model odpowiedział "pass"');
+    expect(JSON.stringify(fake.requests)).toContain("TITLE_MARKER");
+    expect(JSON.stringify(fake.requests)).toContain("BODY_MARKER");
+  });
+
   it("falls back to data/sample.diff when there is no input", async () => {
     const result = await runCli({ env: env() });
 
