@@ -22,6 +22,8 @@ jobs:
       # Reviewer is a separate package; root eslint needs its node_modules to resolve types.
       - run: npm ci --prefix packages/code-reviewer
       - run: npm run typecheck --prefix packages/code-reviewer
+      # No secrets needed: the model is a local fake server / in-memory mock.
+      - run: npm test --prefix packages/code-reviewer
       - run: npx astro sync
       - run: npm run lint
       - run: npm run lint:ui

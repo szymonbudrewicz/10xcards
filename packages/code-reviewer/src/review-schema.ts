@@ -1,15 +1,7 @@
-// m5l2-review-schema.ts — shared contract for the code-review agent (M5L2, M5L3).
-// Copy to <reviewer-dir>/src/review-schema.ts. Both SDK variants (Claude Agent SDK and
-// AI SDK ToolLoopAgent), the CI gate and the promptfoo evals read this one definition.
-// Criteria follow m5l3-requirements: six scores on a 1-10 scale, a binding verdict, a summary.
+// Output contract of the code-review agent (M5L2, M5L3): six criteria scored 1-10,
+// a binding verdict and a summary. The agent, the CLI, the CI gate and the promptfoo
+// evals read this one definition. Prompts live in src/prompts/.
 import { z } from "zod";
-
-export const SYSTEM_PROMPT = `Jesteś precyzyjnym, konstruktywnym recenzentem kodu oceniającym pull request.
-Oceń podany diff w sześciu kryteriach w skali 1-10 (1 = poważne braki, 10 = wzorowo):
-poprawność implementacji, idiomatyczność, złożoność, pokrycie testami względem ryzyka,
-dokumentacja, bezpieczeństwo.
-Następnie wydaj wiążący werdykt (pass/fail) dla całej zmiany i dołącz krótkie podsumowanie (2-3 zdania)
-w Markdown, na podstawie którego autor PR-a będzie mógł działać.`;
 
 // Scores are plain z.number(): Anthropic structured output rejects minimum/maximum on
 // integer types, so the 1-10 range is carried by the field description and the prompt.
