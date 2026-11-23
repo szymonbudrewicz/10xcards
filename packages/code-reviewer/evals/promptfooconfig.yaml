@@ -1,4 +1,4 @@
-# Evals of the 10xCards code reviewer (M5L3, change context/changes/code-review-evals).
+# Evals of the 10xCards code reviewer (M5L3, change context/archive/2026-11-19-code-review-evals).
 # Run: npm run eval --prefix packages/code-reviewer  (paid: OpenRouter, key from the package .env)
 # Regression gate before changing the review prompt, schema or model. Exit 100 = a failed test.
 # The provider runs the real agent (runReview): schema, verdict rule and limits included.
