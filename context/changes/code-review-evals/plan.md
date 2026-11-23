@@ -387,10 +387,10 @@ Nie dotyczy (nowe pliki; domyślne zachowanie CLI i CI bez zmian do fazy 4). Wyc
 
 #### Automated
 
-- [x] 5.1 Testy, typecheck i lint przechodzą
-- [x] 5.2 Przebieg `npm run eval` dla wybranej konfiguracji z nową asercją długości kończy się kodem 0
-- [ ] 5.3 Check `review` na PR jest zielony
+- [x] 5.1 Testy, typecheck i lint przechodzą — 88a8049
+- [x] 5.2 Przebieg `npm run eval` dla wybranej konfiguracji z nową asercją długości kończy się kodem 0 — 88a8049
+- [x] 5.3 Check `review` na PR jest zielony — 5415df3
 
 #### Manual
 
-- [ ] 5.4 Użytkownik ogląda komentarz AI na PR i potwierdza, że uzasadnienia są czytelne
+- [x] 5.4 Użytkownik ogląda komentarz AI na PR i potwierdza, że uzasadnienia są czytelne — 5415df3
