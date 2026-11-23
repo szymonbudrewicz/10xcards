@@ -23,7 +23,7 @@ inputs:
   model:
     description: OpenRouter model id passed to the reviewer
     required: false
-    # Same default as the CLI; chosen by the promptfoo evals (context/changes/code-review-evals/results.md).
+    # Same default as the CLI; chosen by the promptfoo evals (context/archive/2026-11-19-code-review-evals/results.md).
     default: openai/gpt-6-luna
 
 outputs:

@@ -1,10 +1,10 @@
 ---
 change_id: code-review-evals
 title: Evale recenzenta AI w promptfoo jako bramka regresji
-status: implemented
+status: archived
 created: 2026-11-19
 updated: 2026-11-23
-archived_at: null
+archived_at: 2026-11-23T22:53:21Z
 ---
 
 ## Notes

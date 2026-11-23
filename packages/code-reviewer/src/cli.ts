@@ -24,7 +24,7 @@ const PACKAGE_DIR = fileURLToPath(new URL("..", import.meta.url));
 // Load this package's .env only, never the app's .env/.dev.vars, whatever the cwd.
 config({ path: `${PACKAGE_DIR}.env`, quiet: true });
 
-// Default chosen by the promptfoo evals (context/changes/code-review-evals/results.md).
+// Default chosen by the promptfoo evals (context/archive/2026-11-19-code-review-evals/results.md).
 const MODEL = process.env.REVIEW_MODEL ?? "openai/gpt-6-luna";
 const SAMPLE_DIFF = `${PACKAGE_DIR}data/sample.diff`;
 

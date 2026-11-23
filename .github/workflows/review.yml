@@ -1,5 +1,5 @@
 # AI code review on every pull request to main (M5L3). Requirements and decisions:
-# context/changes/ci-cd-code-review/ (requirements.md, plan.md). Based on the course template:
+# context/archive/2026-11-19-ci-cd-code-review/ (requirements.md, plan.md). Based on the course template:
 # - one bot comment per PR (edited in place), label ai-cr:passed / ai-cr:failed,
 #   failing `review` check on "fail" or when there is no verdict
 # - lockfiles are excluded from the diff; a diff that is empty afterwards passes without the model
