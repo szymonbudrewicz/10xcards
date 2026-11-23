@@ -92,3 +92,12 @@ Asercja przypadku: `verdict` zgodny z oczekiwanym oraz oś twarda ≤ 3 (user_id
 Zmiana: prompt systemowy i opis pola `reason` w schemacie wymagają jednego zdania ≤ 250 znaków (szczegóły i poprawki w podsumowaniu); nowa deterministyczna asercja w `defaultTest` sprawdza długość i liczbę zdań każdego uzasadnienia.
 
 Przebieg `gpt-6-luna` ×1: **5/5 PASS, exit 0** (33 s). (a) werdykt i progi: 5/5 (user_id izolacja 2, wklejony tekst prywatność 1, service-role izolacja 1, oba czyste `pass`); kontrakt 5/5; asercja długości 5/5 (najdłuższe uzasadnienie 155 znaków, wcześniej do 224); (b) llm-rubric 5/5 — pierwszy raz bez oblania service-role. Koszt: recenzje $0.0028 + grader ~$0.03 ≈ $0.03.
+
+## Poprawka po PR #32 — lockfile'e wycięte z diffu (2026-11-23)
+
+Obserwacja: recenzja CI na PR #32 (commit epilogu) dała fałszywy `fail` — poprawność 2/10 za „package.json bez aktualizacji package-lock.json”, choć `review.yml` celowo wycina lockfile'e z diffu, a job `ci` przeszedł `npm ci`. Ten sam model na niemal tym samym diffie dał wcześniej dwa razy `pass` (1 fałszywy alarm na 3 przebiegi).
+
+- Nowy przypadek `dependency-without-lockfile.diff` (zależność + skrypt w `package.json`, bez locka): oczekiwany `pass`, poprawność i konwencje ≥ 7.
+- **Nie odtwarza problemu**: na starym prompcie 3/3 PASS (oceny 9–10). Fałszywy alarm wystąpił tylko w dużym diffie (~109 tys. znaków); decyzja użytkownika: poprawka bez czerwonego testu, przypadek zostaje jako strażnik.
+- Poprawka promptu: zdanie, że diff może nie zawierać lockfile'i, a ich zgodność sprawdza `npm ci` w CI.
+- Po poprawce (`gpt-6-luna`): pełny zestaw ×1 **6/6 PASS, exit 0**; nowy przypadek ×2 2/2. (a) bez regresji (izolacja 3 / prywatność 1 / izolacja 1, oba czyste `pass`). Koszt łącznie z przebiegiem na starym prompcie: recenzje $0.005 + grader ~$0.04 ≈ **$0.05**.

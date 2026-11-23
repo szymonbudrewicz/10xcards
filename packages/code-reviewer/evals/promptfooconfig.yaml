@@ -144,3 +144,18 @@ tests:
         value: |
           const r = typeof output === "string" ? JSON.parse(output) : output;
           return r.verdict === "pass";
+
+  # CI cuts lockfiles out of the diff (review.yml); PR #32 once failed on "package.json
+  # without package-lock.json" although npm ci in the ci job proved the lock in sync.
+  - description: "dependency added, lockfile cut out of the diff — not penalized"
+    vars:
+      title: "chore(test): raport pokrycia testów jednostkowych"
+      body: |
+        Dodaje @vitest/coverage-v8 w wersji zgodnej z vitest i skrypt npm run test:coverage do
+        ręcznego sprawdzania pokrycia; CI bez zmian.
+      diff: file://fixtures/dependency-without-lockfile.diff
+    assert:
+      - type: javascript
+        value: |
+          const r = typeof output === "string" ? JSON.parse(output) : output;
+          return r.verdict === "pass" && r.implementationCorrectness.score >= 7 && r.projectConventions.score >= 7;
