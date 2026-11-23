@@ -1,0 +1,143 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "implementationCorrectness": {
+      "type": "object",
+      "properties": {
+        "score": {
+          "type": "number",
+          "description": "Ocena 1-10. 1: logika błędna, pominięte przypadki brzegowe (puste wejście, brak rekordu, błąd Supabase/modelu), cicha zmiana istniejącego zachowania, błędy w innym kształcie niż { error: { code, message } } albo z mylącym statusem HTTP. 10: ścieżka główna, przypadki brzegowe i obsługa błędów poprawne; wejście walidowane; kod błędu w snake_case, komunikat po polsku; brak regresji."
+        },
+        "reason": {
+          "type": "string",
+          "description": "Jedno zdanie uzasadnienia, najwyżej 250 znaków; przy ocenie < 7 wskaż konkretny plik lub linię i problem"
+        }
+      },
+      "required": [
+        "score",
+        "reason"
+      ],
+      "additionalProperties": false,
+      "description": "Poprawność i kontrakt API"
+    },
+    "accountIsolation": {
+      "type": "object",
+      "properties": {
+        "score": {
+          "type": "number",
+          "description": "Ocena 1-10. 1: nowa tabela bez RLS albo z jedną szeroką polityką; user_id z body/parametru; szersze grants na kolumnach niż potrzeba; brak sprawdzenia null z createClient(); nowa chroniona strona poza PROTECTED_ROUTES; jedno konto może czytać lub zmieniać dane innego. 10: osobne polityki RLS na każdą operację i rolę; tożsamość wyłącznie z sesji; minimalne uprawnienia; ścieżki bez auth obsłużone jawnie."
+        },
+        "reason": {
+          "type": "string",
+          "description": "Jedno zdanie uzasadnienia, najwyżej 250 znaków; przy ocenie < 7 wskaż konkretny plik lub linię i problem"
+        }
+      },
+      "required": [
+        "score",
+        "reason"
+      ],
+      "additionalProperties": false,
+      "description": "Izolacja kont i dostęp do danych (twarda reguła)"
+    },
+    "privacySecretsAiCost": {
+      "type": "object",
+      "properties": {
+        "score": {
+          "type": "number",
+          "description": "Ocena 1-10. 1: wklejony tekst użytkownika zapisywany lub logowany (także console.* i treść błędów); sekret/klucz w kodzie lub w .dev.vars; limit generowania do obejścia; wywołania modelu bez ograniczeń. 10: trwałe są tylko fiszki i liczniki; sekrety we właściwych plikach env; wywołania AI mają limit i sensowną obsługę porażki."
+        },
+        "reason": {
+          "type": "string",
+          "description": "Jedno zdanie uzasadnienia, najwyżej 250 znaków; przy ocenie < 7 wskaż konkretny plik lub linię i problem"
+        }
+      },
+      "required": [
+        "score",
+        "reason"
+      ],
+      "additionalProperties": false,
+      "description": "Prywatność, sekrety i koszt AI (twarda reguła)"
+    },
+    "projectConventions": {
+      "type": "object",
+      "properties": {
+        "score": {
+          "type": "number",
+          "description": "Ocena 1-10. 1: React tam, gdzie wystarczy Astro; \"use client\"; sklejanie klas zamiast cn(); palety/hex/arbitrary zamiast ról tokenów; nowy komponent zamiast istniejącego z src/components/ui/; pakiet radix-ui; logika biznesowa poza src/lib/services/, typy poza src/types.ts; zła nazwa migracji; zmiany w context/archive/; zmiana architektury bez aktualizacji CLAUDE.md. 10: nie do odróżnienia od dobrze napisanego kodu wokół; dokumentacja zaktualizowana tam, gdzie trzeba."
+        },
+        "reason": {
+          "type": "string",
+          "description": "Jedno zdanie uzasadnienia, najwyżej 250 znaków; przy ocenie < 7 wskaż konkretny plik lub linię i problem"
+        }
+      },
+      "required": [
+        "score",
+        "reason"
+      ],
+      "additionalProperties": false,
+      "description": "Zgodność z konwencjami 10xCards"
+    },
+    "simplicityAndScope": {
+      "type": "object",
+      "properties": {
+        "score": {
+          "type": "number",
+          "description": "Ocena 1-10. 1: niepotrzebne abstrakcje, martwy kod, `any` dla wygody; PR miesza kilka niezależnych zmian; opis PR-a nie mówi, co i dlaczego się zmienia. 10: najprostsze rozwiązanie, które w pełni rozwiązuje problem; jedna spójna zmiana; opis wskazuje cel (najlepiej z odwołaniem do context/changes/<id>/)."
+        },
+        "reason": {
+          "type": "string",
+          "description": "Jedno zdanie uzasadnienia, najwyżej 250 znaków; przy ocenie < 7 wskaż konkretny plik lub linię i problem"
+        }
+      },
+      "required": [
+        "score",
+        "reason"
+      ],
+      "additionalProperties": false,
+      "description": "Prostota i zakres zmiany"
+    },
+    "testRiskCoverage": {
+      "type": "object",
+      "properties": {
+        "score": {
+          "type": "number",
+          "description": "Ocena 1-10. 1: ryzykowna logika (endpoint, RLS, liczniki, granica AI) bez testów; testy niczego nie sprawdzają, leżą w src/pages/ albo wołają prawdziwą sieć. 10: najbardziej ryzykowne ścieżki mają celowe testy w tests/; granica AI stubowana przez fetch; zmiany w bazie pokryte testami integracyjnymi; prostych zmian nie testujemy na siłę."
+        },
+        "reason": {
+          "type": "string",
+          "description": "Jedno zdanie uzasadnienia, najwyżej 250 znaków; przy ocenie < 7 wskaż konkretny plik lub linię i problem"
+        }
+      },
+      "required": [
+        "score",
+        "reason"
+      ],
+      "additionalProperties": false,
+      "description": "Testy proporcjonalne do ryzyka"
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "pass",
+        "fail"
+      ],
+      "description": "Wiążący werdykt: fail, gdy kryterium 2 lub 3 ma ocenę <= 4 albo dowolne kryterium <= 3; inaczej pass"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Podsumowanie w Markdown dla autora PR-a; każda ocena < 7 wskazuje konkretny plik lub linię"
+    }
+  },
+  "required": [
+    "implementationCorrectness",
+    "accountIsolation",
+    "privacySecretsAiCost",
+    "projectConventions",
+    "simplicityAndScope",
+    "testRiskCoverage",
+    "verdict",
+    "summary"
+  ],
+  "additionalProperties": false
+}

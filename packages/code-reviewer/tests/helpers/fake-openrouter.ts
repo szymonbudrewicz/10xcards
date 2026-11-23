@@ -34,11 +34,14 @@ export function reviewCompletion(review: unknown = VALID_REVIEW, cost?: number):
     body: {
       id: "gen-test",
       model: "test/model",
+      // OpenRouter names the upstream provider that served the call.
+      provider: "fake-upstream",
       choices: [{ index: 0, finish_reason: "stop", message: { role: "assistant", content: JSON.stringify(review) } }],
       usage: {
         prompt_tokens: 100,
         completion_tokens: 50,
         total_tokens: 150,
+        completion_tokens_details: { reasoning_tokens: 30 },
         ...(cost === undefined ? {} : { cost }),
       },
     },

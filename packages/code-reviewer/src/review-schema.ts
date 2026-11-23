@@ -10,7 +10,12 @@ function criterion(name: string, low: string, high: string) {
   return z
     .object({
       score: z.number().describe(`Ocena 1-10. 1: ${low} 10: ${high}`),
-      reason: z.string().describe("Jedno zdanie uzasadnienia; przy ocenie < 7 wskaż konkretny plik lub linię"),
+      // No maxLength: one overlong reason must not reject the whole review; the eval checks length.
+      reason: z
+        .string()
+        .describe(
+          "Jedno zdanie uzasadnienia, najwyżej 250 znaków; przy ocenie < 7 wskaż konkretny plik lub linię i problem",
+        ),
     })
     .describe(name);
 }

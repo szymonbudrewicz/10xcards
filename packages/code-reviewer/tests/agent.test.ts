@@ -13,7 +13,7 @@ import {
 } from "../src/index.ts";
 import { VALID_REVIEW } from "./helpers/fake-openrouter.ts";
 
-function mockModel(cost?: number, review: unknown = VALID_REVIEW) {
+function mockModel(cost?: number, review: unknown = VALID_REVIEW, provider?: string) {
   return new MockLanguageModelV4({
     modelId: "mock/reviewer",
     doGenerate: {
@@ -21,9 +21,12 @@ function mockModel(cost?: number, review: unknown = VALID_REVIEW) {
       finishReason: { unified: "stop", raw: "stop" },
       usage: {
         inputTokens: { total: 100, noCache: 100, cacheRead: undefined, cacheWrite: undefined },
-        outputTokens: { total: 50, text: 50, reasoning: undefined },
+        outputTokens: { total: 50, text: 20, reasoning: 30 },
       },
-      providerMetadata: cost === undefined ? undefined : { openrouter: { usage: { cost } } },
+      providerMetadata:
+        cost === undefined && provider === undefined
+          ? undefined
+          : { openrouter: { ...(cost === undefined ? {} : { usage: { cost } }), ...(provider ? { provider } : {}) } },
       warnings: [],
     },
   });
@@ -46,6 +49,7 @@ describe("runReview", () => {
       steps: 1,
       inputTokens: 100,
       outputTokens: 50,
+      reasoningTokens: 30,
       costUsd: 0.0042,
     });
   });
@@ -66,6 +70,23 @@ describe("runReview", () => {
 
     const prompt = JSON.stringify(model.doGenerateCalls[0]?.prompt);
     for (const marker of ["DIFF_MARKER", "TITLE_MARKER", "BODY_MARKER"]) expect(prompt).toContain(marker);
+  });
+
+  it("reports reasoning tokens and the OpenRouter upstream provider", async () => {
+    const run = await runReview({ diff: "diff" }, { model: mockModel(0.001, VALID_REVIEW, "upstream-x") });
+
+    expect(run.usage.reasoningTokens).toBe(30);
+    expect(run.usage.provider).toBe("upstream-x");
+  });
+
+  it("caps reasoning at 8000 by default and sends no reasoning option when maxReasoningTokens is null", async () => {
+    const model = mockModel(0.001);
+
+    await runReview({ diff: "diff" }, { model });
+    await runReview({ diff: "diff" }, { model, limits: { maxReasoningTokens: null } });
+
+    expect(model.doGenerateCalls[0]?.providerOptions?.openrouter).toEqual({ reasoning: { max_tokens: 8000 } });
+    expect(model.doGenerateCalls[1]?.providerOptions?.openrouter).toBeUndefined();
   });
 
   it("leaves costUsd undefined when the provider reports no cost", async () => {

@@ -49,7 +49,9 @@ describe("reviewer CLI", () => {
 
     expect(result.code).toBe(0);
     expectReviewOnStdout(result.stdout);
-    expect(result.stderr).toMatch(/\[usage\] model=\S+ steps=1 in=100 out=50 cost=\$0\.001230/);
+    expect(result.stderr).toMatch(
+      /\[usage\] model=\S+ provider=\S+ steps=1 in=100 out=50 reasoning=\S+ cost=\$0\.001230/,
+    );
     expect(JSON.stringify(fake.requests)).toContain("CHARACTERIZATION_MARKER");
   });
 
@@ -129,7 +131,9 @@ describe("reviewer CLI limits", () => {
 
     expect(result.code).toBe(2);
     expect(result.stdout).toBe("");
-    expect(result.stderr).toMatch(/\[usage\] model=\S+ steps=1 in=100 out=50 cost=\$0\.032100/);
+    expect(result.stderr).toMatch(
+      /\[usage\] model=\S+ provider=\S+ steps=1 in=100 out=50 reasoning=\S+ cost=\$0\.032100/,
+    );
     expect(result.stderr).toContain("[limit]");
     expect(result.stderr).toContain("REVIEW_MAX_OUTPUT_TOKENS");
   });
@@ -155,6 +159,23 @@ describe("reviewer CLI limits", () => {
     expect(bodies[1]?.reasoning).toEqual({ max_tokens: 1234 });
   });
 
+  it("prints the upstream provider and reasoning tokens in [usage]", async () => {
+    const result = await runCli({ stdin: DIFF, env: env() });
+
+    expect(result.code).toBe(0);
+    expect(result.stderr).toContain("provider=fake-upstream");
+    expect(result.stderr).toContain("reasoning=30");
+  });
+
+  it("sends no reasoning cap when REVIEW_MAX_REASONING_TOKENS=0", async () => {
+    const result = await runCli({ stdin: DIFF, env: { ...env(), REVIEW_MAX_REASONING_TOKENS: "0" } });
+
+    expect(result.code).toBe(0);
+    const body = fake.requests[0] as { reasoning?: unknown; max_tokens?: number };
+    expect(body.reasoning).toBeUndefined();
+    expect(body.max_tokens).toBe(16000);
+  });
+
   it("exits 1 without calling the model when the reasoning cap is not below the output limit", async () => {
     const result = await runCli({
       stdin: DIFF,
@@ -173,7 +194,7 @@ describe("reviewer CLI limits", () => {
 
     expect(result.code).toBe(1);
     expect(result.stdout).toBe("");
-    expect(result.stderr).toMatch(/\[usage\] model=\S+ steps=1 in=100 out=50 cost=\?/);
+    expect(result.stderr).toMatch(/\[usage\] model=\S+ provider=\S+ steps=1 in=100 out=50 reasoning=\S+ cost=\?/);
     expect(result.stderr).toContain("[finish] Model nie zwrócił recenzji (finishReason=stop)");
   });
 

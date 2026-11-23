@@ -1,0 +1,21 @@
+diff --git a/tests/lib/card-content.test.ts b/tests/lib/card-content.test.ts
+new file mode 100644
+index 0000000..3e785ba
+--- /dev/null
++++ b/tests/lib/card-content.test.ts
+@@ -0,0 +1,15 @@
++// isBlankCardText is the one "blank card text" rule shared by the API and the card editor;
++// it must match the cards CHECK constraints (front/back !~ '^\s*$').
++
++import { describe, expect, it } from "vitest";
++import { isBlankCardText } from "@/lib/card-content";
++
++describe("isBlankCardText", () => {
++  it.each(["", " ", "\t", "\n", " \r\n\t "])("treats %j as blank", (value) => {
++    expect(isBlankCardText(value)).toBe(true);
++  });
++
++  it.each(["a", " a ", " x", "0"])("treats %j as not blank", (value) => {
++    expect(isBlankCardText(value)).toBe(false);
++  });
++});

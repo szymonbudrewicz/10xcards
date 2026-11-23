@@ -23,7 +23,8 @@ inputs:
   model:
     description: OpenRouter model id passed to the reviewer
     required: false
-    default: z-ai/glm-5.3
+    # Same default as the CLI; chosen by the promptfoo evals (context/changes/code-review-evals/results.md).
+    default: openai/gpt-6-luna
 
 outputs:
   verdict:
@@ -50,7 +51,8 @@ runs:
 
     - name: Install reviewer
       shell: bash
-      run: npm ci --prefix "$GITHUB_WORKSPACE/packages/code-reviewer" --no-audit --no-fund
+      # Runtime only: devDependencies (promptfoo, vitest, typescript) are for local evals and tests.
+      run: npm ci --omit=dev --prefix "$GITHUB_WORKSPACE/packages/code-reviewer" --no-audit --no-fund
 
     - name: Run agent
       id: agent

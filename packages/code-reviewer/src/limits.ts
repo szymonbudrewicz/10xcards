@@ -10,7 +10,8 @@ export interface ReviewLimits {
   maxOutputTokens: number;
   // Cap on reasoning tokens (OpenRouter reasoning.max_tokens); must stay below
   // maxOutputTokens so the model always has room left to write the JSON review.
-  maxReasoningTokens: number;
+  // null: no separate cap, reasoning is bounded only by maxOutputTokens (eval baseline).
+  maxReasoningTokens: number | null;
   // Total billed cost of one run (sum over steps) in USD.
   maxCostUsd: number;
 }

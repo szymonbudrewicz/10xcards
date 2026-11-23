@@ -70,7 +70,7 @@ jobs:
           REVIEW_FILE: ${{ steps.review.outputs.review-file }}
         run: |
           # The comment CLI needs the package even when the agent did not run (empty diff).
-          [ -d "$REVIEWER/node_modules" ] || npm ci --prefix "$REVIEWER" --no-audit --no-fund
+          [ -d "$REVIEWER/node_modules" ] || npm ci --omit=dev --prefix "$REVIEWER" --no-audit --no-fund
           if [ "$EMPTY" = true ]; then
             verdict=pass; args=(--no-verdict empty_diff)
           elif [ -n "$VERDICT" ]; then

@@ -1,0 +1,47 @@
+diff --git a/src/components/cards/SavedCardList.tsx b/src/components/cards/SavedCardList.tsx
+index 547650e..182c9ca 100644
+--- a/src/components/cards/SavedCardList.tsx
++++ b/src/components/cards/SavedCardList.tsx
+@@ -1,6 +1,9 @@
+ import { useEffect, useRef, useState } from "react";
+ import { SavedCardItem } from "@/components/cards/SavedCardItem";
+ import { useSavedCardActions } from "@/components/hooks/useSavedCardActions";
++import { Button } from "@/components/ui/button";
++import { Card, CardContent } from "@/components/ui/card";
++import { cn } from "@/lib/utils";
+ import type { SavedCard } from "@/types";
+ 
+ interface SavedCardListProps {
+@@ -44,7 +47,10 @@ export default function SavedCardList({ initialCards }: SavedCardListProps) {
+       <h2
+         ref={headingRef}
+         tabIndex={-1}
+-        className="focus-visible:ring-ring rounded-sm text-lg font-semibold outline-none focus-visible:ring-2"
++        className={cn(
++          "focus-visible:ring-ring rounded-sm text-lg font-semibold outline-none focus-visible:ring-2",
++          cards.length === 0 && "text-muted-foreground",
++        )}
+       >
+         Zapisane fiszki ({cards.length})
+       </h2>
+@@ -53,12 +59,14 @@ export default function SavedCardList({ initialCards }: SavedCardListProps) {
+       </p>
+ 
+       {cards.length === 0 ? (
+-        <p className="text-muted-foreground text-sm">
+-          Nie masz jeszcze zapisanych fiszek.{" "}
+-          <a href="/generate" className="text-link hover:underline">
+-            Wygeneruj fiszki
+-          </a>
+-        </p>
++        <Card className="border-dashed">
++          <CardContent className="flex flex-col items-start gap-3">
++            <p className="text-muted-foreground text-sm">Nie masz jeszcze zapisanych fiszek.</p>
++            <Button asChild variant="outline" size="sm">
++              <a href="/generate">Wygeneruj fiszki</a>
++            </Button>
++          </CardContent>
++        </Card>
+       ) : (
+         <ul className="space-y-3">
+           {cards.map((card) => (

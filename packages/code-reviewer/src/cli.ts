@@ -24,7 +24,8 @@ const PACKAGE_DIR = fileURLToPath(new URL("..", import.meta.url));
 // Load this package's .env only, never the app's .env/.dev.vars, whatever the cwd.
 config({ path: `${PACKAGE_DIR}.env`, quiet: true });
 
-const MODEL = process.env.REVIEW_MODEL ?? "z-ai/glm-5.3";
+// Default chosen by the promptfoo evals (context/changes/code-review-evals/results.md).
+const MODEL = process.env.REVIEW_MODEL ?? "openai/gpt-6-luna";
 const SAMPLE_DIFF = `${PACKAGE_DIR}data/sample.diff`;
 
 async function readDiff(): Promise<string> {
@@ -52,14 +53,21 @@ function readLimit(name: string, fallback: number, integer: boolean): number {
   return value;
 }
 
+// REVIEW_MAX_REASONING_TOKENS=0 turns the separate reasoning cap off (maxOutputTokens still applies).
+function readReasoningLimit(): number | null {
+  if (process.env.REVIEW_MAX_REASONING_TOKENS?.trim() === "0") return null;
+  const fallback = DEFAULT_LIMITS.maxReasoningTokens;
+  return fallback === null ? null : readLimit("REVIEW_MAX_REASONING_TOKENS", fallback, true);
+}
+
 const limits: ReviewLimits = {
   maxCostUsd: readLimit("REVIEW_MAX_COST_USD", DEFAULT_LIMITS.maxCostUsd, false),
   maxDiffChars: readLimit("REVIEW_MAX_DIFF_CHARS", DEFAULT_LIMITS.maxDiffChars, true),
   maxOutputTokens: readLimit("REVIEW_MAX_OUTPUT_TOKENS", DEFAULT_LIMITS.maxOutputTokens, true),
-  maxReasoningTokens: readLimit("REVIEW_MAX_REASONING_TOKENS", DEFAULT_LIMITS.maxReasoningTokens, true),
+  maxReasoningTokens: readReasoningLimit(),
 };
 // Reasoning counts toward maxOutputTokens; without room left there is never a JSON answer.
-if (limits.maxReasoningTokens >= limits.maxOutputTokens) {
+if (limits.maxReasoningTokens !== null && limits.maxReasoningTokens >= limits.maxOutputTokens) {
   console.error(
     `REVIEW_MAX_REASONING_TOKENS (${limits.maxReasoningTokens}) musi być mniejszy niż ` +
       `REVIEW_MAX_OUTPUT_TOKENS (${limits.maxOutputTokens}).`,
@@ -75,7 +83,8 @@ if (!apiKey) {
 
 function printUsage(usage: RunUsage): void {
   console.error(
-    `[usage] model=${usage.modelId} steps=${usage.steps} in=${usage.inputTokens ?? "?"} out=${usage.outputTokens ?? "?"} ` +
+    `[usage] model=${usage.modelId} provider=${usage.provider ?? "?"} steps=${usage.steps} ` +
+      `in=${usage.inputTokens ?? "?"} out=${usage.outputTokens ?? "?"} reasoning=${usage.reasoningTokens ?? "?"} ` +
       `cost=${usage.costUsd === undefined ? "?" : `$${usage.costUsd.toFixed(6)}`}`,
   );
   if (usage.costUsd === undefined) {
