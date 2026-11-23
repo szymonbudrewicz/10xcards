@@ -375,20 +375,20 @@ Nie dotyczy (nowe pliki; domyślne zachowanie CLI i CI bez zmian do fazy 4). Wyc
 
 #### Automated
 
-- [x] 4.1 Przebieg `npm run eval -- --repeat 3` kończy się kodem 0 albo 100; wynik zawiera 48 komórek
-- [x] 4.2 Po wdrożeniu: testy, typecheck i lint przechodzą
-- [x] 4.3 Przebieg potwierdzający ×1 dla wybranej konfiguracji kończy się kodem 0
+- [x] 4.1 Przebieg `npm run eval -- --repeat 3` kończy się kodem 0 albo 100; wynik zawiera 48 komórek — 34cd24c
+- [x] 4.2 Po wdrożeniu: testy, typecheck i lint przechodzą — 34cd24c
+- [x] 4.3 Przebieg potwierdzający ×1 dla wybranej konfiguracji kończy się kodem 0 — 34cd24c
 
 #### Manual
 
-- [x] 4.4 Użytkownik zatwierdza decyzję o modelu i limicie rozumowania na podstawie macierzy ×3
+- [x] 4.4 Użytkownik zatwierdza decyzję o modelu i limicie rozumowania na podstawie macierzy ×3 — 34cd24c
 
 ### Phase 5: Krótsze uzasadnienia
 
 #### Automated
 
-- [ ] 5.1 Testy, typecheck i lint przechodzą
-- [ ] 5.2 Przebieg `npm run eval` dla wybranej konfiguracji z nową asercją długości kończy się kodem 0
+- [x] 5.1 Testy, typecheck i lint przechodzą
+- [x] 5.2 Przebieg `npm run eval` dla wybranej konfiguracji z nową asercją długości kończy się kodem 0
 - [ ] 5.3 Check `review` na PR jest zielony
 
 #### Manual

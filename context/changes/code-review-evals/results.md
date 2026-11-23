@@ -86,3 +86,9 @@ Asercja przypadku: `verdict` zgodny z oczekiwanym oraz oś twarda ≤ 3 (user_id
 (a) 5/5, kontrakt 5/5, (b) 4/5 — service-role: jedno kryterium < 7 bez pliku/linii (jak w ×3). promptfoo exit 100 wyłącznie z powodu (b); krok 4.3 oceniany po (a) (decyzja użytkownika). Koszt: recenzje $0.0030 + grader ~$0.034 ≈ $0.04.
 
 Łączny koszt evali w fazach 3–4: ~$0.02 (smoke) + ~$0.25 (×1) + ~$0.44 (×3) + ~$0.04 (potwierdzenie) ≈ **$0.75**.
+
+## Faza 5 — krótsze uzasadnienia (2026-11-23)
+
+Zmiana: prompt systemowy i opis pola `reason` w schemacie wymagają jednego zdania ≤ 250 znaków (szczegóły i poprawki w podsumowaniu); nowa deterministyczna asercja w `defaultTest` sprawdza długość i liczbę zdań każdego uzasadnienia.
+
+Przebieg `gpt-6-luna` ×1: **5/5 PASS, exit 0** (33 s). (a) werdykt i progi: 5/5 (user_id izolacja 2, wklejony tekst prywatność 1, service-role izolacja 1, oba czyste `pass`); kontrakt 5/5; asercja długości 5/5 (najdłuższe uzasadnienie 155 znaków, wcześniej do 224); (b) llm-rubric 5/5 — pierwszy raz bez oblania service-role. Koszt: recenzje $0.0028 + grader ~$0.03 ≈ $0.03.

@@ -11,7 +11,7 @@
         },
         "reason": {
           "type": "string",
-          "description": "Jedno zdanie uzasadnienia; przy ocenie < 7 wskaż konkretny plik lub linię"
+          "description": "Jedno zdanie uzasadnienia, najwyżej 250 znaków; przy ocenie < 7 wskaż konkretny plik lub linię i problem"
         }
       },
       "required": [
@@ -30,7 +30,7 @@
         },
         "reason": {
           "type": "string",
-          "description": "Jedno zdanie uzasadnienia; przy ocenie < 7 wskaż konkretny plik lub linię"
+          "description": "Jedno zdanie uzasadnienia, najwyżej 250 znaków; przy ocenie < 7 wskaż konkretny plik lub linię i problem"
         }
       },
       "required": [
@@ -49,7 +49,7 @@
         },
         "reason": {
           "type": "string",
-          "description": "Jedno zdanie uzasadnienia; przy ocenie < 7 wskaż konkretny plik lub linię"
+          "description": "Jedno zdanie uzasadnienia, najwyżej 250 znaków; przy ocenie < 7 wskaż konkretny plik lub linię i problem"
         }
       },
       "required": [
@@ -68,7 +68,7 @@
         },
         "reason": {
           "type": "string",
-          "description": "Jedno zdanie uzasadnienia; przy ocenie < 7 wskaż konkretny plik lub linię"
+          "description": "Jedno zdanie uzasadnienia, najwyżej 250 znaków; przy ocenie < 7 wskaż konkretny plik lub linię i problem"
         }
       },
       "required": [
@@ -87,7 +87,7 @@
         },
         "reason": {
           "type": "string",
-          "description": "Jedno zdanie uzasadnienia; przy ocenie < 7 wskaż konkretny plik lub linię"
+          "description": "Jedno zdanie uzasadnienia, najwyżej 250 znaków; przy ocenie < 7 wskaż konkretny plik lub linię i problem"
         }
       },
       "required": [
@@ -106,7 +106,7 @@
         },
         "reason": {
           "type": "string",
-          "description": "Jedno zdanie uzasadnienia; przy ocenie < 7 wskaż konkretny plik lub linię"
+          "description": "Jedno zdanie uzasadnienia, najwyżej 250 znaków; przy ocenie < 7 wskaż konkretny plik lub linię i problem"
         }
       },
       "required": [

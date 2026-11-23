@@ -48,6 +48,14 @@ defaultTest:
         const r = typeof output === "string" ? JSON.parse(output) : output;
         const m = context.providerResponse && context.providerResponse.metadata;
         return Boolean(m) && m.modelVerdict === r.verdict;
+    # PR comment readability: every reason is one sentence of at most 250 characters.
+    # A sentence end is . ! ? followed by whitespace and a capital letter, or the end of the text.
+    - type: javascript
+      value: |
+        const r = typeof output === "string" ? JSON.parse(output) : output;
+        const keys = ["implementationCorrectness", "accountIsolation", "privacySecretsAiCost", "projectConventions", "simplicityAndScope", "testRiskCoverage"];
+        const ends = (t) => (t.trim().match(/[.!?](?=\s+[A-ZĄĆĘŁŃÓŚŹŻ]|\s*$)/g) || []).length;
+        return keys.every((k) => r[k].reason.length <= 250 && ends(r[k].reason) <= 1);
     - type: llm-rubric
       # simplicityAndScope also judges the PR description, so for that one criterion the
       # description counts as a concrete source (decision 2026-11-19, results.md obs. 5).

@@ -12,7 +12,9 @@ Oceń zmianę w sześciu kryteriach, każde w skali 1-10 (1 = poważne braki, 10
 5. Prostota i zakres zmiany (jedna spójna zmiana, opis PR-a mówi co i dlaczego).
 6. Testy proporcjonalne do ryzyka (testy w tests/, granica AI stubowana przez fetch, bez prawdziwej sieci).
 
-Dla każdego kryterium podaj ocenę i jedno zdanie uzasadnienia. Każda ocena poniżej 7 musi wskazywać konkretny plik lub linię.
+Dla każdego kryterium podaj ocenę i uzasadnienie w jednym zdaniu, najwyżej 250 znaków: bez wyliczeń i bez kilku zdań.
+Każda ocena poniżej 7 musi wskazywać konkretny plik lub linię i nazwać problem; szczegóły i propozycje poprawek
+umieść w podsumowaniu, nie w uzasadnieniu.
 Oceniaj tylko to, co widać w diffie; brak dowodu na problem to nie problem.
 
 Werdykt: fail, gdy kryterium 2 lub 3 ma ocenę 4 lub niższą albo gdy którekolwiek kryterium ma ocenę 3 lub niższą; pass w każdym innym przypadku.
